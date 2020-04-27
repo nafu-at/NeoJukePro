@@ -1,0 +1,54 @@
+##########################################################
+#       Welcome to NeoJukePro's configuration file.      #
+#                   Author : NAFU_at                     #
+#            config version: v1.0.0                      #
+##########################################################
+
+###############################################
+#                Basic Settings               #
+###############################################
+basic: # This is the configuration required to use this bot.
+  discordToken: "YourTokenHere"        # Set the token that this Bot will use to authenticate to the Discord API.
+
+  prefix: ";;"                         # Specifies a prefix for the bot to recognize the message as a command.
+  botAdmins: []                        # Specifies the ID of the user who has administrative privileges for this Bot.
+
+  musicSource:                         # Specifies the source to be used to play the music.
+    youtube:    true
+    soundcloud: true
+    bandcamp:   true
+    vimeo:      true
+    twitch:     true
+    http:       true
+    local:      false
+
+  database: # Set the connection information of the database to store the data.
+    databaseType: "MARIADB"            # Specify the type of database. (MARIADB/MYSQL)
+    tablePrefix: "sj_"
+    address: localhost:3306
+    database: NeoJukePro
+    username: NeoJukePro
+    password: PaSsWoRd
+
+
+###############################################
+#              Advanced Settings              #
+###############################################
+advanced:
+  googleAPIToken: ""                   # You can use the YouTube video search function by entering a token.
+
+  # --- --- The following settings are not yet implemented and are not available. --- --- #
+  #useNodeServer: false                 # この設定を有効にするとオーディオの送信に負荷分散を利用します。
+
+  #nodesInfo:                          # 負荷分散に使用するノードサーバーの接続情報を指定します。
+  #  - nodeName: "local"               # ノードを管理するための識別名を指定します。
+  #    address: "ws://localhost:2333"  # ノードに接続するための接続先を指定します。
+  #    password: "node1Password"       # ノード側で設定した接続用のパスワードを指定します。
+  #
+  #  - nodeName: "network"
+  #    address: "ws://example.com:2333"
+  #    password: "node2Password"
+
+
+  # --- --- --- --- #
+  sentryDsn: ""

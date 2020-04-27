@@ -1,0 +1,16 @@
+
+.gradle/
+
+build/
+
+gradle/
+
+.idea/sonarlint/
+
+.settings/
+
+.project
+
+.classpath
+
+bin/
