@@ -19,10 +19,13 @@ package page.nafuchoco.neojukepro.core.discord.handler;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.*;
+import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 @Slf4j
@@ -49,9 +52,14 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 !event.getTextChannel().canTalk())
             return;
 
-        String prefix;
-        // Nullは返ってこないはず。返ってきたら別のどこかがおかしい。
-        prefix = launcher.getConfig().getBasicConfig().getPrefix(); // TODO: 2020/04/24
+        String prefix = null;
+        GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
+        try {
+            prefix = settingsTable.getGuildSetting(event.getGuild().getIdLong(), "prefix");
+        } catch (SQLException e) {
+            log.error("An error occurred while retrieving data from SQL.", e);
+        }
+        prefix = StringUtils.defaultString(prefix, launcher.getConfig().getBasicConfig().getPrefix());
 
         String raw = event.getMessage().getContentRaw();
         String input;
@@ -60,7 +68,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         } else if (!event.getMessage().getMentions().isEmpty()) { // 自分宛てのメンションの場合はコマンドとして認識
             if (!event.getMessage().isMentioned(event.getJDA().getSelfUser()))
                 return;
-            input = raw.substring(event.getJDA().getSelfUser().getAsMention().length()).trim();
+            input = raw.substring(event.getJDA().getSelfUser().getAsMention().length() + 1).trim();
         } else { // コマンドではないメッセージを無視
             return;
         }

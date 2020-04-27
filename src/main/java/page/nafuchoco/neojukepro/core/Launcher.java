@@ -91,7 +91,7 @@ public class Launcher implements NeoJukeLauncher {
             return;
         }
 
-        DiscordAppInfo appInfo = null;
+        DiscordAppInfo appInfo;
         try {
             appInfo = new DiscordAPIClient().getBotApplicationInfo(config.getBasicConfig().getDiscordToken());
         } catch (IOException e) {
@@ -147,8 +147,10 @@ public class Launcher implements NeoJukeLauncher {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Shutting down the system...");
             moduleManager.disableAllModules();
-            if (lavalink != null)
+            if (lavalink != null) {
+                playerRegistry.getPlayers().forEach(player -> playerRegistry.destroyPlayer(player.getGuild()));
                 lavalink.shutdown();
+            }
             shardManager.shutdown();
             connector.close();
             log.info("See you again!");
@@ -158,6 +160,7 @@ public class Launcher implements NeoJukeLauncher {
     private void initCommand() {
         commandRegistry.registerCommand(new HelpCommand("help", "h"), null);
 
+        commandRegistry.registerCommand(new SettingsCommand("settings", "set"), null);
         commandRegistry.registerCommand(new StatusCommand("status", "stats"), null);
         commandRegistry.registerCommand(new JoinCommand("join", "j"), null);
         commandRegistry.registerCommand(new LeaveCommand("leave", "lv"), null);
@@ -173,8 +176,11 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new RepeatCommand("repeat", "rep"), null);
         commandRegistry.registerCommand(new ShuffleCommand("shuffle", "sh"), null);
 
+        commandRegistry.registerCommand(new DeleteCommand("delete", "clean"), null);
+
         commandRegistry.registerCommand(new NodesCommand("nodes", "node"), null);
         commandRegistry.registerCommand(new ModuleCommand("module", "mod"), null);
+        commandRegistry.registerCommand(new ShutdownCommand("shutdown", "exit"), null);
     }
 
     private JDA getJdaFromId(int shardId) {

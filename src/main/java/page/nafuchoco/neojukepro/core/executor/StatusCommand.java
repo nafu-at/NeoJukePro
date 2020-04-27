@@ -38,7 +38,7 @@ public class StatusCommand extends CommandExecutor {
         builder.append("Pause: " + audioPlayer.isPaused() + "\n");
         builder.append("Volume: " + audioPlayer.getVolume() + "\n");
         builder.append("Shuffle: " + audioPlayer.isShuffle() + "\n");
-        builder.append("Repeat Mode: " + audioPlayer.getRepeatType().name() + "\n");
+        builder.append("Repeat Mode: " + audioPlayer.getRepeatType() + "\n");
         builder.append("```");
         context.getChannel().sendMessage(builder.toString()).queue();
     }
