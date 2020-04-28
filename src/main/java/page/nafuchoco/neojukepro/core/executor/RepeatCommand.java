@@ -17,7 +17,6 @@
 package page.nafuchoco.neojukepro.core.executor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
@@ -43,8 +42,12 @@ public class RepeatCommand extends CommandExecutor {
         if (audioPlayer == null)
             return;
         if (context.getArgs().length != 0) {
-            GuildSettings.REPEATTYPE repeattype =
-                    GuildSettings.REPEATTYPE.valueOf(StringUtils.defaultString(context.getArgs()[0], "NONE"));
+            GuildSettings.REPEATTYPE repeattype;
+            try {
+                repeattype = GuildSettings.REPEATTYPE.valueOf(context.getArgs()[0].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                repeattype = GuildSettings.REPEATTYPE.NONE;
+            }
             audioPlayer.setRepeatType(repeattype);
             context.getChannel().sendMessage("Repeat mode has been changed.").queue();
             GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
