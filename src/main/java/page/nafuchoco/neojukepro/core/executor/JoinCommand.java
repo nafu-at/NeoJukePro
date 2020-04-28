@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.executor;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
@@ -37,12 +38,12 @@ public class JoinCommand extends CommandExecutor {
         VoiceChannel targetChannel = context.getInvoker().getVoiceState().getChannel();
         try {
             if (targetChannel == null)
-                context.getChannel().sendMessage("Please connect to the voice channel before executing.").queue();
+                context.getChannel().sendMessage(MessageManager.getMessage("command.join.before")).queue();
             else
                 audioPlayer.joinChannel(targetChannel);
         } catch (InsufficientPermissionException e) {
             context.getChannel().sendMessage(
-                    "Cannot connect to this channel because Bot has no permissions assigned to it.").queue();
+                    MessageManager.getMessage("command.channel.permission")).queue();
             return;
         }
     }

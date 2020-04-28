@@ -17,9 +17,11 @@
 package page.nafuchoco.neojukepro.core.executor;
 
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
 import page.nafuchoco.neojukepro.core.player.GuildTrackContext;
 
@@ -37,7 +39,7 @@ public class SkipCommand extends CommandExecutor {
             if (!context.getMessage().getMentionedMembers().isEmpty()) {
                 int skipcount =
                         context.getMessage().getMentionedMembers().stream().mapToInt(member -> audioPlayer.skip(member).size()).sum();
-                context.getChannel().sendMessage("**Skipped " + skipcount + "songs.**").queue();
+                context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip.skip.count"), skipcount)).queue();
             } else if (context.getArgs().length >= 1) {
                 String indexS = context.getArgs()[0];
                 if (indexS.contains("-")) {
@@ -45,16 +47,15 @@ public class SkipCommand extends CommandExecutor {
                     if (split.length == 1 && indexS.endsWith("-")) {
                         int below = Integer.parseInt(indexS.replace("-", ""));
                         audioPlayer.skip(below);
-                        context.getChannel().sendMessage("Skipped the `#" + below + "` song and beyond.").queue();
+                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip.below"), below)).queue();
                     } else {
                         audioPlayer.skip(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-                        context.getChannel().sendMessage("Skipped songs `#" + split[0] + "` through " + "`#" + split[1] + "`").queue();
+                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip.between"), split[0], split[1])).queue();
                     }
                 } else {
                     try {
-                        context.getChannel().sendMessage("**"
-                                + audioPlayer.skip(Integer.parseInt(indexS), Integer.parseInt(indexS)).get(0).getTrack().getInfo().title
-                                + "** was skipped.").queue();
+                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip"),
+                                audioPlayer.skip(Integer.parseInt(indexS), Integer.parseInt(indexS)).get(0).getTrack().getInfo().title)).queue();
                     } catch (IllegalArgumentException e) {
                         // nothing
                     }
@@ -62,7 +63,8 @@ public class SkipCommand extends CommandExecutor {
             } else {
                 GuildTrackContext nowPlaying = audioPlayer.getNowPlaying();
                 audioPlayer.skip();
-                context.getChannel().sendMessage("**" + nowPlaying.getTrack().getInfo().title + "** was skipped.").queue();
+                context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip"),
+                        nowPlaying.getTrack().getInfo().title)).queue();
             }
         }
     }

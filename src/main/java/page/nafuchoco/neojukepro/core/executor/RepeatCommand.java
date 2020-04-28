@@ -18,6 +18,7 @@ package page.nafuchoco.neojukepro.core.executor;
 
 import lombok.extern.slf4j.Slf4j;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
@@ -54,7 +55,7 @@ public class RepeatCommand extends CommandExecutor {
             try {
                 settingsTable.setGuildSetting(context.getGuild().getIdLong(), "repeat", repeattype.name());
             } catch (SQLException e) {
-                log.error("An error occurred while saving data to SQL.");
+                log.error(MessageManager.getMessage("system.db.save.error"));
             }
         }
     }

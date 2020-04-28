@@ -17,6 +17,7 @@
 package page.nafuchoco.neojukepro.core.executor;
 
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
@@ -49,7 +50,7 @@ public class ListCommand extends CommandExecutor {
                         page = 1;
                     }
                 } catch (NumberFormatException e) {
-                    context.getChannel().sendMessage("Please specify the number of pages with a number.").queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage("command.page.specify")).queue();
                 }
             }
 
@@ -58,7 +59,7 @@ public class ListCommand extends CommandExecutor {
                 listPage++;
 
             if (page > listPage) {
-                context.getChannel().sendMessage("The page numbers specified are too large!").queue();
+                context.getChannel().sendMessage(MessageManager.getMessage("command.page.large")).queue();
                 return;
             }
 
@@ -66,9 +67,9 @@ public class ListCommand extends CommandExecutor {
             for (GuildTrackContext track : tracks)
                 totalTime += track.getTrack().getDuration();
 
-            sb.append("\\▶Playing track: " + audioPlayer.getNowPlaying().getTrack().getInfo().title + "\n");
-            sb.append("**There are currently " + tracks.size() + " songs added to the queue.** `[" + page + "/" + listPage + "]`" +
-                    " `(" + MessageUtil.formatTime(totalTime) + ")`");
+            sb.append(MessageManager.getMessage("command.list.playing") + audioPlayer.getNowPlaying().getTrack().getInfo().title + "\n");
+            sb.append(MessageUtil.format(MessageManager.getMessage("command.list.list"),
+                    tracks.size(), page, listPage, MessageUtil.formatTime(totalTime)));
             for (int count = range * page - range + 1; count <= range * page; count++) {
                 if (tracks.size() >= count) {
                     GuildTrackContext track = tracks.get(count - 1);
@@ -78,7 +79,7 @@ public class ListCommand extends CommandExecutor {
             }
             context.getChannel().sendMessage(sb.toString()).queue();
         } else {
-            context.getChannel().sendMessage("Nothing seems to be in the queue. Would you like to listen to something new?").queue();
+            context.getChannel().sendMessage(MessageManager.getMessage("command.list.nothing")).queue();
         }
     }
 
