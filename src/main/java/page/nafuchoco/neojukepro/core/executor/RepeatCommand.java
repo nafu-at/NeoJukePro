@@ -46,6 +46,7 @@ public class RepeatCommand extends CommandExecutor {
             GuildSettings.REPEATTYPE repeattype =
                     GuildSettings.REPEATTYPE.valueOf(StringUtils.defaultString(context.getArgs()[0], "NONE"));
             audioPlayer.setRepeatType(repeattype);
+            context.getChannel().sendMessage("Repeat mode has been changed.").queue();
             GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
             try {
                 settingsTable.setGuildSetting(context.getGuild().getIdLong(), "repeat", repeattype.name());

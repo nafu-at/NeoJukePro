@@ -44,7 +44,7 @@ public class ShutdownCommand extends CommandExecutor {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Exit the system.";
     }
 
     @Override

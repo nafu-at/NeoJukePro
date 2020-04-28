@@ -31,6 +31,8 @@ public final class GuildVoiceLeaveEventHandler extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
+        if (event.getEntity().getUser() == event.getJDA().getSelfUser())
+            return;
         for (Member member : event.getChannelLeft().getMembers())
             if (!member.getUser().isBot())
                 return;
