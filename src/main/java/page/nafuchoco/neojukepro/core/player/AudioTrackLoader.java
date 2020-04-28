@@ -89,7 +89,8 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
             if (!track.equals(firstTrack))
                 contextList.add(new GuildTrackContext(invoker.getGuild(), invoker, track));
         });
-        contextList.add(0, new GuildTrackContext(invoker.getGuild(), invoker, firstTrack));
+        if (firstTrack != null)
+            contextList.add(0, new GuildTrackContext(invoker.getGuild(), invoker, firstTrack));
         audioPlayer.play(contextList, desiredNumber);
         MessageUtil.sendMessage(audioPlayer.getGuild(),
                 MessageUtil.format(MessageManager.getMessage("player.playlist.add"), playlist.getTracks().size(), playlist.getName()));
