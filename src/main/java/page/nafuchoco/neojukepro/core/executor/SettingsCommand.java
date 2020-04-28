@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.executor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
@@ -48,7 +49,7 @@ public class SettingsCommand extends CommandExecutor {
                                 launcher.getConfig().getBasicConfig().getPrefix());
                     else
                         settingsTable.setGuildSetting(context.getGuild().getIdLong(), "prefix", context.getArgs()[1]);
-                    context.getChannel().sendMessage("A prefix was set.").queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage("command.set.prefix.set")).queue();
                     break;
 
                 default:
@@ -57,12 +58,12 @@ public class SettingsCommand extends CommandExecutor {
 
             }
         } catch (SQLException e) {
-            log.error("Some error occurred while communicating with SQL.");
+            log.error(MessageManager.getMessage("system.db.communicate.error"));
         }
     }
 
     private String getGuildSettings(Guild guild, GuildSettingsTable settingsTable) throws SQLException {
-        StringBuilder builder = new StringBuilder("Current guild settings.\n```\n");
+        StringBuilder builder = new StringBuilder(MessageManager.getMessage("command.set.current") + "\n```\n");
         builder.append("Prefix: " + settingsTable.getGuildSetting(guild.getIdLong(), "prefix") + "\n");
         builder.append("```");
         return builder.toString();

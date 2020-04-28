@@ -18,10 +18,12 @@ package page.nafuchoco.neojukepro.core.executor;
 
 import lombok.extern.slf4j.Slf4j;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
 import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
 
@@ -45,12 +47,12 @@ public class VolumeCommand extends CommandExecutor {
                 GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
                 settingsTable.setGuildSetting(context.getGuild().getIdLong(), "volume", String.valueOf(volume));
             } catch (NumberFormatException e) {
-                context.getChannel().sendMessage("The value specified is not correct!").queue();
+                context.getChannel().sendMessage(MessageManager.getMessage("command.volume.correct")).queue();
             } catch (SQLException e) {
-                log.error("An error occurred while saving data to SQL.");
+                log.error(MessageManager.getMessage("system.db.save.error"));
             }
         }
-        context.getChannel().sendMessage("The current volume is **" + audioPlayer.getVolume() + "%**.").queue();
+        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.volume.corrent"), audioPlayer.getVolume())).queue();
     }
 
     @Override

@@ -27,6 +27,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
@@ -76,7 +77,7 @@ public class NowPlayingCommand extends CommandExecutor {
                     try {
                         context.getChannel().sendMessage(getYouTubeEmbed(audioPlayer)).queue();
                     } catch (IOException | NullPointerException e) {
-                        ExceptionUtil.sendStackTrace(context.getGuild(), e, "Failed to get the video information.");
+                        ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
                     }
                 } else if (audioTrack instanceof SoundCloudAudioTrack) {
                     context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, SOUNDCLOUD_COLOR)).queue();
@@ -93,7 +94,7 @@ public class NowPlayingCommand extends CommandExecutor {
                 }
             }
         } else {
-            context.getChannel().sendMessage("Nothing is playing right now!").queue();
+            context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.nothing")).queue();
         }
     }
 
@@ -124,7 +125,7 @@ public class NowPlayingCommand extends CommandExecutor {
             descMessage = descMessage.substring(0, 800) + " [...]";
         MessageEmbed.Field description = new MessageEmbed.Field("Description", descMessage, false);
         builder.addField(description);
-        builder.setFooter("The request was made by " + audioPlayer.getNowPlaying().getInvoker().getEffectiveName() + ".",
+        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getNowPlaying().getInvoker().getEffectiveName()),
                 audioPlayer.getNowPlaying().getInvoker().getUser().getAvatarUrl());
         return builder.build();
     }
@@ -141,7 +142,7 @@ public class NowPlayingCommand extends CommandExecutor {
         MessageEmbed.Field source = new MessageEmbed.Field("",
                 "Loaded from " + audioPlayer.getNowPlaying().getTrack().getSourceManager().getSourceName() + ".", false);
         builder.addField(source);
-        builder.setFooter("The request was made by " + audioPlayer.getNowPlaying().getInvoker().getEffectiveName() + ".",
+        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getNowPlaying().getInvoker().getEffectiveName()),
                 audioPlayer.getNowPlaying().getInvoker().getUser().getAvatarUrl());
         return builder.build();
     }

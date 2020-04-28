@@ -17,9 +17,11 @@
 package page.nafuchoco.neojukepro.core.executor;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 
 public class ShutdownCommand extends CommandExecutor {
 
@@ -32,13 +34,12 @@ public class ShutdownCommand extends CommandExecutor {
         if (context.getArgs().length == 0) {
             String pass = RandomStringUtils.randomAlphanumeric(6);
             CommandCache.registerCache(context.getGuild(), "shutdownKey", pass);
-            context.getChannel().sendMessage("An execution key has been generated to prevent misoperation.\n" +
-                    "Enter a execution key in the argument and run it again.: " + pass).queue();
+            context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.shutdown.key"), pass)).queue();
         } else {
             if (context.getArgs()[0].equals(CommandCache.getCache(context.getGuild(), "shutdownKey")))
                 Runtime.getRuntime().exit(0);
             else
-                context.getChannel().sendMessage("Incorrect execution key.").queue();
+                context.getChannel().sendMessage(MessageManager.getMessage("command.shutdown.key.incorrect")).queue();
         }
     }
 

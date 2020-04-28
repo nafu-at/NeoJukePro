@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.executor;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciithemes.TA_GridThemes;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
@@ -46,9 +47,9 @@ public class ModuleCommand extends CommandExecutor {
         } else switch (context.getArgs()[0].toLowerCase()) {
             case "load":
                 if (launcher.getModuleManager().loadModule(new File(context.getArgs()[1])))
-                    context.getChannel().sendMessage("The module has been successfully loaded.").queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage("command.module.load.success")).queue();
                 else
-                    context.getChannel().sendMessage("Failed to load the module.").queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage("command.module.load.failed")).queue();
                 break;
 
             case "unload":
@@ -61,7 +62,7 @@ public class ModuleCommand extends CommandExecutor {
                         try {
                             launcher.getModuleManager().unloadModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage("The specified module is not registered.").queue();
+                            context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
                         }
                         break;
                 }
@@ -77,7 +78,7 @@ public class ModuleCommand extends CommandExecutor {
                         try {
                             launcher.getModuleManager().enableModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage("The specified module is not registered.").queue();
+                            context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
                         }
                         break;
                 }
@@ -93,7 +94,7 @@ public class ModuleCommand extends CommandExecutor {
                         try {
                             launcher.getModuleManager().disableModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage("The specified module is not registered.").queue();
+                            context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
                         }
                         break;
                 }
@@ -105,7 +106,7 @@ public class ModuleCommand extends CommandExecutor {
                 } else {
                     NeoModule module = launcher.getModuleManager().getModule(context.getArgs()[0]);
                     if (module == null) {
-                        context.getChannel().sendMessage("The specified module is not registered.").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
                     } else {
                         ModuleDescription description = module.getDescription();
                         AsciiTable table = new AsciiTable();
@@ -133,7 +134,7 @@ public class ModuleCommand extends CommandExecutor {
             if (page < 1)
                 page = 1;
         } catch (NumberFormatException e) {
-            return "Please specify the number of pages with a number.";
+            return MessageManager.getMessage("command.page.specify");
         }
 
         List<NeoModule> modules = launcher.getModuleManager().getModules();
@@ -143,7 +144,7 @@ public class ModuleCommand extends CommandExecutor {
             listPage++;
 
         if (page > listPage)
-            return "The page numbers specified are too large!";
+            return MessageManager.getMessage("command.page.large");
 
         StringBuilder builder = new StringBuilder("```");
         AsciiTable table = new AsciiTable();

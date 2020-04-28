@@ -17,6 +17,7 @@
 package page.nafuchoco.neojukepro.core.executor;
 
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
@@ -33,7 +34,7 @@ public class StopCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
         audioPlayer.stop();
-        context.getChannel().sendMessage("Playback stopped.").queue();
+        context.getChannel().sendMessage(MessageManager.getMessage("command.stop")).queue();
         audioPlayer.leaveChannel();
         launcher.getPlayerRegistry().destroyPlayer(context.getGuild());
     }

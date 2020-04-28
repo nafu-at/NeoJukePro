@@ -19,9 +19,11 @@ package page.nafuchoco.neojukepro.core.executor;
 import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.jda.JdaLavalink;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -43,7 +45,7 @@ public class NodesCommand extends CommandExecutor {
             if (context.getArgs().length == 0) {
                 StringBuilder builder = new StringBuilder();
                 List<LavalinkSocket> nodes = lavalink.getNodes();
-                builder.append("There are " + nodes.size() + " nodes registered in this Bot.\n");
+                builder.append(MessageUtil.format(MessageManager.getMessage("command.nodes.list"), nodes.size()) + "\n");
                 builder.append("```");
                 for (int i = 0; nodes.size() > i; i++) {
                     LavalinkSocket node = nodes.get(i);
@@ -65,22 +67,23 @@ public class NodesCommand extends CommandExecutor {
                             lavalink.addNode(context.getArgs()[1], new URI(context.getArgs()[2]), context.getArgs()[3]);
                         }
                         context.getMessage().delete().submit();
-                        context.getChannel().sendMessage("Node No." + (lavalink.getNodes().size() - 1) + " has been added.").queue();
+                        context.getChannel().sendMessage(MessageUtil.format(
+                                MessageManager.getMessage("command.nodes.add"), lavalink.getNodes().size() - 1)).queue();
                     } catch (URISyntaxException e) {
-                        context.getChannel().sendMessage("The URI you entered is not correct!").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.notcorrect")).queue();
                     }
                     break;
 
                 case "remove":
                     try {
                         lavalink.removeNode(Integer.parseInt(context.getArgs()[1]));
-                        context.getChannel().sendMessage("Removed a node.").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.remove")).queue();
                     } catch (NumberFormatException e) {
-                        context.getChannel().sendMessage("Please specify the node number.").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.number")).queue();
                     }
             }
         } else {
-            context.getChannel().sendMessage("This bot doesn't have any nodes enabled!").queue();
+            context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.disabled")).queue();
         }
     }
 

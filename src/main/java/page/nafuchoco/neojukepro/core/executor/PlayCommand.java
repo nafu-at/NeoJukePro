@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
@@ -53,14 +54,14 @@ public class PlayCommand extends CommandExecutor {
         if (!context.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
             VoiceChannel targetChannel = context.getInvoker().getVoiceState().getChannel();
             if (targetChannel == null) {
-                context.getChannel().sendMessage("Please connect to the voice channel before executing.").queue();
+                context.getChannel().sendMessage(MessageManager.getMessage("command.join.before")).queue();
                 return;
             }
             try {
                 audioPlayer.joinChannel(targetChannel);
             } catch (InsufficientPermissionException e) {
                 context.getChannel().sendMessage(
-                        "Cannot connect to this channel because Bot has no permissions assigned to it.").queue();
+                        MessageManager.getMessage("command.channel.permission")).queue();
                 return;
             }
         }
@@ -108,24 +109,24 @@ public class PlayCommand extends CommandExecutor {
                     YouTubeSearchResults result =
                             new YouTubeAPIClient(launcher.getConfig().getAdvancedConfig().getGoogleAPIToken()).searchVideos(builder.toString());
                     if (result == null || result.getItems().length == 0) {
-                        context.getChannel().sendMessage("Not found any videos matching the criteria.").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.notfound")).queue();
                         return;
                     }
 
                     StringBuilder message = new StringBuilder();
-                    message.append("**The following items were found**");
+                    message.append(MessageManager.getMessage("command.play.search.found"));
                     int count = 1;
                     for (SearchItem item : result.getItems()) {
                         message.append("\n`[" + count + "]` " + item.getSnippet().getTitle() + "");
                         count++;
                     }
-                    message.append("\n\n**To play it, select `play [1-5]`.**");
+                    message.append("\n\n" + MessageManager.getMessage("command.play.search.select"));
 
                     context.getChannel().sendMessage(message.toString()).queue(send -> CommandCache.registerCache(context.getGuild(), "searchResults", Arrays.asList(result, context.getMessage(), send)));
                 } catch (IOException e) {
-                    ExceptionUtil.sendStackTrace(context.getGuild(), e, "Failed to get search results.");
+                    ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.play.search.failed"));
                 } catch (IllegalArgumentException e) {
-                    context.getChannel().sendMessage("The search function has not been activated!").queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.disabled")).queue();
                 }
             }
         }
