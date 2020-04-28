@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
@@ -51,7 +52,7 @@ public final class GuildVoiceJoinEventHandler extends ListenerAdapter {
                 audioPlayer.setVolume(NumberUtils.toInt(settings.get("volume"), 80));
                 audioPlayer.setRepeatType(GuildSettings.REPEATTYPE.valueOf(StringUtils.defaultString(settings.get("repeat"), "NONE")));
             } catch (SQLException e) {
-                log.error("An error occurred while retrieving data from SQL.", e);
+                log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
             }
         }
     }

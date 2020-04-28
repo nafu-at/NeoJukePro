@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.module;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidModuleException;
 import page.nafuchoco.neojukepro.core.module.exception.ModuleDuplicateException;
 import page.nafuchoco.neojukepro.core.module.exception.UnknownDependencyException;
@@ -73,7 +74,7 @@ public class ModuleManager {
                 try {
                     description = moduleLoader.loadModuleDescription(file);
                 } catch (InvalidModuleException e) {
-                    log.warn("Failed to load the module information.: {}", file.getName(), e);
+                    log.warn(MessageManager.getMessage("system.module.load.info.failed"), file.getName(), e);
                     iterator.remove();
                     continue iterator;
                 }
@@ -107,9 +108,9 @@ public class ModuleManager {
         try {
             module = moduleLoader.loadModule(file);
         } catch (UnknownDependencyException e) {
-            log.error("It couldn't be load because the dependency couldn't be resolved.", e);
+            log.error(MessageManager.getMessage("system.module.load.info.depend.unknown"), e);
         } catch (InvalidModuleException e) {
-            log.error("The module could not be loaded due to an incorrect format.", e);
+            log.error(MessageManager.getMessage("system.module.load.invalid"), e);
         }
 
         if (module == null)
@@ -118,15 +119,15 @@ public class ModuleManager {
         try {
             moduleRegistry.registerModule(module);
         } catch (ModuleDuplicateException e) {
-            log.warn("The same module is already loaded.: {}", module.getDescription().getName());
+            log.warn(MessageManager.getMessage("system.module.load.already"), module.getDescription().getName());
             return false;
         }
 
         try {
             module.onLoad();
-            log.info("Module loaded.: {}", module.getDescription().getName());
+            log.info(MessageManager.getMessage("system.module.load.success"), module.getDescription().getName());
         } catch (Throwable e) {
-            log.warn("An uncaught exception has been raised in \"onLoad\".", e);
+            log.warn(MessageManager.getMessage("system.module.load.error"), e);
             unloadModule(module);
             return false;
         }
@@ -229,15 +230,15 @@ public class ModuleManager {
      */
     public void unloadModule(NeoModule module) {
         if (module.isEnable()) {
-            log.warn("Unable to unload because the module is in a valid state.: {}", module.getDescription().getName());
+            log.warn(MessageManager.getMessage("system.module.unload.failed"), module.getDescription().getName());
         } else {
             try {
                 moduleRegistry.deleteModule(module);
                 ModuleClassLoader classLoader = module.getClassLoder();
                 classLoader.close();
-                log.info("Module unloaded.: {}", module.getDescription().getName());
+                log.info(MessageManager.getMessage("system.module.unload.success"), module.getDescription().getName());
             } catch (IOException e) {
-                log.error("An error occurred during the unloading of the module.", e);
+                log.error(MessageManager.getMessage("system.module.unload.error"), e);
             }
         }
     }

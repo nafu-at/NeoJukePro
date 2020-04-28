@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class BasicConfigSection {
+    @JsonProperty("language")
+    private String language;
     @JsonProperty("discordToken")
     private String discordToken;
     @JsonProperty("prefix")
@@ -31,6 +33,10 @@ public class BasicConfigSection {
     private MusicSourceSection musicSource;
     @JsonProperty("database")
     private DatabaseSection database;
+
+    public String getLanguage() {
+        return language;
+    }
 
     public String getDiscordToken() {
         return discordToken;

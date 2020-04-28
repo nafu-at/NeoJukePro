@@ -21,6 +21,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.entities.Guild;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
 
 import java.util.ArrayList;
@@ -55,8 +56,7 @@ public class GuildPlayerRegistry {
                 player.stop();
                 player.leaveChannel();
             } else if (player.getLink().getState() == Link.State.DESTROYED) {
-                MessageUtil.sendMessage(guild, "The player has already been discarded. This problem does not usually occur." +
-                        "The player will be removed without doing anything.");
+                MessageUtil.sendMessage(guild, MessageManager.getMessage("player.destroyed"));
             } else {
                 player.destroy();
             }

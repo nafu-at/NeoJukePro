@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.*;
 import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
@@ -57,7 +58,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         try {
             prefix = settingsTable.getGuildSetting(event.getGuild().getIdLong(), "prefix");
         } catch (SQLException e) {
-            log.error("An error occurred while retrieving data from SQL.", e);
+            log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
         }
         prefix = StringUtils.defaultString(prefix, launcher.getConfig().getBasicConfig().getPrefix());
 
@@ -80,22 +81,22 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         for (String commandString : commands) {
             CommandContext context = parseCommand(commandString, event);
             if (context == null) {
-                event.getChannel().sendMessage("The input command `" + commandString + "` is not registered in NeoJuke.\n" +
-                        "If you want to know the commands of NeoJuke, type `" + prefix + "help`.").queue();
+                event.getChannel().sendMessage(MessageUtil.format(
+                        MessageManager.getMessage("command.nocommand"), commandString, prefix)).queue();
             } else {
                 log.debug("Command Received: {}", context.toString());
 
                 // コマンドの実行権限の確認
                 if (authManager.getUserPerm(event.getMember()) <
                         context.getCommand().getRequiredPerm()) {
-                    event.getChannel().sendMessage("You don't have the necessary permissions to run this command!").queue();
+                    event.getChannel().sendMessage(MessageManager.getMessage("command.nopermission")).queue();
                     continue;
                 }
 
                 try {
                     context.getCommand().onInvoke(context);
                 } catch (Exception e) {
-                    ExceptionUtil.sendStackTrace(event.getGuild(), e, "Failed to execute the command.");
+                    ExceptionUtil.sendStackTrace(event.getGuild(), e, MessageManager.getMessage("command.execute.failed"));
                 }
             }
         }

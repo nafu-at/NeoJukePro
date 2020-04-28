@@ -63,18 +63,20 @@ public class Launcher implements NeoJukeLauncher {
 
     @Override
     public void launch() {
-        log.info("Load the configuration file.");
+        log.info(MessageManager.getMessage("system.config.load"));
         configManager = new ConfigManager();
         if (configManager.existsConfig(true)) {
             configManager.reloadConfig();
             config = configManager.getConfig();
-            log.info("The configuration file has been successfully loaded.");
+            log.info(MessageManager.getMessage("system.config.load.success"));
         } else {
-            log.error("The configuration file could not be loaded successfully.");
+            log.error(MessageManager.getMessage("system.config.load.failed"));
             return;
         }
 
-        log.info("Start a connection to the database.");
+        MessageManager.setDefaultLocale(config.getBasicConfig().getLanguage());
+
+        log.info(MessageManager.getMessage("system.db.connection"));
         DatabaseSection database = config.getBasicConfig().getDatabase();
         connector = new DatabaseConnector(
                 database.getDatabaseType().getAddressPrefix() + database.getAddress(), database.getDatabase(),
@@ -87,7 +89,7 @@ public class Launcher implements NeoJukeLauncher {
             usersPermTable.createTable();
             CommandCache.registerCache(null, "settingsTable", settingsTable);
         } catch (SQLException e) {
-            log.error("An error occurred while initializing the table.");
+            log.error(MessageManager.getMessage("system.db.initialize.error"));
             return;
         }
 
@@ -95,7 +97,7 @@ public class Launcher implements NeoJukeLauncher {
         try {
             appInfo = new DiscordAPIClient().getBotApplicationInfo(config.getBasicConfig().getDiscordToken());
         } catch (IOException e) {
-            log.error("An error occurred while retrieving information about the Discord Bot.", e);
+            log.error(MessageManager.getMessage("system.api.about.error"), e);
             return;
         }
 
@@ -117,22 +119,22 @@ public class Launcher implements NeoJukeLauncher {
                 shardManagerBuilder.setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor());
             }
         } catch (IOException e) {
-            log.error("An error occurred while connecting the LavaLink Node.", e);
+            log.error(MessageManager.getMessage("system.node.connection.failed"), e);
         }
 
         try {
-            log.info("Attempt to login to the Discord API.");
+            log.info(MessageManager.getMessage("system.api.login"));
             shardManager = shardManagerBuilder.build();
             while (!shardManager.getStatus(0).equals(JDA.Status.CONNECTED))
                 Thread.sleep(100);
         } catch (LoginException e) {
-            log.error("Failed to authenticate the connection of the Discord API.", e);
+            log.error(MessageManager.getMessage("system.api.login.failed"), e);
             Runtime.getRuntime().exit(1);
         } catch (InterruptedException e) {
-            log.error("An error occurred while waiting for the login process.", e);
+            log.error(MessageManager.getMessage("system.api.login.error"), e);
             Runtime.getRuntime().exit(1);
         }
-        log.info("Successfully connected to the Discord API.");
+        log.info(MessageManager.getMessage("system.api.login.success"));
         log.debug("Ping! {}ms", shardManager.getAverageGatewayPing());
 
         playerRegistry = new GuildPlayerRegistry(new DefaultAudioPlayerManager(), null); // TODO: 2020/04/24
