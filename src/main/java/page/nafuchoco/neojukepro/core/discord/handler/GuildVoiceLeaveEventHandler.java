@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
@@ -37,8 +38,7 @@ public final class GuildVoiceLeaveEventHandler extends ListenerAdapter {
             if (!member.getUser().isBot())
                 return;
 
-        MessageUtil.sendMessage(event.getEntity().getGuild(), "No one seems to have left.\n" +
-                "It was automatically exited to relieve the load.");
+        MessageUtil.sendMessage(event.getEntity().getGuild(), MessageManager.getMessage("player.autoleave"));
         GuildAudioPlayer player =
                 launcher.getPlayerRegistry().getGuildAudioPlayer(event.getEntity().getGuild());
         player.setPaused(true);

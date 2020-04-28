@@ -21,8 +21,11 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MessageUtil {
+    private static final Pattern VAR_PATTERN = Pattern.compile("(\\{\\d+\\})");
     private static final Map<Guild, MessageChannel> channelCache = new HashMap<>();
 
     private MessageUtil() {
@@ -37,6 +40,19 @@ public class MessageUtil {
 
     public static void cacheChannel(Guild guild, MessageChannel channel) {
         channelCache.put(guild, channel);
+    }
+
+    public static String format(String message, Object... args) {
+        String result = message;
+        Matcher matcher = VAR_PATTERN.matcher(result);
+        while (matcher.find()) {
+            String index = matcher.group().replace("{", "").replace("}", "");
+            try {
+                result = result.replace(matcher.group(), String.valueOf(args[Integer.parseInt(index)]));
+            } catch (IndexOutOfBoundsException e) {
+            }
+        }
+        return result;
     }
 
     public static String formatTime(long millis) {

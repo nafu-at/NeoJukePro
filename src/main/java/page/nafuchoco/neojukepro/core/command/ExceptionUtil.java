@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.command;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.MDC;
+import page.nafuchoco.neojukepro.core.MessageManager;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,7 +42,7 @@ public class ExceptionUtil {
         String trace = stringWriter.toString();
 
         StringBuilder builder = new StringBuilder();
-        builder.append(":warning: 問題が発生しました。問題が続く場合は管理者に報告してください。\n");
+        builder.append(MessageManager.getMessage("command.exception") + "\n");
         for (String msg : message)
             builder.append(msg + "\n");
 

@@ -18,6 +18,7 @@ package page.nafuchoco.neojukepro.core.command;
 
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAppInfo;
 
@@ -56,7 +57,7 @@ public class CommandExecuteAuth {
                         return getUserPermLevel(member);
                 }
             } catch (SQLException e) {
-                log.error("An error occurred while trying to obtain the user's execution permissions.", e);
+                log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
                 return 0;
             }
         }

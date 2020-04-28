@@ -81,22 +81,22 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         for (String commandString : commands) {
             CommandContext context = parseCommand(commandString, event);
             if (context == null) {
-                event.getChannel().sendMessage("The input command `" + commandString + "` is not registered in NeoJuke.\n" +
-                        "If you want to know the commands of NeoJuke, type `" + prefix + "help`.").queue();
+                event.getChannel().sendMessage(MessageUtil.format(
+                        MessageManager.getMessage("command.nocommand"), commandString, prefix)).queue();
             } else {
                 log.debug("Command Received: {}", context.toString());
 
                 // コマンドの実行権限の確認
                 if (authManager.getUserPerm(event.getMember()) <
                         context.getCommand().getRequiredPerm()) {
-                    event.getChannel().sendMessage("You don't have the necessary permissions to run this command!").queue();
+                    event.getChannel().sendMessage(MessageManager.getMessage("command.nopermission")).queue();
                     continue;
                 }
 
                 try {
                     context.getCommand().onInvoke(context);
                 } catch (Exception e) {
-                    ExceptionUtil.sendStackTrace(event.getGuild(), e, "Failed to execute the command.");
+                    ExceptionUtil.sendStackTrace(event.getGuild(), e, MessageManager.getMessage("command.execute.failed"));
                 }
             }
         }

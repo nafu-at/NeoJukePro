@@ -30,6 +30,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.config.MusicSourceSection;
 
@@ -58,7 +59,7 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     protected void loadTrack() {
         if (audioPlayer == null)
-            throw new IllegalStateException("GuildAudioPlayer is not registered.");
+            throw new IllegalStateException(MessageManager.getMessage("player.loader.error"));
         audioPlayer.getAudioPlayerManager().loadItemOrdered(this, loadTrackUrl, this);
     }
 
@@ -73,9 +74,11 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
         audioPlayer.play(new GuildTrackContext(invoker.getGuild(), invoker, track), desiredNumber);
         if (audioPlayer.getTrackProvider().getQueues().size() == 0)
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Playing **" + track.getInfo().title + "**");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.playing"), track.getInfo().title));
         else
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Added **" + track.getInfo().title + "** to the queue.");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.addqueue"), track.getInfo().title));
     }
 
     @Override
@@ -89,7 +92,7 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
         contextList.add(0, new GuildTrackContext(invoker.getGuild(), invoker, firstTrack));
         audioPlayer.play(contextList, desiredNumber);
         MessageUtil.sendMessage(audioPlayer.getGuild(),
-                "Loaded a `" + playlist.getTracks().size() + "` tracks from **" + playlist.getName() + "**.");
+                MessageUtil.format(MessageManager.getMessage("player.playlist.add"), playlist.getTracks().size(), playlist.getName()));
     }
 
     @Override
@@ -104,25 +107,32 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     private boolean checkAudioSorce(AudioTrack track) {
         if (track instanceof YoutubeAudioTrack && !musicSource.enableYoutube()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Playback from YouTube has been disabled by the settings.");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "YouTube"));
             return false;
         } else if (track instanceof SoundCloudAudioTrack && !musicSource.enableSoundCloud()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Playback from SoundCloud has been disabled by the settings.");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "SoundCloud"));
             return false;
         } else if (track instanceof BandcampAudioTrack && !musicSource.enableBandCamp()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Playback from BandCamp has been disabled by the settings.");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "BandCamp"));
             return false;
         } else if (track instanceof VimeoAudioTrack && !musicSource.enableVimeo()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Playback from Vimeo has been disabled by the settings.");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Vimeo"));
             return false;
         } else if (track instanceof TwitchStreamAudioTrack && !musicSource.enableTwitch()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Playback from Twitch has been disabled by the settings.");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Twitch"));
             return false;
         } else if (track instanceof HttpAudioTrack && !musicSource.enableHttp()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Playback from HTTP has been disabled by the settings.");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "HTTP"));
             return false;
         } else if (track instanceof LocalAudioTrack && !musicSource.enableLocal()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(), "Playback from Local has been disabled by the settings.");
+            MessageUtil.sendMessage(audioPlayer.getGuild(),
+                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Local"));
             return false;
         }
         return true;

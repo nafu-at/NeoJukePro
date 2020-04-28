@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.discord.guild.GuildSettings;
 
@@ -218,12 +219,12 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
 
     @Override
     public void onPlayerPause(IPlayer player) {
-        MessageUtil.sendMessage(guild, "Playback was paused. Please enter it again to resume.");
+        MessageUtil.sendMessage(guild, MessageManager.getMessage("player.pause"));
     }
 
     @Override
     public void onPlayerResume(IPlayer player) {
-        MessageUtil.sendMessage(guild, "Resume playback.");
+        MessageUtil.sendMessage(guild, MessageManager.getMessage("player.resume"));
     }
 
     @Override
