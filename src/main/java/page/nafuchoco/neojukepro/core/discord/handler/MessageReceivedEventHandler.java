@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.*;
 import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
@@ -57,7 +58,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         try {
             prefix = settingsTable.getGuildSetting(event.getGuild().getIdLong(), "prefix");
         } catch (SQLException e) {
-            log.error("An error occurred while retrieving data from SQL.", e);
+            log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
         }
         prefix = StringUtils.defaultString(prefix, launcher.getConfig().getBasicConfig().getPrefix());
 

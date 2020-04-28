@@ -40,6 +40,13 @@ public class Main {
                 case "debug":
                     debugMode = true;
                     break;
+
+                default:
+                    if (prop.startsWith("lang=")) {
+                        String[] s = prop.split("=");
+                        MessageManager.setDefaultLocale(s[1]);
+                    }
+                    break;
             }
         }
 

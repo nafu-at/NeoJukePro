@@ -37,12 +37,11 @@ public class ConfigManager {
             try (InputStream original = ClassLoader.getSystemResourceAsStream("NeoJukeConfig.yaml")) {
                 Files.copy(original, configFile.toPath());
                 result = true;
-                log.info("The configuration file was not found, so a new file was created.");
-                log.debug("Configuration file location: {}", configFile.getPath());
+                log.info(MessageManager.getMessage("system.config.generate"));
+                log.debug(MessageManager.getMessage("system.config.generate.debug"), configFile.getPath());
             } catch (IOException e) {
                 result = false;
-                log.error("The correct configuration file could not be retrieved from the executable.\n" +
-                        "If you have a series of problems, please contact the developer.", e);
+                log.error(MessageManager.getMessage("system.config.generate.failed"), e);
             }
         }
         return result;
@@ -51,12 +50,11 @@ public class ConfigManager {
     public void reloadConfig() {
         try (FileInputStream configInput = new FileInputStream(configFile)) {
             config = MAPPER.readValue(configInput, NeoJukeConfig.class);
-            log.info("The configuration file has been successfully loaded.");
+            log.info(MessageManager.getMessage("system.config.load.success"));
         } catch (FileNotFoundException e) {
-            log.error("The configuration file could not be found. Do not delete the configuration file after starting the program.\n" +
-                    "If you don't know what it is, please report it to the developer.", e);
+            log.error(MessageManager.getMessage("system.config.load.notfound"), e);
         } catch (IOException e) {
-            log.error("An error occurred while loading the configuration file.", e);
+            log.error(MessageManager.getMessage("system.config.load.error"), e);
         }
     }
 

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidDescriptionException;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidModuleException;
 import page.nafuchoco.neojukepro.core.module.exception.UnknownDependencyException;
@@ -71,7 +72,7 @@ public class ModuleLoader {
      */
     public NeoModule loadModule(File file) throws InvalidModuleException {
         if (!file.exists())
-            throw new InvalidModuleException("The specified file does not exist.");
+            throw new InvalidModuleException(MessageManager.getMessage("system.module.load.notfound"));
 
         ModuleDescription description;
         try {
@@ -83,13 +84,12 @@ public class ModuleLoader {
         int currentVersion = parseVersion(Main.class.getPackage().getImplementationVersion());
         int requiredVersion = parseVersion(description.getRequiredVersion());
         if (requiredVersion > currentVersion)
-            throw new InvalidModuleException("The current version of NeoJukePro in use is unavailable " +
-                    "because it falls below the version required by the module.");
+            throw new InvalidModuleException(MessageManager.getMessage("system.module.load.version.below"));
 
         if (!CollectionUtils.isEmpty(description.getDependency())) {
             for (String dep : description.getDependency()) {
                 if (moduleRegistry.getModule(dep) == null)
-                    throw new UnknownDependencyException("The dependency could not be resolved.");
+                    throw new UnknownDependencyException(MessageManager.getMessage("system.module.load.depend.notresolved"));
             }
         }
 
@@ -119,7 +119,7 @@ public class ModuleLoader {
      */
     public ModuleDescription loadModuleDescription(File file) throws InvalidModuleException {
         if (!file.exists())
-            throw new InvalidModuleException("The specified file does not exist.");
+            throw new InvalidModuleException(MessageManager.getMessage("system.module.load.notfound"));
 
         InputStream inputStream = null;
         try (JarFile jar = new JarFile(file)) {
@@ -131,7 +131,7 @@ public class ModuleLoader {
             inputStream = jar.getInputStream(entry);
             return mapper.readValue(inputStream, ModuleDescription.class);
         } catch (IOException e) {
-            throw new InvalidModuleException("The module could not be loaded.", e);
+            throw new InvalidModuleException(MessageManager.getMessage("system.module.load.failed"), e);
         } finally {
             if (inputStream != null) {
                 try {

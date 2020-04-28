@@ -8,6 +8,8 @@
 #                Basic Settings               #
 ###############################################
 basic: # This is the configuration required to use this bot.
+  language: "en_US"                    # Specifies the language that the system uses by default.
+
   discordToken: "YourTokenHere"        # Set the token that this Bot will use to authenticate to the Discord API.
 
   prefix: ";;"                         # Specifies a prefix for the bot to recognize the message as a command.
