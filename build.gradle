@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
@@ -23,6 +24,43 @@ shadowJar {
     archiveName = "NeoJukePro.${extension}"
 }
 
+task sourcesJar(type: Jar, dependsOn: 'classes') {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+task javadocJar(type: Jar, dependsOn: 'javadoc') {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+javadoc {
+    options.charSet = 'UTF-8'
+    options.encoding = 'UTF-8'
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(id: 'pandasoft', url: 'ftp://sv8276.xserver.jp/') {
+            authentication(userName: "${project.mavenUser}", password: "${project.mavenPassword}")
+        }
+        pom.project {
+            inceptionYear '2020'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+        }
+    }
+}
+
 repositories {
     mavenCentral()
     jcenter()
@@ -30,6 +68,8 @@ repositories {
 }
 
 dependencies {
+    deployerJars 'org.apache.maven.wagon:wagon-ftp:3.3.4'
+    
     // Logger
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'ch.qos.logback:logback-core:1.2.3'

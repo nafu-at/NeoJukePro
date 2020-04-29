@@ -14,3 +14,5 @@ gradle/
 .classpath
 
 bin/
+
+gradle.properties
