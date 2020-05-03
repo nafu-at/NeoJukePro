@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.config.MusicSourceSection;
 
@@ -103,7 +104,7 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException exception) {
-
+        ExceptionUtil.sendStackTrace(audioPlayer.getGuild(), exception, MessageManager.getMessage("player.loader.failed"));
     }
 
     private boolean checkAudioSorce(AudioTrack track) {

@@ -17,9 +17,11 @@
 package page.nafuchoco.neojukepro.core.executor;
 
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
 
 public class ShuffleCommand extends CommandExecutor {
@@ -32,7 +34,9 @@ public class ShuffleCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
-        audioPlayer.setShuffle(audioPlayer.isShuffle());
+        audioPlayer.setShuffle(!audioPlayer.isShuffle());
+        context.getChannel().sendMessage(
+                MessageUtil.format(MessageManager.getMessage("command.shuffle"), audioPlayer.isShuffle())).queue();
     }
 
     @Override

@@ -24,6 +24,10 @@ shadowJar {
     archiveName = "NeoJukePro.${extension}"
 }
 
+
+configurations {
+    deployerJars
+}
 task sourcesJar(type: Jar, dependsOn: 'classes') {
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -36,7 +40,6 @@ javadoc {
     options.charSet = 'UTF-8'
     options.encoding = 'UTF-8'
 }
-
 artifacts {
     archives sourcesJar
     archives javadocJar
@@ -69,7 +72,7 @@ repositories {
 
 dependencies {
     deployerJars 'org.apache.maven.wagon:wagon-ftp:3.3.4'
-    
+
     // Logger
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'ch.qos.logback:logback-core:1.2.3'
