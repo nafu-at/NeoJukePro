@@ -137,7 +137,7 @@ public class Launcher implements NeoJukeLauncher {
         log.info(MessageManager.getMessage("system.api.login.success"));
         log.debug("Ping! {}ms", shardManager.getAverageGatewayPing());
 
-        playerRegistry = new GuildPlayerRegistry(new DefaultAudioPlayerManager(), null); // TODO: 2020/04/24
+        playerRegistry = new GuildPlayerRegistry(new DefaultAudioPlayerManager(), lavalink);
 
         moduleManager = new ModuleManager("modules");
         moduleManager.loadAllModules();

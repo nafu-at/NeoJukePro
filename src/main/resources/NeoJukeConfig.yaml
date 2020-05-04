@@ -39,13 +39,12 @@ basic: # This is the configuration required to use this bot.
 advanced:
   googleAPIToken: ""                   # You can use the YouTube video search function by entering a token.
 
-  # --- --- The following settings are not yet implemented and are not available. --- --- #
-  #useNodeServer: false                 # この設定を有効にするとオーディオの送信に負荷分散を利用します。
+  useNodeServer: false                 # This setting enables load balancing to be used for audio transmission.
 
-  #nodesInfo:                          # 負荷分散に使用するノードサーバーの接続情報を指定します。
-  #  - nodeName: "local"               # ノードを管理するための識別名を指定します。
-  #    address: "ws://localhost:2333"  # ノードに接続するための接続先を指定します。
-  #    password: "node1Password"       # ノード側で設定した接続用のパスワードを指定します。
+  #nodesInfo:                          # Set the connection information of the node server used for load balancing.
+  #  - nodeName: "local"               # Specify a distinguished name to manage the node.
+  #    address: "ws://localhost:2333"  # Specify the address to connect to the node.
+  #    password: "node1Password"       # Set the password for the connection set in the node.
   #
   #  - nodeName: "network"
   #    address: "ws://example.com:2333"
