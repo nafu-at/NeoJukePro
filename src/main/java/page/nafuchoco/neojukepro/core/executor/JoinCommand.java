@@ -44,7 +44,6 @@ public class JoinCommand extends CommandExecutor {
         } catch (InsufficientPermissionException e) {
             context.getChannel().sendMessage(
                     MessageManager.getMessage("command.channel.permission")).queue();
-            return;
         }
     }
 

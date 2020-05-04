@@ -26,7 +26,7 @@ import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
-import page.nafuchoco.neojukepro.core.discord.guild.GuildSettings;
+import page.nafuchoco.neojukepro.core.database.RepeatType;
 import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
 
 import javax.annotation.Nonnull;
@@ -50,7 +50,7 @@ public final class GuildVoiceJoinEventHandler extends ListenerAdapter {
             try {
                 Map<String, String> settings = settingsTable.getGuildSettings(event.getGuild().getIdLong());
                 audioPlayer.setVolume(NumberUtils.toInt(settings.get("volume"), 80));
-                audioPlayer.setRepeatType(GuildSettings.REPEATTYPE.valueOf(StringUtils.defaultString(settings.get("repeat"), "NONE")));
+                audioPlayer.setRepeatType(RepeatType.valueOf(StringUtils.defaultString(settings.get("repeat"), "NONE")));
             } catch (SQLException e) {
                 log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
             }

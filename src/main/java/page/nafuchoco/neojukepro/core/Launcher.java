@@ -109,7 +109,7 @@ public class Launcher implements NeoJukeLauncher {
         shardManagerBuilder.addEventListeners(new GuildVoiceJoinEventHandler());
         shardManagerBuilder.addEventListeners(new GuildVoiceLeaveEventHandler());
         try {
-            if (config.getAdvancedConfig().isUseNodeServer() && config.getAdvancedConfig().getNodesInfo().size() != 0) {
+            if (config.getAdvancedConfig().isUseNodeServer() && !config.getAdvancedConfig().getNodesInfo().isEmpty()) {
                 lavalink =
                         new JdaLavalink(new DiscordAPIClient().getBotApplicationInfo(config.getBasicConfig().getDiscordToken()).getID(),
                                 getShardsTotal(), this::getJdaFromId);

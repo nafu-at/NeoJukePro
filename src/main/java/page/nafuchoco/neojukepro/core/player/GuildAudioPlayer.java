@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.discord.guild.GuildSettings;
+import page.nafuchoco.neojukepro.core.database.RepeatType;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
     private GuildTrackProvider trackProvider;
 
     private boolean isShuffle = false;
-    private GuildSettings.REPEATTYPE repeatType;
+    private RepeatType repeatType;
 
     private volatile GuildTrackContext nowPlaying;
 
@@ -83,6 +83,8 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
             nowPlaying = nowPlaying.makeClone();
             player.playTrack(nowPlaying.getTrack());
         }
+        if (player.isPaused())
+            player.setPaused(false);
     }
 
     public void play(GuildTrackContext context, int desiredNumber) {
@@ -92,6 +94,8 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
         } else {
             trackProvider.queue(context, desiredNumber);
         }
+        if (player.isPaused())
+            player.setPaused(false);
     }
 
     public void play(List<GuildTrackContext> contextList, int desiredNumber) {
@@ -167,11 +171,11 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
             trackProvider.shuffle();
     }
 
-    public GuildSettings.REPEATTYPE getRepeatType() {
+    public RepeatType getRepeatType() {
         return repeatType;
     }
 
-    public void setRepeatType(GuildSettings.REPEATTYPE repeatType) {
+    public void setRepeatType(RepeatType repeatType) {
         this.repeatType = repeatType;
     }
 
@@ -237,7 +241,7 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
         if (endReason == AudioTrackEndReason.FINISHED || endReason == AudioTrackEndReason.STOPPED) {
             if (endReason == AudioTrackEndReason.FINISHED) {
                 if (nowPlaying != null &&
-                        repeatType == GuildSettings.REPEATTYPE.SINGLE) {
+                        repeatType == RepeatType.SINGLE) {
                     GuildTrackContext newTrack = nowPlaying.makeClone();
                     nowPlaying = null;
                     play(newTrack, 0);
@@ -245,7 +249,7 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
                 }
             }
 
-            if (nowPlaying != null && repeatType == GuildSettings.REPEATTYPE.ALL) {
+            if (nowPlaying != null && repeatType == RepeatType.ALL) {
                 play(nowPlaying.makeClone(), 0);
             }
 

@@ -103,7 +103,7 @@ public class NodesCommand extends CommandExecutor {
     }
 
     private float fromByteToMB(long value) {
-        BigDecimal bd = new BigDecimal((float) value / 1024 / 1014);
+        BigDecimal bd = BigDecimal.valueOf((float) value / 1024 / 1014);
         return bd.setScale(1, RoundingMode.HALF_UP).floatValue();
     }
 }

@@ -24,7 +24,7 @@ import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
-import page.nafuchoco.neojukepro.core.discord.guild.GuildSettings;
+import page.nafuchoco.neojukepro.core.database.RepeatType;
 import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
 
 import java.sql.SQLException;
@@ -43,11 +43,11 @@ public class RepeatCommand extends CommandExecutor {
         if (audioPlayer == null)
             return;
         if (context.getArgs().length != 0) {
-            GuildSettings.REPEATTYPE repeattype;
+            RepeatType repeattype;
             try {
-                repeattype = GuildSettings.REPEATTYPE.valueOf(context.getArgs()[0].toUpperCase());
+                repeattype = RepeatType.valueOf(context.getArgs()[0].toUpperCase());
             } catch (IllegalArgumentException e) {
-                repeattype = GuildSettings.REPEATTYPE.NONE;
+                repeattype = RepeatType.NONE;
             }
             audioPlayer.setRepeatType(repeattype);
             context.getChannel().sendMessage("Repeat mode has been changed.").queue();

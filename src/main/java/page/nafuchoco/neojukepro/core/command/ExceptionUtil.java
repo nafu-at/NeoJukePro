@@ -34,7 +34,7 @@ public class ExceptionUtil {
         sendStackTrace(guild, true, throwable, message);
     }
 
-    public static void sendStackTrace(Guild guild, Boolean toLog, Throwable throwable, String... message) {
+    public static void sendStackTrace(Guild guild, boolean toLog, Throwable throwable, String... message) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         throwable.printStackTrace(printWriter);

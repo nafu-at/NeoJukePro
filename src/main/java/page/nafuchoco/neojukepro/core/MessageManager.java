@@ -25,6 +25,10 @@ public class MessageManager {
     private static final Map<String, ResourceBundle> lang = new HashMap<>();
     private static String defaultLocale = "en_US";
 
+    private MessageManager() {
+        throw new IllegalStateException();
+    }
+
     public static String getMessage(String locale, String index) {
         ResourceBundle bundle = lang.computeIfAbsent(locale, key -> {
             String[] loc = key.split("_");

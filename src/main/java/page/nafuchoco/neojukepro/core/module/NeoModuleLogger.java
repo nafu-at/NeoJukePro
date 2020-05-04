@@ -21,11 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
 public class NeoModuleLogger {
-    private final NeoModule module;
     private final Logger logger;
 
     public NeoModuleLogger(NeoModule module) {
-        this.module = module;
         logger = LoggerFactory.getLogger(module.getDescription().getName());
     }
 

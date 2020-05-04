@@ -40,8 +40,6 @@ public class ModuleCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-
-        int page = 1;
         if (context.getArgs().length == 0) {
             context.getChannel().sendMessage(renderModuleList(1)).queue();
         } else switch (context.getArgs()[0].toLowerCase()) {
@@ -146,7 +144,6 @@ public class ModuleCommand extends CommandExecutor {
         if (page > listPage)
             return MessageManager.getMessage("command.page.large");
 
-        StringBuilder builder = new StringBuilder("```");
         AsciiTable table = new AsciiTable();
         table.getContext().setGridTheme(TA_GridThemes.HORIZONTAL);
         table.addRule();

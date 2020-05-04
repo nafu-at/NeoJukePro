@@ -74,7 +74,7 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
             return;
 
         audioPlayer.play(new GuildTrackContext(invoker.getGuild(), invoker, track), desiredNumber);
-        if (audioPlayer.getTrackProvider().getQueues().size() == 0)
+        if (audioPlayer.getTrackProvider().getQueues().isEmpty())
             MessageUtil.sendMessage(audioPlayer.getGuild(),
                     MessageUtil.format(MessageManager.getMessage("player.playing"), track.getInfo().title));
         else
@@ -99,7 +99,7 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override

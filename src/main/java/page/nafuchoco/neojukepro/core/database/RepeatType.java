@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.discord.guild;
+package page.nafuchoco.neojukepro.core.database;
 
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
-
-public class GuildResources {
-    private GuildSettings guildSettings;
-    private GuildAudioPlayer audioPlayer;
+public enum RepeatType {
+    NONE, SINGLE, ALL
 }

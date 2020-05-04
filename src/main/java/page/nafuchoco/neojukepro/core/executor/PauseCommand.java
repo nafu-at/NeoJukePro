@@ -32,10 +32,7 @@ public class PauseCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
-        if (audioPlayer.isPaused())
-            audioPlayer.setPaused(false);
-        else
-            audioPlayer.setPaused(true);
+        audioPlayer.setPaused(!audioPlayer.isPaused());
     }
 
     @Override
