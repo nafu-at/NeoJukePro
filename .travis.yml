@@ -10,6 +10,7 @@ jdk:
   - openjdk13
   - openjdk14
 
+after_success: ./gradlew shadowJar
 
 deploy:
   - provider: script
@@ -19,7 +20,6 @@ deploy:
   - provider: releases
     file_glob: true
     file: build/libs/*
-    skip_cleanup: true
     draft: true
     on:
       tags: true
