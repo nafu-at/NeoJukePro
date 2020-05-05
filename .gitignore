@@ -3,8 +3,6 @@
 
 build/
 
-gradle/
-
 .idea/sonarlint/
 
 .settings/
