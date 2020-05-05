@@ -32,7 +32,7 @@ public class GuildUsersPermTable extends DatabaseTable {
     }
 
     /**
-     * @deprecated このクラスではこのメソッドは動作しません。実行された場合はUnsupportedOperationExceptionを返します。
+     * @deprecated This method does not work in this class. Returns UnsupportedOperationException if it is executed.
      */
     @Override
     @Deprecated
@@ -41,7 +41,7 @@ public class GuildUsersPermTable extends DatabaseTable {
     }
 
     /**
-     * @deprecated このクラスではこのメソッドは動作しません。実行された場合はUnsupportedOperationExceptionを返します。
+     * @deprecated This method does not work in this class. Returns UnsupportedOperationException if it is executed.
      */
     @Override
     @Deprecated
@@ -49,18 +49,6 @@ public class GuildUsersPermTable extends DatabaseTable {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * 以下の形式に基づいたテーブルが作成されます。<br>
-     * <table><tbody>
-     *     <tr><td>Name</td><td>Type</td><td>Null</td></tr>
-     *     <tr><td>guild_id</td><td>BIGINT</td><td>NOT NULL</td></tr>
-     *     <tr><td>user_id</td><td>BIGINT</td><td>NOT NULL</td></tr>
-     *     <tr><td>permission_code</td><td>TINYINT UNSIGNED</td><td>NOT NULL</td></tr>
-     * </tbody></table>
-     * <br>
-     *
-     * @throws SQLException テーブルの作成に失敗した場合にスローされます。
-     */
     public void createTable() throws SQLException {
         super.createTable("guild_id BIGINT NOT NULL, user_id BIGINT NOT NULL, " +
                 "permission_code TINYINT UNSIGNED NOT NULL");
@@ -76,12 +64,12 @@ public class GuildUsersPermTable extends DatabaseTable {
     }
 
     /**
-     * 保存されているギルドでのユーザーの権限を取得します。
+     * Retrieves the user's permissions in the stored guild.
      *
-     * @param guildId 取得するギルドのギルドID
-     * @param userId  取得するユーザーのユーザーID
-     * @return 保存されているギルドでのユーザーの権限
-     * @throws SQLException ユーザー権限の取得に失敗した場合にスローされます。
+     * @param guildId Guild ID of the guild to be obtained.
+     * @param userId  User ID of the user to be obtained.
+     * @return User permissions for a stored guild
+     * @throws SQLException Thrown if the user privileges are not obtained.
      */
     public int getUserPermission(long guildId, long userId) throws SQLException {
         try (Connection connection = getConnector().getConnection();
@@ -98,12 +86,12 @@ public class GuildUsersPermTable extends DatabaseTable {
     }
 
     /**
-     * ギルドでのユーザーの権限を保存します。
+     * Save the user's permissions in the guild.
      *
-     * @param guildId        ユーザー権限を保存するギルドのギルドID
-     * @param userId         ユーザー権限を保存するユーザーのユーザーID
-     * @param permissionCode 保存するユーザーのユーザー権限
-     * @throws SQLException ユーザー権限の保存に失敗した場合にスローされます。
+     * @param guildId        Guild ID of the guild to store user privileges.
+     * @param userId         User ID of the user to store user privileges.
+     * @param permissionCode User permissions of the user to store
+     * @throws SQLException Thrown if saving user privileges fails.
      */
     public void setUserPermission(long guildId, long userId, int permissionCode) throws SQLException {
         try (Connection connection = getConnector().getConnection();
@@ -118,10 +106,10 @@ public class GuildUsersPermTable extends DatabaseTable {
     }
 
     /**
-     * ギルドに紐付けられたすべてのユーザー権限を削除します。
+     * Removes all user permissions associated with the guild.
      *
-     * @param guildId 削除するギルドのギルドID
-     * @throws SQLException ユーザー権限の削除に失敗した場合にスローされます。
+     * @param guildId Guild ID of the guild to be removed.
+     * @throws SQLException Thrown if the deletion of user privileges fails.
      */
     public void deleteGuildUsers(long guildId) throws SQLException {
         try (Connection connection = getConnector().getConnection();
@@ -133,10 +121,10 @@ public class GuildUsersPermTable extends DatabaseTable {
     }
 
     /**
-     * ユーザーの全てのギルドのユーザー権限を削除します。
+     * Removes user permissions for all guilds of the user.
      *
-     * @param userId 削除するユーザーのユーザーID
-     * @throws SQLException ユーザー権限の削除に失敗した場合にスローされます。
+     * @param userId User ID of the user to be deleted.
+     * @throws SQLException Thrown if the deletion of user privileges fails.
      */
     public void deleteUser(long userId) throws SQLException {
         try (Connection connection = getConnector().getConnection();
@@ -148,11 +136,11 @@ public class GuildUsersPermTable extends DatabaseTable {
     }
 
     /**
-     * ギルドのユーザーのユーザー権限を削除します。
+     * Removes user permissions for users in the guild.
      *
-     * @param guildId 削除するギルドのギルドID
-     * @param userId  削除するユーザーのユーザーID
-     * @throws SQLException ユーザー権限の削除に失敗した場合にスローされます。
+     * @param guildId Guild ID of the guild to be removed.
+     * @param userId  User ID of the user to be deleted.
+     * @throws SQLException Thrown if the deletion of user privileges fails.
      */
     public void deleteGuildUser(long guildId, long userId) throws SQLException {
         try (Connection connection = getConnector().getConnection();
