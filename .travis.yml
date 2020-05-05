@@ -1,0 +1,25 @@
+language: java
+
+jdk:
+  - oraclejdk11
+  - oraclejdk12
+  - oraclejdk13
+  - oraclejdk14
+  - openjdk11
+  - openjdk12
+  - openjdk13
+  - openjdk14
+
+
+deploy:
+  - provider: script
+    script: ./gradlew uploadArchives
+    on:
+      tags: true
+  - provider: releases
+    file_glob: true
+    file: build/libs/*
+    skip_cleanup: true
+    draft: true
+    on:
+      tags: true
