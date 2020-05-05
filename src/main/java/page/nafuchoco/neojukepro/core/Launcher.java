@@ -17,11 +17,13 @@
 package page.nafuchoco.neojukepro.core;
 
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import io.sentry.Sentry;
 import lavalink.client.io.jda.JdaLavalink;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandExecuteAuth;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
@@ -35,6 +37,9 @@ import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceJoinEventHandler
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceLeaveEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.MessageReceivedEventHandler;
 import page.nafuchoco.neojukepro.core.executor.*;
+import page.nafuchoco.neojukepro.core.executor.system.ShutdownCommand;
+import page.nafuchoco.neojukepro.core.executor.system.SystemCommand;
+import page.nafuchoco.neojukepro.core.executor.system.UpdateCommand;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAPIClient;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAppInfo;
 import page.nafuchoco.neojukepro.core.module.ModuleManager;
@@ -73,6 +78,9 @@ public class Launcher implements NeoJukeLauncher {
             log.error(MessageManager.getMessage("system.config.load.failed"));
             return;
         }
+
+        if (!StringUtils.isEmpty(config.getAdvancedConfig().getSentryDsn()))
+            Sentry.init(config.getAdvancedConfig().getSentryDsn());
 
         MessageManager.setDefaultLocale(config.getBasicConfig().getLanguage());
 
@@ -170,6 +178,8 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new ListCommand("list", "l"), null);
 
         commandRegistry.registerCommand(new PlayCommand("play", "p"), null);
+        commandRegistry.registerCommand(new RePlayCommand("replay", "re"), null);
+        commandRegistry.registerCommand(new InterruptCommand("interrupt", "in"), null);
         commandRegistry.registerCommand(new PauseCommand("pause"), null);
         commandRegistry.registerCommand(new StopCommand("stop", "st", "s"), null);
         commandRegistry.registerCommand(new SkipCommand("skip", "sk"), null);
@@ -180,8 +190,10 @@ public class Launcher implements NeoJukeLauncher {
 
         commandRegistry.registerCommand(new DeleteCommand("delete", "clean"), null);
 
+        commandRegistry.registerCommand(new SystemCommand("system", "sinfo"), null);
         commandRegistry.registerCommand(new NodesCommand("nodes", "node"), null);
         commandRegistry.registerCommand(new ModuleCommand("module", "mod"), null);
+        if (Main.isDebugMode()) commandRegistry.registerCommand(new UpdateCommand("update"), null);
         commandRegistry.registerCommand(new ShutdownCommand("shutdown", "exit"), null);
     }
 
