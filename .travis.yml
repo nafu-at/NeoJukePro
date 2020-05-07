@@ -10,16 +10,21 @@ jdk:
   - openjdk13
   - openjdk14
 
-after_success: ./gradlew shadowJar
-
-deploy:
-  - provider: script
-    script: ./gradlew uploadArchives
-    on:
-      tags: true
-  - provider: releases
-    file_glob: true
-    file: build/libs/*
-    draft: true
-    on:
-      tags: true
+jobs:
+  include:
+    - stage: deploy
+      jdk: openjdk11
+      script: skip
+      before_deploy:
+        - ./gradlew shadowJar
+      deploy:
+        - provider: script
+          script: ./gradlew uploadArchives
+          on:
+            tags: true
+        - provider: releases
+          file_glob: true
+          file: build/libs/*
+          draft: true
+          on:
+            tags: true
