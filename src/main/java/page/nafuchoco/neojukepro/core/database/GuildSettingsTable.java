@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ギルド設定が保持されるテーブルです。
+ * The table where the guild settings are held.
  */
 public class GuildSettingsTable extends DatabaseTable {
 
@@ -39,7 +39,7 @@ public class GuildSettingsTable extends DatabaseTable {
     }
 
     /**
-     * @deprecated このクラスではこのメソッドは動作しません。実行された場合はUnsupportedOperationExceptionを返します。
+     * @deprecated This method does not work in this class. Returns UnsupportedOperationException if it is executed.
      */
     @Override
     @Deprecated
@@ -48,7 +48,7 @@ public class GuildSettingsTable extends DatabaseTable {
     }
 
     /**
-     * @deprecated このクラスではこのメソッドは動作しません。実行された場合はUnsupportedOperationExceptionを返します。
+     * @deprecated This method does not work in this class. Returns UnsupportedOperationException if it is executed.
      */
     @Override
     @Deprecated
@@ -56,18 +56,6 @@ public class GuildSettingsTable extends DatabaseTable {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * 以下の形式に基づいたテーブルが作成されます。<br>
-     * <table><tbody>
-     *     <tr><td>Name</td><td>Type</td><td>Null</td></tr>
-     *     <tr><td>guild_id</td><td>BIGINT</td><td>NOT NULL</td></tr>
-     *     <tr><td>option_name</td><td>VARCHAR(32)</td><td>NOT NULL</td></tr>
-     *     <tr><td>option_value</td><td>LONGTEXT</td><td>NOT NULL</td></tr>
-     * </tbody></table>
-     * <br>
-     *
-     * @throws SQLException テーブルの作成に失敗した場合にスローされます。
-     */
     public void createTable() throws SQLException {
         super.createTable("guild_id BIGINT NOT NULL, " +
                 "option_name VARCHAR(32) NOT NULL, option_value LONGTEXT NOT NULL");
@@ -83,10 +71,10 @@ public class GuildSettingsTable extends DatabaseTable {
     }
 
     /**
-     * 保存されているギルドをすべて取得します。
+     * Get all saved guilds.
      *
-     * @return 保存されているギルド一覧
-     * @throws SQLException データの取得に失敗した場合にスローされます。
+     * @return List of saved guilds
+     * @throws SQLException Thrown if the data fails to be retrieved.
      */
     public List<Long> getGuilds() throws SQLException {
         List<Long> users = new ArrayList<>();
@@ -102,11 +90,11 @@ public class GuildSettingsTable extends DatabaseTable {
     }
 
     /**
-     * 保存されているギルド設定を取得します。
+     * Get the saved guild settings.
      *
-     * @param guildId 取得するギルドのギルドID
-     * @return 保存されているギルド設定
-     * @throws SQLException ギルド設定の取得に失敗した場合にスローされます。
+     * @param guildId Guild ID of the guild to be obtained.
+     * @return Saved guild settings
+     * @throws SQLException Thrown if the guild setting fails to be obtained.
      */
     public Map<String, String> getGuildSettings(long guildId) throws SQLException {
         Map<String, String> map = new HashMap<>();
@@ -123,12 +111,12 @@ public class GuildSettingsTable extends DatabaseTable {
     }
 
     /**
-     * 保存されているギルド設定を取得します。
+     * Retrieve the saved guild settings.
      *
-     * @param guildId 取得するギルドのギルドID
-     * @param name    取得するギルド設定の項目名
-     * @return 保存されているギルド設定
-     * @throws SQLException ギルド設定の取得に失敗した場合にスローされます。
+     * @param guildId Guild ID of the guild to be obtained.
+     * @param name    The name of the guild setting to get.
+     * @return Saved guild settings
+     * @throws SQLException Thrown if the guild setting fails to be obtained.
      */
     public String getGuildSetting(long guildId, String name) throws SQLException {
         try (Connection connection = getConnector().getConnection();
@@ -145,12 +133,12 @@ public class GuildSettingsTable extends DatabaseTable {
     }
 
     /**
-     * ギルド設定を保存します。
+     * Save the guild settings.
      *
-     * @param guildId ギルド設定を保存するギルドのギルドID
-     * @param name    ギルド設定の項目名
-     * @param value   ギルド設定の設定内容
-     * @throws SQLException ギルド設定の保存に失敗したか、ギルドIDと設定項目名が同一のものが既に存在する場合にスローされます。
+     * @param guildId Guild ID of the guild to store the guild settings.
+     * @param name    Item name of guild setting.
+     * @param value   The guild setting.
+     * @throws SQLException Thrown if a guild setting failed to be saved, or if a guild ID and setting item name already exists that is identical.
      */
     public void setGuildSetting(long guildId, String name, String value) throws SQLException {
         try (Connection connection = getConnector().getConnection();
@@ -165,10 +153,10 @@ public class GuildSettingsTable extends DatabaseTable {
     }
 
     /**
-     * ギルドに紐付けられたすべてのギルド設定を削除します。
+     * Removes all guild settings tied to the guild.
      *
-     * @param guildId 削除するギルド設定のギルドID
-     * @throws SQLException ギルド設定の削除に失敗した場合にスローされます。
+     * @param guildId Guild ID of the guild setting to be removed.
+     * @throws SQLException Thrown if the guild setting fails to be deleted.
      */
     public void deleteSettings(long guildId) throws SQLException {
         try (Connection connection = getConnector().getConnection();
@@ -180,11 +168,11 @@ public class GuildSettingsTable extends DatabaseTable {
     }
 
     /**
-     * ギルドに紐付けられたギルド設定を削除します。
+     * Removes the guild settings tied to the guild.
      *
-     * @param guildId 削除するギルド設定のギルドID
-     * @param name    削除するギルド設定の項目
-     * @throws SQLException ギルド設定の削除に失敗した場合にスローされます。
+     * @param guildId Guild ID of the guild setting to be removed.
+     * @param name    The guild setting to delete.
+     * @throws SQLException Thrown if the guild setting fails to be deleted.
      */
     public void deleteSetting(long guildId, String name) throws SQLException {
         try (Connection connection = getConnector().getConnection();

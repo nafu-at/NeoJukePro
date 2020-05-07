@@ -49,7 +49,7 @@ uploadArchives {
     repositories.mavenDeployer {
         configuration = configurations.deployerJars
         repository(id: 'pandasoft', url: 'ftp://sv8276.xserver.jp/') {
-            authentication(userName: "${project.mavenUser}", password: "${project.mavenPassword}")
+            authentication(userName: System.getenv("mavenUser"), password: System.getenv("mavenPassword"))
         }
         pom.project {
             inceptionYear '2020'
