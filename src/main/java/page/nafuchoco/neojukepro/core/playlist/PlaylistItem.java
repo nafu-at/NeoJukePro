@@ -21,16 +21,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PlaylistItem {
     @JsonProperty("name")
     private final String name;
+    @JsonProperty("sourceName")
+    private final String sourceName;
     @JsonProperty("url")
     private final String url;
 
-    public PlaylistItem(String name, String url) {
+    public PlaylistItem(String name, String sorceName, String url) {
         this.name = name;
+        this.sourceName = sorceName;
         this.url = url;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getSourceName() {
+        return sourceName;
     }
 
     public String getUrl() {

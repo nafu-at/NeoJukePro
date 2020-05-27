@@ -30,6 +30,7 @@ import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.config.DatabaseSection;
 import page.nafuchoco.neojukepro.core.config.LavalinkConfigSection;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
+import page.nafuchoco.neojukepro.core.database.CustomPlaylistTable;
 import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
 import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
@@ -58,6 +59,7 @@ public class Launcher implements NeoJukeLauncher {
     private DatabaseConnector connector;
     private GuildSettingsTable settingsTable;
     private GuildUsersPermTable usersPermTable;
+    private CustomPlaylistTable playlistTable;
 
     private ModuleManager moduleManager;
     private CommandRegistry commandRegistry;
@@ -91,11 +93,14 @@ public class Launcher implements NeoJukeLauncher {
                 database.getUsername(), database.getPassword());
         settingsTable = new GuildSettingsTable(database.getTablePrefix(), connector);
         usersPermTable = new GuildUsersPermTable(database.getTablePrefix(), connector);
+        playlistTable = new CustomPlaylistTable(database.getTablePrefix(), connector);
 
         try {
             settingsTable.createTable();
             usersPermTable.createTable();
+            playlistTable.createTable();
             CommandCache.registerCache(null, "settingsTable", settingsTable);
+            CommandCache.registerCache(null, "playlistTable", playlistTable);
         } catch (SQLException e) {
             log.error(MessageManager.getMessage("system.db.initialize.error"));
             return;
@@ -180,6 +185,7 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new PlayCommand("play", "p"), null);
         commandRegistry.registerCommand(new RePlayCommand("replay", "re"), null);
         commandRegistry.registerCommand(new InterruptCommand("interrupt", "in"), null);
+        commandRegistry.registerCommand(new PlaylistCommand("playlist", "pl"), null);
         commandRegistry.registerCommand(new PauseCommand("pause"), null);
         commandRegistry.registerCommand(new StopCommand("stop", "st", "s"), null);
         commandRegistry.registerCommand(new SkipCommand("skip", "sk"), null);

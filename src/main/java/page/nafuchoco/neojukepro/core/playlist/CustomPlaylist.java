@@ -16,19 +16,27 @@
 
 package page.nafuchoco.neojukepro.core.playlist;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public class CustomPlaylist {
-    @JsonProperty("listname")
+    private final String uuid;
+    private final long guildId;
     private final String listname;
-    @JsonProperty("items")
     private final List<PlaylistItem> items;
 
-    public CustomPlaylist(String listname, List<PlaylistItem> items) {
+    public CustomPlaylist(String uuid, long guildId, String listname, List<PlaylistItem> items) {
+        this.uuid = uuid;
+        this.guildId = guildId;
         this.listname = listname;
         this.items = items;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public long getGuildId() {
+        return guildId;
     }
 
     public String getListname() {

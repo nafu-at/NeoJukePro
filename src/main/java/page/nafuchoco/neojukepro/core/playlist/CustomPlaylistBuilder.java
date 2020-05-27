@@ -21,55 +21,73 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.Guild;
+import page.nafuchoco.neojukepro.core.MessageManager;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 public class CustomPlaylistBuilder implements AudioLoadResultHandler {
     private final AudioPlayerManager playerManager;
     private final String name;
+    private final Guild guild;
     private final List<PlaylistItem> playlist = new LinkedList<>();
 
+    private volatile PlaylistItem loadedItem;
 
-    private PlaylistItem loadedItem;
-
-    public CustomPlaylistBuilder(String name, AudioPlayerManager playerManager) {
+    public CustomPlaylistBuilder(AudioPlayerManager playerManager, String name, Guild guild) {
         this.playerManager = playerManager;
         this.name = name;
+        this.guild = guild;
     }
 
-    @Deprecated
-    public PlaylistItem loadAndAddTrack(String url) {
-        throw new UnsupportedOperationException("");
+    public CustomPlaylistBuilder loadAndAddTrack(String url) {
+        loadedItem = null;
+        playerManager.loadItemOrdered(this, url, this);
+        while (loadedItem == null) {
+            try {
+                wait(200);
+            } catch (InterruptedException e) {
+                log.warn("Oops...!", e); // TODO: 2020/05/20
+            }
+        }
+        if (loadedItem.getName() != null)
+            playlist.add(loadedItem);
+        return this;
     }
 
-    public void addTrack(AudioTrack track) {
-        PlaylistItem item = new PlaylistItem(track.getInfo().title, track.getInfo().uri);
+    public CustomPlaylistBuilder addTrack(AudioTrack track) {
+        PlaylistItem item = new PlaylistItem(track.getInfo().title, track.getSourceManager().getSourceName(), track.getInfo().uri);
         playlist.add(item);
+        return this;
     }
 
-    private CustomPlaylist build() {
-        return new CustomPlaylist(name, Collections.unmodifiableList(playlist));
+    public CustomPlaylist build() {
+        return new CustomPlaylist(UUID.randomUUID().toString(), guild.getIdLong(), name, Collections.unmodifiableList(playlist));
     }
 
     @Override
     public void trackLoaded(AudioTrack track) {
-
+        loadedItem = new PlaylistItem(track.getInfo().title, track.getSourceManager().getSourceName(), track.getInfo().uri);
     }
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void noMatches() {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void loadFailed(FriendlyException exception) {
-
+        loadedItem = new PlaylistItem(null, null, null);
+        log.warn(MessageManager.getMessage("player.loader.failed"));
     }
 }
