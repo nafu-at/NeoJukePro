@@ -50,7 +50,7 @@ public class CustomPlaylistBuilder implements AudioLoadResultHandler {
         playerManager.loadItemOrdered(this, url, this);
         while (loadedItem == null) {
             try {
-                wait(200);
+                Thread.currentThread().sleep(200);
             } catch (InterruptedException e) {
                 log.warn("Oops...!", e); // TODO: 2020/05/20
             }

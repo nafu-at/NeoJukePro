@@ -75,7 +75,7 @@ public class PlaylistCommand extends CommandExecutor {
                         launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild()).getAudioPlayerManager();
                 CommandCache.registerCache(context.getGuild(), "playlist",
                         new CustomPlaylistBuilder(playerManager, context.getArgs()[1], context.getGuild()));
-                context.getChannel().sendMessage(MessageManager.getMessage("command.playlist.start"));
+                context.getChannel().sendMessage(MessageManager.getMessage("command.playlist.start")).queue();
                 break;
 
             case "add":
@@ -112,10 +112,10 @@ public class PlaylistCommand extends CommandExecutor {
                         }
                     } catch (SQLException e) {
                         log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
-                        context.getChannel().sendMessage("system.db.retrieving.error").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("system.db.retrieving.error")).queue();
                     } catch (JsonProcessingException e) {
                         log.error(MessageManager.getMessage("system.general.error"), e);
-                        context.getChannel().sendMessage("system.db.retrieving.error").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("system.db.retrieving.error")).queue();
                     }
                 } else {
                     try {
@@ -138,10 +138,10 @@ public class PlaylistCommand extends CommandExecutor {
                         }
                     } catch (SQLException e) {
                         log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
-                        context.getChannel().sendMessage("system.db.retrieving.error").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("system.db.retrieving.error")).queue();
                     } catch (JsonProcessingException e) {
                         log.error(MessageManager.getMessage("system.general.error"), e);
-                        context.getChannel().sendMessage("system.db.retrieving.error").queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage("system.db.retrieving.error")).queue();
                     }
                 }
 
