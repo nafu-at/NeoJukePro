@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 public class PlayCommand extends CommandExecutor {
     private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final Pattern URL_REGEX = Pattern.compile("^(http|https)://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$");
-    private static final Pattern NOMBER_REGEX = Pattern.compile("^[1-5]$");
+    private static final Pattern NUMBER_REGEX = Pattern.compile("^[1-5]$");
 
     public PlayCommand(String name, String... aliases) {
         super(name, aliases);
@@ -77,7 +77,7 @@ public class PlayCommand extends CommandExecutor {
                 audioPlayer.play(new AudioTrackLoader(context.getArgs()[0], context.getInvoker(), 0));
                 if (context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE))
                     context.getMessage().delete().submit();
-            } else if (NOMBER_REGEX.matcher(context.getArgs()[0]).find()) { // 指定された引数が数字の場合は保存された検索結果を取得して指定されたトラックを再生
+            } else if (NUMBER_REGEX.matcher(context.getArgs()[0]).find()) { // 指定された引数が数字の場合は保存された検索結果を取得して指定されたトラックを再生
                 List<Object> objects = (List<Object>) CommandCache.deleteCache(context.getGuild(), "searchResults");
                 if (objects != null
                         && objects.get(0) instanceof YouTubeSearchResults
