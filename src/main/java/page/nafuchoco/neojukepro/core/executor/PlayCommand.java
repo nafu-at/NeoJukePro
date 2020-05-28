@@ -75,7 +75,7 @@ public class PlayCommand extends CommandExecutor {
         } else {
             if (URL_REGEX.matcher(context.getArgs()[0]).find()) { // 指定された引数がURLの場合はURLのトラックを再生
                 audioPlayer.play(new AudioTrackLoader(context.getArgs()[0], context.getInvoker(), 0));
-                if (context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE))
+                if (context.getGuild().getSelfMember().hasPermission(context.getChannel(), Permission.MESSAGE_MANAGE))
                     context.getMessage().delete().submit();
             } else if (NUMBER_REGEX.matcher(context.getArgs()[0]).find()) { // 指定された引数が数字の場合は保存された検索結果を取得して指定されたトラックを再生
                 List<Object> objects = (List<Object>) CommandCache.deleteCache(context.getGuild(), "searchResults");
@@ -89,7 +89,7 @@ public class PlayCommand extends CommandExecutor {
                     audioPlayer.play(new AudioTrackLoader("https://www.youtube.com/watch?v="
                             + searchResult.getItems()[Integer.parseInt(context.getArgs()[0]) - 1].getID().getVideoID(),
                             context.getInvoker(), 0));
-                    if (context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                    if (context.getGuild().getSelfMember().hasPermission(context.getChannel(), Permission.MESSAGE_MANAGE)) {
                         context.getMessage().delete().submit();
                         sendMessage.delete().submit();
                         message.delete().submit();
