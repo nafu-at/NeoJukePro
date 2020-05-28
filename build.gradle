@@ -49,7 +49,7 @@ artifacts {
 uploadArchives {
     repositories.mavenDeployer {
         configuration = configurations.deployerJars
-        repository(id: 'pandasoft', url: 'ftp://sv8276.xserver.jp/') {
+        repository(id: 'pandasoft', url: 'ftp://ftp.nafuchoco.cfbx.jp/') {
             authentication(userName: System.getenv("mavenUser"), password: System.getenv("mavenPassword"))
         }
         pom.project {
