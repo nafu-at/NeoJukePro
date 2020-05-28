@@ -33,6 +33,7 @@ public class Snippet {
     private Localized localized;
     private String defaultAudioLanguage;
     private String country;
+    private String publishTime;
 
     @JsonProperty("publishedAt")
     public String getPublishedAt() {
@@ -102,5 +103,10 @@ public class Snippet {
     @JsonProperty("country")
     public String getCountry() {
         return country;
+    }
+
+    @JsonProperty("publishTime")
+    public String getPublishTime() {
+        return publishTime;
     }
 }

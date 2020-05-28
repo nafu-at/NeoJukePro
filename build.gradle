@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
@@ -85,11 +86,11 @@ dependencies {
 
     // ClientLib
     implementation 'com.squareup.okhttp3:okhttp:4.5.0'
-    implementation('net.dv8tion:JDA:4.1.1_139') {
+    api('net.dv8tion:JDA:4.1.1_139') {
         exclude module: 'opus-java'
     }
-    implementation 'com.sedmelluq:lavaplayer:1.3.47'
-    implementation 'com.github.FredBoat:Lavalink-Client:f84b333'
+    implementation 'com.sedmelluq:lavaplayer:1.3.49'
+    implementation 'com.github.FredBoat:Lavalink-Client:41e1025'
 
     // Parser
     // implementation 'org.jsoup:jsoup:1.13.1'
