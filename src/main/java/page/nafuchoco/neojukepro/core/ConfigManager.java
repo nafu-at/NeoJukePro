@@ -36,11 +36,9 @@ public class ConfigManager {
         if (!result && generateFile) {
             try (InputStream original = ClassLoader.getSystemResourceAsStream("NeoJukeConfig.yaml")) {
                 Files.copy(original, configFile.toPath());
-                result = true;
                 log.info(MessageManager.getMessage("system.config.generate"));
                 log.debug(MessageManager.getMessage("system.config.generate.debug"), configFile.getPath());
             } catch (IOException e) {
-                result = false;
                 log.error(MessageManager.getMessage("system.config.generate.failed"), e);
             }
         }
