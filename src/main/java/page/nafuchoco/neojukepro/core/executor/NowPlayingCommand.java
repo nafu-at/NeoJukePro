@@ -40,6 +40,8 @@ import page.nafuchoco.neojukepro.core.player.GuildTrackContext;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class NowPlayingCommand extends CommandExecutor {
     private static final NeoJukeLauncher launcher = Main.getLauncher();
@@ -73,24 +75,40 @@ public class NowPlayingCommand extends CommandExecutor {
             GuildTrackContext trackContext = audioPlayer.getNowPlaying();
             if (trackContext != null) {
                 AudioTrack audioTrack = trackContext.getTrack();
-                if (audioTrack instanceof YoutubeAudioTrack) {
-                    try {
-                        context.getChannel().sendMessage(getYouTubeEmbed(audioPlayer)).queue();
-                    } catch (IOException | NullPointerException e) {
-                        ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
+                if (context.getArgs().length == 0) {
+                    if (audioTrack instanceof YoutubeAudioTrack) {
+                        try {
+                            context.getChannel().sendMessage(getYouTubeEmbed(audioPlayer)).queue();
+                        } catch (IOException | NullPointerException e) {
+                            ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
+                        }
+                    } else if (audioTrack instanceof SoundCloudAudioTrack) {
+                        context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, SOUNDCLOUD_COLOR)).queue();
+                    } else if (audioTrack instanceof BandcampAudioTrack) {
+                        context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BANDCAMP_COLOR)).queue();
+                    } else if (audioTrack instanceof VimeoAudioTrack) {
+                        context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, VIMEO_COLOR)).queue();
+                    } else if (audioTrack instanceof TwitchStreamAudioTrack) {
+                        context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, TWITCH_COLOR)).queue();
+                    } else if (audioTrack instanceof HttpAudioTrack) {
+                        context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BLACK)).queue();
+                    } else if (audioTrack instanceof LocalAudioTrack) {
+                        context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BLACK)).queue();
                     }
-                } else if (audioTrack instanceof SoundCloudAudioTrack) {
-                    context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, SOUNDCLOUD_COLOR)).queue();
-                } else if (audioTrack instanceof BandcampAudioTrack) {
-                    context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BANDCAMP_COLOR)).queue();
-                } else if (audioTrack instanceof VimeoAudioTrack) {
-                    context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, VIMEO_COLOR)).queue();
-                } else if (audioTrack instanceof TwitchStreamAudioTrack) {
-                    context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, TWITCH_COLOR)).queue();
-                } else if (audioTrack instanceof HttpAudioTrack) {
-                    context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BLACK)).queue();
-                } else if (audioTrack instanceof LocalAudioTrack) {
-                    context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BLACK)).queue();
+                } else switch (context.getArgs()[0]) {
+                    case "thumbnail":
+                    case "th":
+                        if (audioTrack instanceof YoutubeAudioTrack) {
+                            context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.getthumbnail")).queue();
+                            try {
+                                context.getChannel().sendFile(getThumbnailStream(audioTrack.getIdentifier()), "thumbnail.jpg").queue();
+                            } catch (IOException e) {
+                                ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
+                            }
+                        } else {
+                            context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.nosupport")).queue();
+                        }
+                        break;
                 }
             }
         } else {
@@ -98,6 +116,15 @@ public class NowPlayingCommand extends CommandExecutor {
         }
     }
 
+    private InputStream getThumbnailStream(String identifier) throws IOException {
+        if (client == null)
+            return null;
+
+        YouTubeObjectItem youtubeVideo =
+                client.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_VIDEO, identifier).getItems()[0];
+        InputStream stream = new URL(youtubeVideo.getSnippet().getThumbnails().getHigh().getURL()).openStream();
+        return stream;
+    }
 
     private MessageEmbed getYouTubeEmbed(GuildAudioPlayer audioPlayer) throws IOException, NullPointerException {
         if (client == null)

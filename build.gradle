@@ -86,10 +86,10 @@ dependencies {
 
     // ClientLib
     implementation 'com.squareup.okhttp3:okhttp:4.5.0'
-    api('net.dv8tion:JDA:4.1.1_139') {
+    api('net.dv8tion:JDA:4.1.1_165') {
         exclude module: 'opus-java'
     }
-    implementation 'com.sedmelluq:lavaplayer:1.3.49'
+    implementation 'com.sedmelluq:lavaplayer:1.3.50'
     implementation 'com.github.FredBoat:Lavalink-Client:41e1025'
 
     // Parser
