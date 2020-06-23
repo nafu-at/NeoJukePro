@@ -23,12 +23,12 @@ import java.sql.SQLException;
 
 public class GuildUsersPermTable extends DatabaseTable {
 
-    public GuildUsersPermTable(String prefix, String tablename, DatabaseConnector connector) {
-        super(prefix, tablename, connector);
+    public GuildUsersPermTable(String tablename, DatabaseConnector connector) {
+        super(tablename, connector);
     }
 
-    public GuildUsersPermTable(String prefix, DatabaseConnector connector) {
-        super(prefix, "guild_userperm", connector);
+    public GuildUsersPermTable(DatabaseConnector connector) {
+        this("guild_userperm", connector);
     }
 
     /**

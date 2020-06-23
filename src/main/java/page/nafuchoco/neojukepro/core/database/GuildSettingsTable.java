@@ -30,12 +30,12 @@ import java.util.Map;
  */
 public class GuildSettingsTable extends DatabaseTable {
 
-    public GuildSettingsTable(String prefix, String tablename, DatabaseConnector connector) {
-        super(prefix, tablename, connector);
+    public GuildSettingsTable(String tablename, DatabaseConnector connector) {
+        super(tablename, connector);
     }
 
-    public GuildSettingsTable(String prefix, DatabaseConnector connector) {
-        this(prefix, "guild_settings", connector);
+    public GuildSettingsTable(DatabaseConnector connector) {
+        this("guild_settings", connector);
     }
 
     /**
