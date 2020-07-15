@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'java-library'
-    id 'maven'
+    id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
@@ -25,10 +25,6 @@ shadowJar {
     archiveName = "NeoJukePro.${extension}"
 }
 
-
-configurations {
-    deployerJars
-}
 task sourcesJar(type: Jar, dependsOn: 'classes') {
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -41,26 +37,33 @@ javadoc {
     options.charSet = 'UTF-8'
     options.encoding = 'UTF-8'
 }
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
 
-uploadArchives {
-    repositories.mavenDeployer {
-        configuration = configurations.deployerJars
-        repository(id: 'pandasoft', url: 'ftp://ftp.nafuchoco.cfbx.jp/') {
-            authentication(userName: System.getenv("mavenUser"), password: System.getenv("mavenPassword"))
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/nafu-at/NeoJukePro")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+            }
         }
-        pom.project {
-            inceptionYear '2020'
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
+    }
+    publications {
+        gpr(MavenPublication) {
+            from components.java
+
+            pom {
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
                 }
             }
+
+            artifact sourcesJar
+            artifact javadocJar
         }
     }
 }

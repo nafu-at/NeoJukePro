@@ -19,7 +19,7 @@ jobs:
         - ./gradlew shadowJar
       deploy:
         - provider: script
-          script: ./gradlew uploadArchives
+          script: ./gradlew publish
           on:
             tags: true
         - provider: releases
