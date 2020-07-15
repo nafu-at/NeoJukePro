@@ -31,12 +31,10 @@ import page.nafuchoco.neojukepro.core.http.youtube.YouTubeSearchResults;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class SearchCommand extends CommandExecutor {
     private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final YouTubeAPIClient client;
-    private static final Pattern NUMBER_REGEX = Pattern.compile("^[1-5]$");
 
     static {
         YouTubeAPIClient apiClient;
@@ -72,7 +70,7 @@ public class SearchCommand extends CommandExecutor {
                 }
 
                 try {
-                    if (StringUtils.isEmpty(results.getNextPageToken())) {
+                    if (results != null || StringUtils.isEmpty(results.getNextPageToken())) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.nopage")).queue();
                         return;
                     }
@@ -116,7 +114,7 @@ public class SearchCommand extends CommandExecutor {
                 }
 
                 try {
-                    if (StringUtils.isEmpty(results.getPrevPageToken())) {
+                    if (results == null || StringUtils.isEmpty(results.getPrevPageToken())) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.nopage")).queue();
                         return;
                     }
