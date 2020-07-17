@@ -66,6 +66,10 @@ public class CustomPlaylistBuilder implements AudioLoadResultHandler {
         return this;
     }
 
+    public PlaylistItem getAddedTrack() {
+        return loadedItem;
+    }
+
     public CustomPlaylist build() {
         return new CustomPlaylist(UUID.randomUUID().toString(), guild.getIdLong(), name, Collections.unmodifiableList(playlist));
     }

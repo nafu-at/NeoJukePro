@@ -32,8 +32,12 @@ import java.util.List;
 public class CustomPlaylistTable extends DatabaseTable {
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public CustomPlaylistTable(String prefix, DatabaseConnector connector) {
-        super(prefix, "playlist", connector);
+    public CustomPlaylistTable(String tablename, DatabaseConnector connector) {
+        super(tablename, connector);
+    }
+
+    public CustomPlaylistTable(DatabaseConnector connector) {
+        this("playlist", connector);
     }
 
     /**
@@ -125,7 +129,7 @@ public class CustomPlaylistTable extends DatabaseTable {
                      "INSERT INTO " + getTablename() + " VALUES (?, ?, ?, ?)")) {
             ps.setString(1, playlist.getUuid());
             ps.setLong(2, playlist.getGuildId());
-            ps.setString(3, playlist.getListname());
+            ps.setString(3, playlist.getName());
             ps.setString(4, mapper.writeValueAsString(playlist.getItems()));
             ps.execute();
         }

@@ -52,14 +52,15 @@ public class PlaylistCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
         if (context.getArgs().length == 0) {
-        } else if (context.getArgs().length != 0 && context.getArgs().length > 2) {
+        } else if (context.getArgs().length != 0 && context.getArgs().length < 2) {
+            CustomPlaylistTable playlistTable = (CustomPlaylistTable) CommandCache.getCache(null, "playlistTable");
             switch (context.getArgs()[0]) {
                 case "flush":
                     CustomPlaylistBuilder builder = (CustomPlaylistBuilder) CommandCache.getCache(context.getGuild(), "playlist");
                     CustomPlaylist playlist = builder.build();
-                    CustomPlaylistTable playlistTable = (CustomPlaylistTable) CommandCache.getCache(null, "playlistTable");
                     try {
                         playlistTable.registerPlaylist(playlist);
+                        context.getChannel().sendMessage(MessageManager.getMessage("command.playlist.saved")).queue();
                     } catch (SQLException e) {
                         log.error(MessageManager.getMessage("system.db.save.error"), e);
                         context.getChannel().sendMessage(MessageManager.getMessage("command.playlist.save.failed")).queue();
@@ -68,6 +69,55 @@ public class PlaylistCommand extends CommandExecutor {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.playlist.save.failed")).queue();
                     }
                     break;
+
+                case "load":
+                    try {
+                        List<CustomPlaylist> playlists = playlistTable.getGuildPlaylists(context.getGuild().getIdLong());
+
+                        if (!playlists.isEmpty()) {
+                            StringBuilder sb = new StringBuilder();
+                            int range = 15;
+                            int page = 1;
+
+                            if (context.getArgs().length != 0) {
+                                try {
+                                    page = Integer.parseInt(context.getArgs()[0]);
+                                    if (page < 1) {
+                                        page = 1;
+                                    }
+                                } catch (NumberFormatException e) {
+                                    context.getChannel().sendMessage(MessageManager.getMessage("command.page.specify")).queue();
+                                }
+                            }
+
+                            int listPage = playlists.size() / range;
+                            if (playlists.size() % range >= 1)
+                                listPage++;
+
+                            if (page > listPage) {
+                                context.getChannel().sendMessage(MessageManager.getMessage("command.page.large")).queue();
+                                return;
+                            }
+
+                            sb.append(MessageUtil.format(MessageManager.getMessage("command.playlist.list"), playlists.size()));
+                            for (int count = range * page - range + 1; count <= range * page; count++) {
+                                if (playlists.size() >= count) {
+                                    CustomPlaylist customPlaylist = playlists.get(count - 1);
+                                    sb.append("\n`[" + count + "]` **" + customPlaylist.getName());
+                                }
+                            }
+                            context.getChannel().sendMessage(sb.toString()).queue();
+                        } else {
+                            context.getChannel().sendMessage(MessageManager.getMessage("command.list.nothing")).queue();
+                        }
+                    } catch (SQLException e) {
+                        log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
+                        context.getChannel().sendMessage(MessageManager.getMessage("system.db.retrieving.error")).queue();
+                    } catch (JsonProcessingException e) {
+                        log.error(MessageManager.getMessage("system.general.error"), e);
+                        context.getChannel().sendMessage(MessageManager.getMessage("system.db.retrieving.error")).queue();
+                    }
+
             }
         } else switch (context.getArgs()[0]) {
             case "create":
@@ -84,7 +134,8 @@ public class PlaylistCommand extends CommandExecutor {
                     builder.addTrack(audioPlayer.getNowPlaying().getTrack());
                 else
                     builder.loadAndAddTrack(context.getArgs()[1]);
-                context.getChannel().sendMessage(MessageManager.getMessage("command.playlist.added")).queue();
+                context.getChannel().sendMessage(MessageUtil.format(
+                        MessageManager.getMessage("command.playlist.added"), builder.getAddedTrack().getName())).queue();
                 break;
 
             case "load":
@@ -92,13 +143,14 @@ public class PlaylistCommand extends CommandExecutor {
                 CustomPlaylistTable playlistTable = (CustomPlaylistTable) CommandCache.getCache(null, "playlistTable");
                 if (NUMBER_REGEX.matcher(context.getArgs()[1]).find()) {
                     List<CustomPlaylist> playlists = (List<CustomPlaylist>) CommandCache.deleteCache(context.getGuild(), "findPlaylists");
-                    if (!playlists.isEmpty()) {
-                        playlist = playlists.get(NumberUtils.toInt(context.getArgs()[1], 0));
+                    int select = NumberUtils.toInt(context.getArgs()[1], 0);
+                    if (!playlists.isEmpty() && playlists.size() >= select) {
+                        playlist = playlists.get(select - 1);
                         for (PlaylistItem item : playlist.getItems()) {
                             audioPlayer.play(new AudioTrackLoader(item.getUrl(), context.getInvoker(), 0));
                         }
                         context.getChannel().sendMessage(MessageUtil.format(
-                                MessageManager.getMessage("command.playlist.loaded"), playlist.getListname())).queue();
+                                MessageManager.getMessage("command.playlist.loaded"), playlist.getName())).queue();
                     }
                 } else if (UUID_REGEX.matcher(context.getArgs()[1]).find()) {
                     try {
@@ -108,7 +160,7 @@ public class PlaylistCommand extends CommandExecutor {
                                 audioPlayer.play(new AudioTrackLoader(item.getUrl(), context.getInvoker(), 0));
                             }
                             context.getChannel().sendMessage(MessageUtil.format(
-                                    MessageManager.getMessage("command.playlist.loaded"), playlist.getListname())).queue();
+                                    MessageManager.getMessage("command.playlist.loaded"), playlist.getName())).queue();
                         }
                     } catch (SQLException e) {
                         log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
@@ -118,6 +170,11 @@ public class PlaylistCommand extends CommandExecutor {
                         context.getChannel().sendMessage(MessageManager.getMessage("system.db.retrieving.error")).queue();
                     }
                 } else {
+                    //// TODO: 2020/07/17 Not working source code.
+                    context.getChannel().sendMessage("This feature is not currently available due to technical difficulties.").queue();
+                    return;
+
+                    /*
                     try {
                         List<CustomPlaylist> playlists = playlistTable.searchPlaylist(context.getGuild().getIdLong(), context.getArgs()[1]);
                         if (playlists.isEmpty()) {
@@ -130,7 +187,7 @@ public class PlaylistCommand extends CommandExecutor {
                             for (CustomPlaylist item : playlists) {
                                 if (count > 5)
                                     break;
-                                message.append("\n`[" + count + "]` " + item.getListname() + "");
+                                message.append("\n`[" + count + "]` " + item.getName() + "");
                                 count++;
                             }
                             message.append("\n\n" + MessageManager.getMessage("command.playlist.select"));
@@ -143,6 +200,7 @@ public class PlaylistCommand extends CommandExecutor {
                         log.error(MessageManager.getMessage("system.general.error"), e);
                         context.getChannel().sendMessage(MessageManager.getMessage("system.db.retrieving.error")).queue();
                     }
+                    */
                 }
 
             default:

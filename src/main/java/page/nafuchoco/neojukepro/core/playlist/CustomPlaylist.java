@@ -39,7 +39,7 @@ public class CustomPlaylist {
         return guildId;
     }
 
-    public String getListname() {
+    public String getName() {
         return listname;
     }
 

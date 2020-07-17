@@ -93,6 +93,7 @@ public class Launcher implements NeoJukeLauncher {
                 database.getUsername(), database.getPassword());
         settingsTable = new GuildSettingsTable(connector);
         usersPermTable = new GuildUsersPermTable(connector);
+        playlistTable = new CustomPlaylistTable(connector);
 
         try {
             settingsTable.createTable();
