@@ -91,9 +91,8 @@ public class Launcher implements NeoJukeLauncher {
         connector = new DatabaseConnector(
                 database.getDatabaseType().getAddressPrefix() + database.getAddress(), database.getDatabase(),
                 database.getUsername(), database.getPassword());
-        settingsTable = new GuildSettingsTable(database.getTablePrefix(), connector);
-        usersPermTable = new GuildUsersPermTable(database.getTablePrefix(), connector);
-        playlistTable = new CustomPlaylistTable(database.getTablePrefix(), connector);
+        settingsTable = new GuildSettingsTable(connector);
+        usersPermTable = new GuildUsersPermTable(connector);
 
         try {
             settingsTable.createTable();
@@ -183,6 +182,7 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new ListCommand("list", "l"), null);
 
         commandRegistry.registerCommand(new PlayCommand("play", "p"), null);
+        commandRegistry.registerCommand(new SearchCommand("search", "se"), null);
         commandRegistry.registerCommand(new RePlayCommand("replay", "re"), null);
         commandRegistry.registerCommand(new InterruptCommand("interrupt", "in"), null);
         commandRegistry.registerCommand(new PlaylistCommand("playlist", "pl"), null);

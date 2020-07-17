@@ -26,23 +26,18 @@ import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
-import page.nafuchoco.neojukepro.core.http.youtube.SearchItem;
-import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeSearchResults;
 import page.nafuchoco.neojukepro.core.player.AudioTrackLoader;
 import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class PlayCommand extends CommandExecutor {
     private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final Pattern URL_REGEX = Pattern.compile("^(http|https)://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$");
-    private static final Pattern NOMBER_REGEX = Pattern.compile("^[1-5]$");
+    private static final Pattern NUMBER_REGEX = Pattern.compile("^[1-5]$");
 
     public PlayCommand(String name, String... aliases) {
         super(name, aliases);
@@ -75,21 +70,21 @@ public class PlayCommand extends CommandExecutor {
         } else {
             if (URL_REGEX.matcher(context.getArgs()[0]).find()) { // 指定された引数がURLの場合はURLのトラックを再生
                 audioPlayer.play(new AudioTrackLoader(context.getArgs()[0], context.getInvoker(), 0));
-                if (context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE))
+                if (context.getGuild().getSelfMember().hasPermission(context.getChannel(), Permission.MESSAGE_MANAGE))
                     context.getMessage().delete().submit();
-            } else if (NOMBER_REGEX.matcher(context.getArgs()[0]).find()) { // 指定された引数が数字の場合は保存された検索結果を取得して指定されたトラックを再生
+            } else if (NUMBER_REGEX.matcher(context.getArgs()[0]).find()) { // 指定された引数が数字の場合は保存された検索結果を取得して指定されたトラックを再生
                 List<Object> objects = (List<Object>) CommandCache.deleteCache(context.getGuild(), "searchResults");
                 if (objects != null
                         && objects.get(0) instanceof YouTubeSearchResults
-                        && objects.get(1) instanceof Message
-                        && objects.get(2) instanceof Message) {
+                        && objects.get(2) instanceof Message
+                        && objects.get(3) instanceof Message) {
                     YouTubeSearchResults searchResult = (YouTubeSearchResults) objects.get(0);
-                    Message message = (Message) objects.get(1);
-                    Message sendMessage = (Message) objects.get((2));
+                    Message message = (Message) objects.get(2);
+                    Message sendMessage = (Message) objects.get((3));
                     audioPlayer.play(new AudioTrackLoader("https://www.youtube.com/watch?v="
                             + searchResult.getItems()[Integer.parseInt(context.getArgs()[0]) - 1].getID().getVideoID(),
                             context.getInvoker(), 0));
-                    if (context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                    if (context.getGuild().getSelfMember().hasPermission(context.getChannel(), Permission.MESSAGE_MANAGE)) {
                         context.getMessage().delete().submit();
                         sendMessage.delete().submit();
                         message.delete().submit();
@@ -99,36 +94,8 @@ public class PlayCommand extends CommandExecutor {
                 File file = new File(context.getArgs()[0]);
                 if (file.exists()) { // 入力された引数がファイルパスかを確認しファイルが存在する場合再生
                     audioPlayer.play(new AudioTrackLoader(file.getPath(), context.getInvoker(), 0));
-                    return;
-                }
-
-                // それ以外は入力された単語をYouTubeで検索
-                StringBuilder builder = new StringBuilder();
-                for (String arg : context.getArgs())
-                    builder.append(arg + " ");
-                try {
-                    YouTubeSearchResults result =
-                            new YouTubeAPIClient(launcher.getConfig().getAdvancedConfig().getGoogleAPIToken()).searchVideos(builder.toString());
-                    if (result == null || result.getItems().length == 0) {
-                        context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.notfound")).queue();
-                        return;
-                    }
-
-                    StringBuilder message = new StringBuilder();
-                    message.append(MessageManager.getMessage("command.play.search.found"));
-                    int count = 1;
-                    for (SearchItem item : result.getItems()) {
-                        message.append("\n`[" + count + "]` " + item.getSnippet().getTitle() + "");
-                        count++;
-                    }
-                    message.append("\n\n" + MessageManager.getMessage("command.play.search.select"));
-
-                    context.getChannel().sendMessage(message.toString()).queue(send ->
-                            CommandCache.registerCache(context.getGuild(), "searchResults", Arrays.asList(result, context.getMessage(), send)));
-                } catch (IOException e) {
-                    ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.play.search.failed"));
-                } catch (IllegalArgumentException e) {
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.disabled")).queue();
+                } else {
+                    context.getChannel().sendMessage("This feature has been integrated into the Search command.").queue();
                 }
             }
         }
@@ -136,7 +103,7 @@ public class PlayCommand extends CommandExecutor {
 
     @Override
     public String getDescription() {
-        return "Play and search for tracks.";
+        return "Play for tracks.";
     }
 
     @Override
