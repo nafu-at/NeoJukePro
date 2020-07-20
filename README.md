@@ -49,7 +49,7 @@ The original source code of this program is released under the Apache License 2.
 - MariaDB Connector/J
 
 #### Apache Lisence, Version 2.0
-- JDA, Version 2.0
+- JDA
 - lavaplayer
 - OkHttp3
 - Jackson Core
