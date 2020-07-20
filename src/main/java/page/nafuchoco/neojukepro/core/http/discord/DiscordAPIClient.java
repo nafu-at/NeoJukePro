@@ -28,7 +28,7 @@ import java.io.IOException;
 
 @Slf4j
 public class DiscordAPIClient {
-    private static final String APP_URL = "https://discordapp.com/api/v6/oauth2/applications/@me";
+    private static final String APP_URL = "https://discord.com/api/v6/oauth2/applications/@me";
 
     private final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
