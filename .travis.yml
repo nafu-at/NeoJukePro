@@ -23,6 +23,7 @@ jobs:
           on:
             tags: true
         - provider: releases
+          edge: true
           file_glob: true
           file: build/libs/*
           draft: true
