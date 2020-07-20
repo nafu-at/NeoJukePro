@@ -81,6 +81,10 @@ public class NodesCommand extends CommandExecutor {
                     } catch (NumberFormatException e) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.number")).queue();
                     }
+                    break;
+
+                default:
+                    break;
             }
         } else {
             context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.disabled")).queue();

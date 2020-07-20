@@ -54,8 +54,7 @@ public class UpdateCommand extends CommandExecutor {
 
         try {
             context.getChannel().sendMessage(":warning: Execute the update operation. Quit the program when you're done.").queue();
-            if (!update(file))
-                context.getChannel().sendMessage(":x: Failed to update Bot.").queue();
+            update(file);
         } catch (IOException e) {
             context.getChannel().sendMessage("Failed to rewrite the file.").queue();
             log.error("Failed to rewrite the file.", e);
@@ -67,7 +66,7 @@ public class UpdateCommand extends CommandExecutor {
         return;
     }
 
-    private boolean update(String file) throws IOException, URISyntaxException {
+    private void update(String file) throws IOException, URISyntaxException {
         File temp = new File("update.jar");
         FileUtils.copyURLToFile(new URL(file), temp);
 
@@ -76,12 +75,12 @@ public class UpdateCommand extends CommandExecutor {
                 DigestUtils.sha3_256Hex(new FileInputStream(getApplicationPath(Main.class).toFile()));
         if (original_sha3.equals(temp_sha3)) {
             FileUtils.forceDelete(temp);
-            return true;
+            return;
         }
 
         FileUtils.forceDelete(getApplicationPath(Main.class).toFile());
         FileUtils.moveFile(temp, getApplicationPath(Main.class).toFile());
-        return true;
+        return;
     }
 
     private Path getApplicationPath(Class<?> cls) throws URISyntaxException {

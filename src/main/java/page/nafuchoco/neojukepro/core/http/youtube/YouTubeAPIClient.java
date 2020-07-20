@@ -36,8 +36,6 @@ public class YouTubeAPIClient {
     private final String apiToken;
 
     public YouTubeAPIClient(@NonNull String apiToken) {
-        if (apiToken == null)
-            throw new IllegalArgumentException("Google API token is empty.");
         this.apiToken = apiToken;
     }
 

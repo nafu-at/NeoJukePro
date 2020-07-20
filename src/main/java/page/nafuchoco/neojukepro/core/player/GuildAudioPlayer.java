@@ -43,6 +43,7 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
     private boolean isShuffle = false;
     private RepeatType repeatType;
 
+    // TODO: 2020/07/21 Synchronizedへの置き換え作業
     private volatile GuildTrackContext nowPlaying;
 
     public GuildAudioPlayer(Guild guild, AudioPlayerManager audioPlayerManager, JdaLink link) {
@@ -190,7 +191,6 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
     public long getTrackPosition() {
         return player.getTrackPosition();
     }
-
 
     public Guild getGuild() {
         return guild;

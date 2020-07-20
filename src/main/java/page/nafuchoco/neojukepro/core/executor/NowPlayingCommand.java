@@ -99,15 +99,21 @@ public class NowPlayingCommand extends CommandExecutor {
                     case "thumbnail":
                     case "th":
                         if (audioTrack instanceof YoutubeAudioTrack) {
-                            context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.getthumbnail")).queue();
                             try {
-                                context.getChannel().sendFile(getThumbnailStream(audioTrack.getIdentifier()), "thumbnail.jpg").queue();
+                                InputStream thumbnail = getThumbnailStream(audioTrack.getIdentifier());
+                                if (thumbnail != null) {
+                                    context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.getthumbnail")).queue();
+                                    context.getChannel().sendFile(thumbnail, "thumbnail.jpg").queue();
+                                }
                             } catch (IOException e) {
                                 ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
                             }
                         } else {
                             context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.nosupport")).queue();
                         }
+                        break;
+
+                    default:
                         break;
                 }
             }
@@ -122,8 +128,7 @@ public class NowPlayingCommand extends CommandExecutor {
 
         YouTubeObjectItem youtubeVideo =
                 client.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_VIDEO, identifier).getItems()[0];
-        InputStream stream = new URL(youtubeVideo.getSnippet().getThumbnails().getHigh().getURL()).openStream();
-        return stream;
+        return new URL(youtubeVideo.getSnippet().getThumbnails().getHigh().getURL()).openStream();
     }
 
     private MessageEmbed getYouTubeEmbed(GuildAudioPlayer audioPlayer) throws IOException, NullPointerException {

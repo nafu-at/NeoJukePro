@@ -45,7 +45,10 @@ public class ModuleRegistry {
      * @param module Module to be removed.
      */
     public synchronized void deleteModule(NeoModule module) {
-        modules.remove(module);
+        modules.entrySet().forEach(entry -> {
+            if (entry.getValue().equals(module))
+                modules.remove(entry.getKey());
+        });
     }
 
     /**
