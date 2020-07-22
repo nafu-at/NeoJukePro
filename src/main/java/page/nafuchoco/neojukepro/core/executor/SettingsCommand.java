@@ -18,6 +18,7 @@ package page.nafuchoco.neojukepro.core.executor;
 
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
+import org.apache.commons.lang3.BooleanUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
@@ -52,6 +53,18 @@ public class SettingsCommand extends CommandExecutor {
                     context.getChannel().sendMessage(MessageManager.getMessage("command.set.prefix.set")).queue();
                     break;
 
+                case "robot":
+                    boolean bool = BooleanUtils.toBoolean(context.getArgs()[1]);
+                    settingsTable.setGuildSetting(context.getGuild().getIdLong(), "robot", Boolean.toString(bool));
+                    context.getChannel().sendMessage(MessageManager.getMessage("command.set.robot.set")).queue();
+                    break;
+
+                case "autoplay":
+                    boolean autoplay = BooleanUtils.toBoolean(context.getArgs()[1]);
+                    settingsTable.setGuildSetting(context.getGuild().getIdLong(), "autoplay", Boolean.toString(autoplay));
+                    context.getChannel().sendMessage(MessageManager.getMessage("command.set.autoplay.set")).queue();
+                    break;
+
                 default:
                     context.getChannel().sendMessage(getGuildSettings(context.getGuild(), settingsTable)).queue();
                     break;
@@ -65,6 +78,8 @@ public class SettingsCommand extends CommandExecutor {
     private String getGuildSettings(Guild guild, GuildSettingsTable settingsTable) throws SQLException {
         StringBuilder builder = new StringBuilder(MessageManager.getMessage("command.set.current") + "\n```\n");
         builder.append("Prefix: " + settingsTable.getGuildSetting(guild.getIdLong(), "prefix") + "\n");
+        builder.append("Robot: " + settingsTable.getGuildSetting(guild.getIdLong(), "robot") + "\n");
+        builder.append("AutoPlay: " + settingsTable.getGuildSetting(guild.getIdLong(), "autoplay") + "\n");
         builder.append("```");
         return builder.toString();
     }

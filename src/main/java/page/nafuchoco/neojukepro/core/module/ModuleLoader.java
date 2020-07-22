@@ -145,7 +145,7 @@ public class ModuleLoader {
     private int parseVersion(String version) {
         String[] sa = version.split("-");
         try {
-            return Integer.parseInt(sa[0].replaceAll(".", ""));
+            return Integer.parseInt(sa[0].replaceAll("\\.", ""));
         } catch (NumberFormatException e) {
             return 0;
         }

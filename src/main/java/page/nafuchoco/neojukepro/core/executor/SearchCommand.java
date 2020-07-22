@@ -57,8 +57,8 @@ public class SearchCommand extends CommandExecutor {
         } else if (context.getArgs().length != 0) {
             if (context.getArgs()[0].equalsIgnoreCase("next")) {
                 List<Object> objects = (List<Object>) CommandCache.deleteCache(context.getGuild(), "searchResults");
-                YouTubeSearchResults results = null;
-                String keyword = null;
+                YouTubeSearchResults results;
+                String keyword;
 
                 if (objects != null
                         && objects.get(0) instanceof YouTubeSearchResults
@@ -67,14 +67,15 @@ public class SearchCommand extends CommandExecutor {
                     keyword = (String) objects.get(1);
                 } else {
                     context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.searchfirst")).queue();
+                    return;
                 }
 
                 try {
-                    if (results != null || StringUtils.isEmpty(results.getNextPageToken())) {
+                    if (StringUtils.isEmpty(results.getNextPageToken())) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.nopage")).queue();
                         return;
                     }
-                    results = client.searchVideos(keyword, results.getNextPageToken());
+                    results = client.searchVideos(YouTubeAPIClient.SearchType.SEARCH, keyword, results.getNextPageToken());
 
                     if (results == null || results.getItems().length == 0) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.notfound")).queue();
@@ -101,8 +102,8 @@ public class SearchCommand extends CommandExecutor {
 
             } else if (context.getArgs()[0].equalsIgnoreCase("prev")) {
                 List<Object> objects = (List<Object>) CommandCache.deleteCache(context.getGuild(), "searchResults");
-                YouTubeSearchResults results = null;
-                String keyword = null;
+                YouTubeSearchResults results;
+                String keyword;
 
                 if (objects != null
                         && objects.get(0) instanceof YouTubeSearchResults
@@ -111,14 +112,15 @@ public class SearchCommand extends CommandExecutor {
                     keyword = (String) objects.get(1);
                 } else {
                     context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.searchfirst")).queue();
+                    return;
                 }
 
                 try {
-                    if (results == null || StringUtils.isEmpty(results.getPrevPageToken())) {
+                    if (StringUtils.isEmpty(results.getPrevPageToken())) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.nopage")).queue();
                         return;
                     }
-                    results = client.searchVideos(keyword, results.getPrevPageToken());
+                    results = client.searchVideos(YouTubeAPIClient.SearchType.SEARCH, keyword, results.getPrevPageToken());
 
                     if (results == null || results.getItems().length == 0) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.notfound")).queue();

@@ -17,23 +17,38 @@
 package page.nafuchoco.neojukepro.core.player;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lavalink.client.io.jda.JdaLink;
 import lavalink.client.player.IPlayer;
 import lavalink.client.player.LavaplayerPlayerWrapper;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.apache.commons.lang3.BooleanUtils;
+import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
+import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
+import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
 import page.nafuchoco.neojukepro.core.database.RepeatType;
+import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
+import page.nafuchoco.neojukepro.core.http.youtube.YouTubeSearchResults;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
+@Slf4j
 public class GuildAudioPlayer extends PlayerEventListenerAdapter {
+    private static final NeoJukeLauncher launcher = Main.getLauncher();
+    private static final YouTubeAPIClient client;
+
     private Guild guild;
     private AudioPlayerManager audioPlayerManager;
     private JdaLink link;
@@ -43,7 +58,18 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
     private boolean isShuffle = false;
     private RepeatType repeatType;
 
+    // TODO: 2020/07/21 Synchronizedへの置き換え作業
     private volatile GuildTrackContext nowPlaying;
+
+    static {
+        YouTubeAPIClient apiClient;
+        try {
+            apiClient = new YouTubeAPIClient(launcher.getConfig().getAdvancedConfig().getGoogleAPIToken());
+        } catch (IllegalArgumentException e) {
+            apiClient = null;
+        }
+        client = apiClient;
+    }
 
     public GuildAudioPlayer(Guild guild, AudioPlayerManager audioPlayerManager, JdaLink link) {
         this.guild = guild;
@@ -191,7 +217,6 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
         return player.getTrackPosition();
     }
 
-
     public Guild getGuild() {
         return guild;
     }
@@ -251,6 +276,29 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
 
             if (nowPlaying != null && repeatType == RepeatType.ALL) {
                 play(nowPlaying.makeClone(), 0);
+            }
+
+            if (nowPlaying.getTrack() instanceof YoutubeAudioTrack
+                    && trackProvider.getQueues().isEmpty()
+                    && client != null
+                    && launcher.getConfig().getAdvancedConfig().isEnableRelatedVideoSearch()) {
+                GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
+                boolean autoplay = false;
+                try {
+                    autoplay = BooleanUtils.toBoolean(settingsTable.getGuildSetting(getGuild().getIdLong(), "autoplay"));
+                } catch (SQLException e) {
+                    log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
+                }
+                if (autoplay) {
+                    try {
+                        YouTubeSearchResults results =
+                                client.searchVideos(YouTubeAPIClient.SearchType.RELATED, nowPlaying.getTrack().getIdentifier(), null);
+                        play(new AudioTrackLoader("https://www.youtube.com/watch?v=" + results.getItems()[0].getID().getVideoID(),
+                                nowPlaying.getInvoker(), 0));
+                    } catch (IOException e) {
+                        log.warn(MessageManager.getMessage("command.play.search.failed"));
+                    }
+                }
             }
 
             nowPlaying = null;

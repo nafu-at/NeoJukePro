@@ -44,6 +44,10 @@ public class TrackEmbedUtil {
     private static final Color VIMEO_COLOR = new Color(15, 174, 241);
     private static final Color BLACK = new Color(0, 0, 0);
 
+    private TrackEmbedUtil() {
+        throw new UnsupportedOperationException();
+    }
+
     static {
         YouTubeAPIClient apiClient;
         try {

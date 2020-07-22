@@ -36,16 +36,14 @@ public class YouTubeAPIClient {
     private final String apiToken;
 
     public YouTubeAPIClient(@NonNull String apiToken) {
-        if (apiToken == null)
-            throw new IllegalArgumentException("Google API token is empty.");
         this.apiToken = apiToken;
     }
 
     public YouTubeSearchResults searchVideos(@NonNull String query) throws IOException {
-        return searchVideos(query, null);
+        return searchVideos(SearchType.SEARCH, query, null);
     }
 
-    public YouTubeSearchResults searchVideos(@NonNull String query, String pageToken) throws IOException {
+    public YouTubeSearchResults searchVideos(@NonNull SearchType type, @NonNull String query, String pageToken) throws IOException {
         HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(YOUTUBE_SEARCH)).newBuilder();
         urlBuilder.addQueryParameter("key", apiToken);
         urlBuilder.addQueryParameter("part", "snippet");
@@ -53,7 +51,15 @@ public class YouTubeAPIClient {
         urlBuilder.addQueryParameter("maxResults", "5");
         if (pageToken != null)
             urlBuilder.addQueryParameter("pageToken", pageToken);
-        urlBuilder.addQueryParameter("q", query);
+        switch (type) {
+            case SEARCH:
+                urlBuilder.addQueryParameter("q", query);
+                break;
+
+            case RELATED:
+                urlBuilder.addQueryParameter("relatedToVideoId", query);
+                break;
+        }
 
         Request request = new Request.Builder().url(urlBuilder.build()).build();
         try (Response response = okHttpClient.newCall(request).execute()) {
@@ -84,5 +90,9 @@ public class YouTubeAPIClient {
             }
             return null;
         }
+    }
+
+    public enum SearchType {
+        SEARCH, RELATED
     }
 }

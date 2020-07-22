@@ -23,7 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public abstract class DatabaseTable {
-    private static final String prefix = Main.getLauncher().getConfig().getBasicConfig().getDatabase().getTablePrefix();
+    private static final String PREFIX = Main.getLauncher().getConfig().getBasicConfig().getDatabase().getTablePrefix();
     private final String tablename;
     private final DatabaseConnector connector;
 
@@ -36,7 +36,7 @@ public abstract class DatabaseTable {
      * @since 1.2
      */
     public DatabaseTable(String tablename, DatabaseConnector connector) {
-        this.tablename = prefix + tablename;
+        this.tablename = PREFIX + tablename;
         this.connector = connector;
     }
 
