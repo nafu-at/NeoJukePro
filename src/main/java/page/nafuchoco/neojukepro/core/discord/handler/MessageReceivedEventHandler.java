@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.discord.handler;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
@@ -48,15 +49,15 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
 
         // 自分自身の投稿, Botによる投稿, WebHookによる投稿, Botが投稿できないチャンネルへの投稿を無視
         if (event.getAuthor() == event.getJDA().getSelfUser() ||
-                event.getAuthor().isBot() ||
-                event.isWebhookMessage() ||
                 !event.getTextChannel().canTalk())
             return;
 
         String prefix = null;
+        boolean robot = false;
         GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
         try {
             prefix = settingsTable.getGuildSetting(event.getGuild().getIdLong(), "prefix");
+            robot = BooleanUtils.toBoolean(settingsTable.getGuildSetting(event.getGuild().getIdLong(), "robot"));
         } catch (SQLException e) {
             log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
         }
@@ -73,6 +74,8 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         } else { // コマンドではないメッセージを無視
             return;
         }
+        if (!robot && (event.getAuthor().isBot() || event.isWebhookMessage()))
+            return; // Robotモード以外でBotからの投稿に反応しない。
 
         if (input.isEmpty())
             return;

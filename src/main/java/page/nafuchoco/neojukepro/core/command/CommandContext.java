@@ -48,49 +48,49 @@ public class CommandContext {
     }
 
     /**
-     * @return コマンドが実行されたギルド
+     * @return Command Executed Guild
      */
     public Guild getGuild() {
         return guild;
     }
 
     /**
-     * @return コマンドが実行されたテキストチャンネル
+     * @return Command executed text channel
      */
     public TextChannel getChannel() {
         return channel;
     }
 
     /**
-     * @return コマンドを実行したメンバー
+     * @return Command executed member
      */
     public Member getInvoker() {
         return invoker;
     }
 
     /**
-     * @return 実際に送信されたメッセージ
+     * @return Received message
      */
     public Message getMessage() {
         return message;
     }
 
     /**
-     * @return 実行されたコマンド名
+     * @return Executed command name
      */
     public String getTrigger() {
         return trigger;
     }
 
     /**
-     * @return 指定されたオプション
+     * @return Specified options
      */
     public String[] getArgs() {
         return args;
     }
 
     /**
-     * @return 送信されたコマンド名に該当するコマンドクラス
+     * @return The command class corresponding to the command name
      */
     public CommandExecutor getCommand() {
         return command;
