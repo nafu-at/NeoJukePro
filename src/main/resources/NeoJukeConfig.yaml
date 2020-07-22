@@ -39,6 +39,13 @@ basic: # This is the configuration required to use this bot.
 advanced:
   googleAPIToken: ""                   # You can use the YouTube video search function by entering a token.
 
+  # Notification #
+  # The related video search feature is also used for the auto-play feature.
+  # Autoplay will automatically play the related video if the last video in the queue was on YouTube.
+  # Be aware that this can result in a lot of API resources being consumed.
+  # It is recommended to disable this feature if you intend to run your application as a public bot for the masses.
+  relatedVideoSearch: false            # Specifies whether to enable the related video search function.
+
   useNodeServer: false                 # This setting enables load balancing to be used for audio transmission.
 
   #nodesInfo:                          # Set the connection information of the node server used for load balancing.

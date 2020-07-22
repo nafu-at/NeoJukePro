@@ -23,6 +23,8 @@ import java.util.List;
 public class AdvancedConfigSection {
     @JsonProperty("googleAPIToken")
     private String googleAPIToken;
+    @JsonProperty("relatedVideoSearch")
+    private boolean relatedVideoSearch;
     @JsonProperty("updateInfoUrl")
     private String updateInfoUrl;
     @JsonProperty("useNodeServer")
@@ -34,6 +36,10 @@ public class AdvancedConfigSection {
 
     public String getGoogleAPIToken() {
         return googleAPIToken;
+    }
+
+    public boolean isEnableRelatedVideoSearch() {
+        return relatedVideoSearch;
     }
 
     public String getUpdateInfoUrl() {

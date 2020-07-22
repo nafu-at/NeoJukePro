@@ -75,7 +75,7 @@ public class SearchCommand extends CommandExecutor {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.nopage")).queue();
                         return;
                     }
-                    results = client.searchVideos(keyword, results.getNextPageToken());
+                    results = client.searchVideos(YouTubeAPIClient.SearchType.SEARCH, keyword, results.getNextPageToken());
 
                     if (results == null || results.getItems().length == 0) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.notfound")).queue();
@@ -120,7 +120,7 @@ public class SearchCommand extends CommandExecutor {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.nopage")).queue();
                         return;
                     }
-                    results = client.searchVideos(keyword, results.getPrevPageToken());
+                    results = client.searchVideos(YouTubeAPIClient.SearchType.SEARCH, keyword, results.getPrevPageToken());
 
                     if (results == null || results.getItems().length == 0) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.notfound")).queue();
