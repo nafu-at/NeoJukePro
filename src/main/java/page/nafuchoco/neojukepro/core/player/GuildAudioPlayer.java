@@ -278,7 +278,8 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
                 play(nowPlaying.makeClone(), 0);
             }
 
-            if (nowPlaying.getTrack() instanceof YoutubeAudioTrack
+            if (nowPlaying != null
+                    && nowPlaying.getTrack() instanceof YoutubeAudioTrack
                     && trackProvider.getQueues().isEmpty()
                     && client != null
                     && launcher.getConfig().getAdvancedConfig().isEnableRelatedVideoSearch()) {
