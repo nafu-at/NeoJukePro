@@ -72,7 +72,7 @@ public class ListCommand extends CommandExecutor {
             sb.append(MessageUtil.format(MessageManager.getMessage("command.list.list"),
                     tracks.size(), page, listPage, MessageUtil.formatTime(totalTime)));
             for (int count = range * page - range + 1; count <= range * page; count++) {
-                if (tracks.size() >= count) {
+                if (tracks.size() >= count && sb.length() < 1800) {
                     GuildTrackContext track = tracks.get(count - 1);
                     sb.append("\n`[" + count + "]` **" + track.getTrack().getInfo().title
                             + " (" + track.getInvoker().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration()) + "]`");

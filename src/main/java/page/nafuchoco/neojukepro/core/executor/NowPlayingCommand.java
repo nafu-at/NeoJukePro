@@ -113,6 +113,13 @@ public class NowPlayingCommand extends CommandExecutor {
                         }
                         break;
 
+                    case "time":
+                    case "t":
+                        context.getChannel().sendMessage(MessageManager.getMessage("command.list.playing") + audioTrack.getInfo().title + "\n" +
+                                MessageUtil.format(MessageManager.getMessage("command.nowplay.currenttime"),
+                                        MessageUtil.formatTime(audioPlayer.getTrackPosition()),
+                                        MessageUtil.formatTime(audioTrack.getDuration() - audioPlayer.getTrackPosition()))).queue();
+
                     default:
                         break;
                 }

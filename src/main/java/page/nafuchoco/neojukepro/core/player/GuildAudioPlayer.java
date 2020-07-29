@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.RandomUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
@@ -278,7 +279,8 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
                 play(nowPlaying.makeClone(), 0);
             }
 
-            if (nowPlaying.getTrack() instanceof YoutubeAudioTrack
+            if (nowPlaying != null
+                    && nowPlaying.getTrack() instanceof YoutubeAudioTrack
                     && trackProvider.getQueues().isEmpty()
                     && client != null
                     && launcher.getConfig().getAdvancedConfig().isEnableRelatedVideoSearch()) {
@@ -291,9 +293,10 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
                 }
                 if (autoplay) {
                     try {
+
                         YouTubeSearchResults results =
                                 client.searchVideos(YouTubeAPIClient.SearchType.RELATED, nowPlaying.getTrack().getIdentifier(), null);
-                        play(new AudioTrackLoader("https://www.youtube.com/watch?v=" + results.getItems()[0].getID().getVideoID(),
+                        play(new AudioTrackLoader("https://www.youtube.com/watch?v=" + results.getItems()[RandomUtils.nextInt(0, 4)].getID().getVideoID(),
                                 nowPlaying.getInvoker(), 0));
                     } catch (IOException e) {
                         log.warn(MessageManager.getMessage("command.play.search.failed"));
