@@ -18,7 +18,6 @@ package page.nafuchoco.neojukepro.core.module;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
@@ -37,7 +36,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class ModuleLoader {
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     private final ModuleRegistry moduleRegistry;

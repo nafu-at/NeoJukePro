@@ -18,7 +18,6 @@ package page.nafuchoco.neojukepro.core.http.discord;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,7 +25,6 @@ import okhttp3.Response;
 
 import java.io.IOException;
 
-@Slf4j
 public class DiscordAPIClient {
     private static final String APP_URL = "https://discord.com/api/v6/oauth2/applications/@me";
 
