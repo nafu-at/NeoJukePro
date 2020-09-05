@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'page.nafuchoco'
-version '1.2.1'
+version '1.4.0'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -86,7 +86,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
 
     // ClientLib
-    implementation 'com.squareup.okhttp3:okhttp:4.5.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
     api('net.dv8tion:JDA:4.2.0_178') {
         exclude module: 'opus-java'
     }
@@ -107,7 +107,7 @@ dependencies {
     // SQL
     implementation 'com.zaxxer:HikariCP:3.4.5'
     implementation 'mysql:mysql-connector-java:8.0.21'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.6.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.6.2'
 
     // Other
     implementation 'de.vandermeer:asciitable:0.3.2'

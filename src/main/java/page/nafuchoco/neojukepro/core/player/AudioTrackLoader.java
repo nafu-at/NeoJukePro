@@ -27,7 +27,6 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
@@ -38,7 +37,6 @@ import page.nafuchoco.neojukepro.core.config.MusicSourceSection;
 import java.util.LinkedList;
 import java.util.List;
 
-@Slf4j
 public class AudioTrackLoader implements AudioLoadResultHandler {
     private static final MusicSourceSection musicSource = Main.getLauncher().getConfig().getBasicConfig().getMusicSource();
 
