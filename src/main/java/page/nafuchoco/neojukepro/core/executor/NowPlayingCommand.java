@@ -35,6 +35,7 @@ import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
+import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
 import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
 import page.nafuchoco.neojukepro.core.player.GuildTrackContext;
 
@@ -93,6 +94,10 @@ public class NowPlayingCommand extends CommandExecutor {
                     } else if (audioTrack instanceof HttpAudioTrack) {
                         context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BLACK)).queue();
                     } else if (audioTrack instanceof LocalAudioTrack) {
+                        context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BLACK)).queue();
+                    } else if (audioTrack.getSourceManager() instanceof CustomAudioSourceManager) {
+                        context.getChannel().sendMessage(((CustomAudioSourceManager) audioTrack.getSourceManager()).getNowPlayingEmbed(audioPlayer)).queue();
+                    } else {
                         context.getChannel().sendMessage(getDefaultEmbed(audioPlayer, BLACK)).queue();
                     }
                 } else switch (context.getArgs()[0]) {

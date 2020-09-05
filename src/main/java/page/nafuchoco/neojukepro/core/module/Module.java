@@ -18,6 +18,7 @@ package page.nafuchoco.neojukepro.core.module;
 
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
 
 import java.io.File;
 import java.io.InputStream;
@@ -46,6 +47,14 @@ public interface Module {
      * @return
      */
     boolean isEnable();
+
+    /**
+     * カスタムされたAudioSourceManagerを登録します。
+     * このメソッドはonLoad内でのみ使用することができます。
+     *
+     * @param customAudioSourceManager 登録するAudioSourceManager
+     */
+    void registerAudioSourceManager(CustomAudioSourceManager customAudioSourceManager);
 
     /**
      * コマンドを登録します。

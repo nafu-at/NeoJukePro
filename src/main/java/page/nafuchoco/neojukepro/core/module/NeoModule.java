@@ -20,6 +20,7 @@ import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
 
 import java.io.File;
 import java.io.InputStream;
@@ -111,6 +112,13 @@ public abstract class NeoModule implements Module {
         } catch (NullPointerException e) {
             throw new IllegalStateException("This method is not available in \"onLoad\".");
         }
+    }
+
+    @Override
+    public void registerAudioSourceManager(CustomAudioSourceManager customAudioSourceManager) {
+        if (isEnable())
+            throw new IllegalStateException("This method should be run in \"onLoad\".");
+        launcher.getCustomSourceRegistry().registerCustomAudioSource(customAudioSourceManager, this);
     }
 
     @Override

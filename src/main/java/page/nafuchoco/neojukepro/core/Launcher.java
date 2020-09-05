@@ -43,6 +43,7 @@ import page.nafuchoco.neojukepro.core.executor.system.UpdateCommand;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAPIClient;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAppInfo;
 import page.nafuchoco.neojukepro.core.module.ModuleManager;
+import page.nafuchoco.neojukepro.core.player.CustomSourceRegistry;
 import page.nafuchoco.neojukepro.core.player.GuildPlayerRegistry;
 
 import javax.security.auth.login.LoginException;
@@ -60,6 +61,7 @@ public class Launcher implements NeoJukeLauncher {
     private GuildUsersPermTable usersPermTable;
 
     private ModuleManager moduleManager;
+    private CustomSourceRegistry customSourceRegistry;
     private CommandRegistry commandRegistry;
 
     private ShardManager shardManager;
@@ -109,6 +111,7 @@ public class Launcher implements NeoJukeLauncher {
             return;
         }
 
+        customSourceRegistry = new CustomSourceRegistry();
         commandRegistry = new CommandRegistry();
         DefaultShardManagerBuilder shardManagerBuilder =
                 DefaultShardManagerBuilder.createDefault(config.getBasicConfig().getDiscordToken());
@@ -116,6 +119,10 @@ public class Launcher implements NeoJukeLauncher {
                 new CommandExecuteAuth(config.getBasicConfig().getBotAdmins(), appInfo, usersPermTable), commandRegistry));
         shardManagerBuilder.addEventListeners(new GuildVoiceJoinEventHandler());
         shardManagerBuilder.addEventListeners(new GuildVoiceLeaveEventHandler());
+
+        moduleManager = new ModuleManager("modules");
+        moduleManager.loadAllModules();
+
         try {
             if (config.getAdvancedConfig().isUseNodeServer() && !config.getAdvancedConfig().getNodesInfo().isEmpty()) {
                 lavalink =
@@ -145,11 +152,7 @@ public class Launcher implements NeoJukeLauncher {
         log.info(MessageManager.getMessage("system.api.login.success"));
         log.debug("Ping! {}ms", shardManager.getAverageGatewayPing());
 
-        playerRegistry = new GuildPlayerRegistry(new DefaultAudioPlayerManager(), lavalink);
-
-        moduleManager = new ModuleManager("modules");
-        moduleManager.loadAllModules();
-
+        playerRegistry = new GuildPlayerRegistry(new DefaultAudioPlayerManager(), lavalink, customSourceRegistry);
         initCommand();
 
         moduleManager.enableAllModules();
@@ -223,6 +226,11 @@ public class Launcher implements NeoJukeLauncher {
     @Override
     public ModuleManager getModuleManager() {
         return moduleManager;
+    }
+
+    @Override
+    public CustomSourceRegistry getCustomSourceRegistry() {
+        return customSourceRegistry;
     }
 
     @Override

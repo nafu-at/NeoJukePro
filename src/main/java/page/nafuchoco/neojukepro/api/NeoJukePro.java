@@ -22,6 +22,7 @@ import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
 import page.nafuchoco.neojukepro.core.module.ModuleManager;
+import page.nafuchoco.neojukepro.core.player.CustomSourceRegistry;
 import page.nafuchoco.neojukepro.core.player.GuildPlayerRegistry;
 
 public interface NeoJukePro {
@@ -29,6 +30,8 @@ public interface NeoJukePro {
     NeoJukeConfig getConfig();
 
     DatabaseConnector getConnector();
+
+    CustomSourceRegistry getCustomSourceRegistry();
 
     CommandRegistry getCommandRegistry();
 

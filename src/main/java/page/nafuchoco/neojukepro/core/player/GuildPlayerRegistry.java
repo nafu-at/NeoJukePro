@@ -16,8 +16,17 @@
 
 package page.nafuchoco.neojukepro.core.player;
 
+import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import lavalink.client.io.Link;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.entities.Guild;
@@ -34,10 +43,21 @@ public class GuildPlayerRegistry {
     private final JdaLavalink lavalink;
     private final AudioPlayerManager playerManager;
 
-    public GuildPlayerRegistry(AudioPlayerManager playerManager, JdaLavalink lavalink) {
+    public GuildPlayerRegistry(AudioPlayerManager playerManager, JdaLavalink lavalink, CustomSourceRegistry sourceRegistry) {
         this.playerManager = playerManager;
         this.lavalink = lavalink;
-        AudioSourceManagers.registerRemoteSources(playerManager);
+
+        playerManager.registerSourceManager(new YoutubeAudioSourceManager(true));
+        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        playerManager.registerSourceManager(new BeamAudioSourceManager());
+        playerManager.registerSourceManager(new GetyarnAudioSourceManager());
+
+        sourceRegistry.getSources().forEach(source -> playerManager.registerSourceManager(source));
+
+        playerManager.registerSourceManager(new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY));
         AudioSourceManagers.registerLocalSource(playerManager);
     }
 
