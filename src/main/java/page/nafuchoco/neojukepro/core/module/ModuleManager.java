@@ -35,7 +35,7 @@ import java.util.List;
 public class ModuleManager {
     private final ModuleRegistry moduleRegistry;
     private final ModuleLoader moduleLoader;
-    private List<File> files;
+    private final List<File> files;
 
     public ModuleManager(String moduleDir) {
         this.moduleRegistry = new ModuleRegistry();

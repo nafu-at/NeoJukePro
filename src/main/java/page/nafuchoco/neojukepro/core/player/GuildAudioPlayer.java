@@ -50,11 +50,11 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
     private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final YouTubeAPIClient client;
 
-    private Guild guild;
-    private AudioPlayerManager audioPlayerManager;
-    private JdaLink link;
-    private IPlayer player;
-    private GuildTrackProvider trackProvider;
+    private final Guild guild;
+    private final AudioPlayerManager audioPlayerManager;
+    private final JdaLink link;
+    private final IPlayer player;
+    private final GuildTrackProvider trackProvider;
 
     private boolean isShuffle = false;
     private RepeatType repeatType;

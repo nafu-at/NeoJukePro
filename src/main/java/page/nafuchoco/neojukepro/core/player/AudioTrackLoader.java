@@ -40,7 +40,7 @@ import java.util.List;
 
 @Slf4j
 public class AudioTrackLoader implements AudioLoadResultHandler {
-    private static MusicSourceSection musicSource = Main.getLauncher().getConfig().getBasicConfig().getMusicSource();
+    private static final MusicSourceSection musicSource = Main.getLauncher().getConfig().getBasicConfig().getMusicSource();
 
     private GuildAudioPlayer audioPlayer;
 
