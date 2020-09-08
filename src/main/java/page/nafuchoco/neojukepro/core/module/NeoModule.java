@@ -17,7 +17,6 @@
 package page.nafuchoco.neojukepro.core.module;
 
 import page.nafuchoco.neojukepro.api.NeoJukePro;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
@@ -27,8 +26,8 @@ import java.io.InputStream;
 import java.util.List;
 
 public abstract class NeoModule implements Module {
-    private final NeoJukeLauncher launcher = Main.getLauncher();
     private final ClassLoader classLoader;
+    private NeoJukeLauncher launcher;
     private ModuleDescription description;
     private File dataFolder;
     private NeoModuleLogger logger;
@@ -153,7 +152,8 @@ public abstract class NeoModule implements Module {
         return logger;
     }
 
-    final void init(ModuleDescription description) {
+    final void init(NeoJukeLauncher launcher, ModuleDescription description) {
+        this.launcher = launcher;
         this.description = description;
         dataFolder = new File("modules/", description.getName());
         logger = new NeoModuleLogger(this);
