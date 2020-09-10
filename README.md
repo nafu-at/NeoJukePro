@@ -1,6 +1,6 @@
 # NeoJukePro
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/00638818665c46d288972ccf8f90b77c)](https://app.codacy.com/manual/NAFU_at/NeoJukePro?utm_source=github.com&utm_medium=referral&utm_content=nafu-at/NeoJukePro&utm_campaign=Badge_Grade_Dashboard)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/nafu-at/NeoJukePro) ![GitHub](https://img.shields.io/github/license/nafu-at/NeoJukePro) [![Build Status](https://travis-ci.com/nafu-at/NeoJukePro.svg?branch=master)](https://travis-ci.com/nafu-at/NeoJukePro) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/00638818665c46d288972ccf8f90b77c)](https://app.codacy.com/manual/NAFU_at/NeoJukePro?utm_source=github.com&utm_medium=referral&utm_content=nafu-at/NeoJukePro&utm_campaign=Badge_Grade_Dashboard)
 
 NeoJukePro is a new Discord Music Bot developed as a successor to SimpleJuke.  
 We rebuilt it from scratch to make it simpler, clearer, more functional, and more stable.  
