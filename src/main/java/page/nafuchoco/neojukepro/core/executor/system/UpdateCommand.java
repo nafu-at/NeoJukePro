@@ -63,7 +63,6 @@ public class UpdateCommand extends CommandExecutor {
         }
 
         Runtime.getRuntime().exit(0);
-        return;
     }
 
     private void update(String file) throws IOException, URISyntaxException {
@@ -80,7 +79,6 @@ public class UpdateCommand extends CommandExecutor {
 
         FileUtils.forceDelete(getApplicationPath(Main.class).toFile());
         FileUtils.moveFile(temp, getApplicationPath(Main.class).toFile());
-        return;
     }
 
     private Path getApplicationPath(Class<?> cls) throws URISyntaxException {

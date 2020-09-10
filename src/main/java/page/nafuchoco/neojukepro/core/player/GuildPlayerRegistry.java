@@ -55,7 +55,7 @@ public class GuildPlayerRegistry {
         playerManager.registerSourceManager(new BeamAudioSourceManager());
         playerManager.registerSourceManager(new GetyarnAudioSourceManager());
 
-        sourceRegistry.getSources().forEach(source -> playerManager.registerSourceManager(source));
+        sourceRegistry.getSources().forEach(playerManager::registerSourceManager);
 
         playerManager.registerSourceManager(new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY));
         AudioSourceManagers.registerLocalSource(playerManager);

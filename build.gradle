@@ -94,7 +94,6 @@ dependencies {
     implementation 'com.github.FredBoat:Lavalink-Client:41e1025'
 
     // Parser
-    // implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.11.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.0'

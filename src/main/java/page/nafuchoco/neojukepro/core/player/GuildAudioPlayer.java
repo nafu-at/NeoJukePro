@@ -246,7 +246,6 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
         }
     }
 
-
     @Override
     public void onPlayerPause(IPlayer player) {
         MessageUtil.sendMessage(guild, MessageManager.getMessage("player.pause"));
@@ -255,11 +254,6 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
     @Override
     public void onPlayerResume(IPlayer player) {
         MessageUtil.sendMessage(guild, MessageManager.getMessage("player.resume"));
-    }
-
-    @Override
-    public void onTrackStart(IPlayer player, AudioTrack track) {
-        super.onTrackStart(player, track);
     }
 
     @Override
@@ -309,15 +303,5 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
         } else {
             nowPlaying = null;
         }
-    }
-
-    @Override
-    public void onTrackException(IPlayer player, AudioTrack track, Exception exception) {
-        super.onTrackException(player, track, exception);
-    }
-
-    @Override
-    public void onTrackStuck(IPlayer player, AudioTrack track, long thresholdMs) {
-        super.onTrackStuck(player, track, thresholdMs);
     }
 }
