@@ -68,7 +68,7 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        if (!checkAudioSorce(track))
+        if (!checkAudioSource(track))
             return;
 
         audioPlayer.play(new GuildTrackContext(invoker.getGuild(), invoker, track), desiredNumber);
@@ -105,7 +105,7 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
         ExceptionUtil.sendStackTrace(audioPlayer.getGuild(), exception, MessageManager.getMessage("player.loader.failed"));
     }
 
-    private boolean checkAudioSorce(AudioTrack track) {
+    private boolean checkAudioSource(AudioTrack track) {
         if (track instanceof YoutubeAudioTrack && !musicSource.enableYoutube()) {
             MessageUtil.sendMessage(audioPlayer.getGuild(),
                     MessageUtil.format(MessageManager.getMessage("player.source.disable"), "YouTube"));
