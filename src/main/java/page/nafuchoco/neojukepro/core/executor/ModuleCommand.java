@@ -18,6 +18,9 @@ package page.nafuchoco.neojukepro.core.executor;
 
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciithemes.TA_GridThemes;
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
@@ -30,6 +33,7 @@ import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class ModuleCommand extends CommandExecutor {
     private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final Pattern NOMBER_REGEX = Pattern.compile("^\\d+$");
@@ -108,17 +112,17 @@ public class ModuleCommand extends CommandExecutor {
                     } else {
                         ModuleDescription description = module.getDescription();
                         AsciiTable table = new AsciiTable();
+                        table.addRule();
+                        table.addRow("Name", description.getName());
+                        table.addRule();
+                        table.addRow("Description", StringUtils.defaultString(description.getDescription(), "null"));
+                        table.addRule();
+                        table.addRow("Version", description.getVersion());
+                        table.addRule();
+                        table.addRow("Authors", StringUtils.defaultString(toStringList(description.getAuthors()), "null"));
+                        table.addRule();
+                        table.addRow("WebSite", StringUtils.defaultString(description.getWebsite(), "null"));
                         table.getContext().setGridTheme(TA_GridThemes.HORIZONTAL);
-                        table.addRule();
-                        table.addRow("Name", null, null, description.getName());
-                        table.addRule();
-                        table.addRow("Description", null, null, description.getDescription());
-                        table.addRule();
-                        table.addRow("Version", null, null, description.getVersion());
-                        table.addRule();
-                        table.addRow("Authors", null, null, description.getAuthors());
-                        table.addRule();
-                        table.addRow("WebSite", null, null, description.getWebsite());
                         context.getChannel().sendMessage("```\n" + table.render() + "\n```").queue();
                     }
                 }
@@ -145,17 +149,30 @@ public class ModuleCommand extends CommandExecutor {
             return MessageManager.getMessage("command.page.large");
 
         AsciiTable table = new AsciiTable();
-        table.getContext().setGridTheme(TA_GridThemes.HORIZONTAL);
         table.addRule();
-        table.addRow("ModuleName", null, "Description", "Version");
+        table.addRow("ModuleName", "Description", "Version").setTextAlignment(TextAlignment.CENTER);
         for (int count = range * page - range; count < range * page; count++) {
             if (modules.size() > count) {
                 NeoModule module = modules.get(count);
-                table.addLightRule();
-                table.addRow(module.getDescription().getName(), null, module.getDescription().getDescription(), module.getDescription().getVersion());
+                table.addRule();
+                table.addRow(
+                        module.getDescription().getName(),
+                        StringUtils.defaultString(module.getDescription().getDescription(), "null"),
+                        module.getDescription().getVersion())
+                        .setTextAlignment(TextAlignment.CENTER);
             }
         }
+        table.addRule();
+        table.getContext().setGridTheme(TA_GridThemes.CC);
         return "```\n" + table.render() + "\n```";
+    }
+
+    private String toStringList(List<String> list) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String val : list) {
+            stringBuilder.append(val + ", ");
+        }
+        return stringBuilder.toString().stripTrailing().replaceFirst(",$", "");
     }
 
     @Override
