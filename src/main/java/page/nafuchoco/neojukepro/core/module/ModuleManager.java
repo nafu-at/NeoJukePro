@@ -34,13 +34,11 @@ import java.util.List;
 
 @Slf4j
 public class ModuleManager {
-    private final NeoJukeLauncher launcher;
     private final ModuleRegistry moduleRegistry;
     private final ModuleLoader moduleLoader;
     private final List<File> files;
 
     public ModuleManager(NeoJukeLauncher launcher, String moduleDir) {
-        this.launcher = launcher;
         this.moduleRegistry = new ModuleRegistry();
         moduleLoader = new ModuleLoader(launcher, moduleRegistry, moduleDir);
         files = moduleLoader.searchModules();
