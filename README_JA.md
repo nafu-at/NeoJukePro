@@ -1,6 +1,9 @@
 # NeoJukePro
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/nafu-at/NeoJukePro) ![GitHub](https://img.shields.io/github/license/nafu-at/NeoJukePro) [![Build Status](https://travis-ci.com/nafu-at/NeoJukePro.svg?branch=master)](https://travis-ci.com/nafu-at/NeoJukePro) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/00638818665c46d288972ccf8f90b77c)](https://app.codacy.com/manual/NAFU_at/NeoJukePro?utm_source=github.com&utm_medium=referral&utm_content=nafu-at/NeoJukePro&utm_campaign=Badge_Grade_Dashboard)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/nafu-at/NeoJukePro)
+![GitHub](https://img.shields.io/github/license/nafu-at/NeoJukePro)
+[![Build Status](https://travis-ci.com/nafu-at/NeoJukePro.svg?branch=master)](https://travis-ci.com/nafu-at/NeoJukePro)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/35ee3810e0b647de90d3251fad96bcc4)](https://www.codacy.com/gh/nafu-at/NeoJukePro/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nafu-at/NeoJukePro&amp;utm_campaign=Badge_Grade)
 
 NeoJukeProはSimpleJukeの正統な後継として開発された新しいDiscord Music Botです。  
 より単純明快で高機能かつ安定した動作ができるよう1から作り直しました。  

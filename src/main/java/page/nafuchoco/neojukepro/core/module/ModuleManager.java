@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidModuleException;
 import page.nafuchoco.neojukepro.core.module.exception.ModuleDuplicateException;
 import page.nafuchoco.neojukepro.core.module.exception.UnknownDependencyException;
@@ -37,9 +38,9 @@ public class ModuleManager {
     private final ModuleLoader moduleLoader;
     private final List<File> files;
 
-    public ModuleManager(String moduleDir) {
+    public ModuleManager(NeoJukeLauncher launcher, String moduleDir) {
         this.moduleRegistry = new ModuleRegistry();
-        moduleLoader = new ModuleLoader(moduleRegistry, moduleDir);
+        moduleLoader = new ModuleLoader(launcher, moduleRegistry, moduleDir);
         files = moduleLoader.searchModules();
     }
 

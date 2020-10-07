@@ -21,6 +21,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidDescriptionException;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidModuleException;
 import page.nafuchoco.neojukepro.core.module.exception.UnknownDependencyException;
@@ -38,10 +39,12 @@ import java.util.stream.Collectors;
 
 public class ModuleLoader {
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private final NeoJukeLauncher launcher;
     private final ModuleRegistry moduleRegistry;
     private final File dir;
 
-    public ModuleLoader(ModuleRegistry moduleRegistry, String moduleDir) {
+    public ModuleLoader(NeoJukeLauncher launcher, ModuleRegistry moduleRegistry, String moduleDir) {
+        this.launcher = launcher;
         this.moduleRegistry = moduleRegistry;
         this.dir = new File(moduleDir);
     }
@@ -93,7 +96,7 @@ public class ModuleLoader {
 
         ModuleClassLoader classLoader;
         try {
-            classLoader = new ModuleClassLoader(file, description, getClass().getClassLoader());
+            classLoader = new ModuleClassLoader(launcher, file, description, getClass().getClassLoader());
         } catch (MalformedURLException e) {
             throw new InvalidModuleException(e);
         }

@@ -47,10 +47,8 @@ public class MessageUtil {
         Matcher matcher = VAR_PATTERN.matcher(result);
         while (matcher.find()) {
             String index = matcher.group().replace("{", "").replace("}", "");
-            try {
+            if (Integer.parseInt(index) < args.length)
                 result = result.replace(matcher.group(), String.valueOf(args[Integer.parseInt(index)]));
-            } catch (IndexOutOfBoundsException e) {
-            }
         }
         return result;
     }

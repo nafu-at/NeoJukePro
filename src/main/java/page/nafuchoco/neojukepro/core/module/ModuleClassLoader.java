@@ -16,6 +16,7 @@
 
 package page.nafuchoco.neojukepro.core.module;
 
+import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidModuleException;
 
 import java.io.File;
@@ -25,12 +26,14 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 public class ModuleClassLoader extends URLClassLoader {
+    private final NeoJukeLauncher launcher;
     private final ModuleDescription description;
     private final NeoModule module;
 
-    protected ModuleClassLoader(File file, ModuleDescription description, ClassLoader parent)
+    protected ModuleClassLoader(NeoJukeLauncher launcher, File file, ModuleDescription description, ClassLoader parent)
             throws MalformedURLException, InvalidModuleException {
         super(new URL[]{file.toURI().toURL()}, parent);
+        this.launcher = launcher;
         this.description = description;
 
         Class<?> jarClass;
@@ -62,6 +65,6 @@ public class ModuleClassLoader extends URLClassLoader {
     }
 
     public void initialize(NeoModule module) {
-        module.init(description);
+        module.init(launcher, description);
     }
 }

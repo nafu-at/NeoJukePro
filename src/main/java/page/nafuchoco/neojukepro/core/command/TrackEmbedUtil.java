@@ -27,9 +27,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
+import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
+import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
+import page.nafuchoco.neojukepro.core.player.GuildTrackContext;
 
 import java.awt.*;
 import java.io.IOException;
@@ -58,31 +62,39 @@ public class TrackEmbedUtil {
         client = apiClient;
     }
 
-    public static MessageEmbed getTrackEmbed(AudioTrack audioTrack) throws IOException {
-        if (audioTrack instanceof YoutubeAudioTrack) {
-            return getYouTubeEmbed(audioTrack);
-        } else if (audioTrack instanceof SoundCloudAudioTrack) {
-            return getDefaultEmbed(audioTrack, SOUNDCLOUD_COLOR);
-        } else if (audioTrack instanceof BandcampAudioTrack) {
-            return getDefaultEmbed(audioTrack, BANDCAMP_COLOR);
-        } else if (audioTrack instanceof VimeoAudioTrack) {
-            return getDefaultEmbed(audioTrack, VIMEO_COLOR);
-        } else if (audioTrack instanceof TwitchStreamAudioTrack) {
-            return getDefaultEmbed(audioTrack, TWITCH_COLOR);
-        } else if (audioTrack instanceof HttpAudioTrack) {
-            return getDefaultEmbed(audioTrack, BLACK);
-        } else if (audioTrack instanceof LocalAudioTrack) {
-            return getDefaultEmbed(audioTrack, BLACK);
+    public static MessageEmbed getTrackEmbed(GuildAudioPlayer audioPlayer) throws IOException {
+        GuildTrackContext trackContext = audioPlayer.getNowPlaying();
+        if (trackContext != null) {
+            AudioTrack audioTrack = trackContext.getTrack();
+            if (audioTrack instanceof YoutubeAudioTrack) {
+                return getYouTubeEmbed(audioPlayer);
+            } else if (audioTrack instanceof SoundCloudAudioTrack) {
+                return getDefaultEmbed(audioPlayer, SOUNDCLOUD_COLOR);
+            } else if (audioTrack instanceof BandcampAudioTrack) {
+                return getDefaultEmbed(audioPlayer, BANDCAMP_COLOR);
+            } else if (audioTrack instanceof VimeoAudioTrack) {
+                return getDefaultEmbed(audioPlayer, VIMEO_COLOR);
+            } else if (audioTrack instanceof TwitchStreamAudioTrack) {
+                return getDefaultEmbed(audioPlayer, TWITCH_COLOR);
+            } else if (audioTrack instanceof HttpAudioTrack) {
+                return getDefaultEmbed(audioPlayer, BLACK);
+            } else if (audioTrack instanceof LocalAudioTrack) {
+                return getDefaultEmbed(audioPlayer, BLACK);
+            } else if (audioTrack.getSourceManager() instanceof CustomAudioSourceManager) {
+                return ((CustomAudioSourceManager) audioTrack.getSourceManager()).getNowPlayingEmbed(audioPlayer);
+            } else {
+                return getDefaultEmbed(audioPlayer, BLACK);
+            }
         }
         return null;
     }
 
-    private static MessageEmbed getYouTubeEmbed(AudioTrack audioTrack) throws IOException, NullPointerException {
+    public static MessageEmbed getYouTubeEmbed(GuildAudioPlayer audioPlayer) throws IOException {
         if (client == null)
-            return getDefaultEmbed(audioTrack, YOUTUBE);
+            return getDefaultEmbed(audioPlayer, YOUTUBE);
 
         YouTubeObjectItem youtubeVideo = client.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_VIDEO,
-                audioTrack.getIdentifier()).getItems()[0];
+                audioPlayer.getNowPlaying().getTrack().getIdentifier()).getItems()[0];
         YouTubeObjectItem youtubeChannel = client.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_CHANNEL,
                 youtubeVideo.getSnippet().getChannelID()).getItems()[0];
 
@@ -94,23 +106,34 @@ public class TrackEmbedUtil {
                 "https://www.youtube.com/channel/" + youtubeVideo.getSnippet().getChannelID(),
                 youtubeChannel.getSnippet().getThumbnails().getHigh().getURL());
         builder.setThumbnail(youtubeVideo.getSnippet().getThumbnails().getHigh().getURL());
+        MessageEmbed.Field time = new MessageEmbed.Field("Time",
+                "[" + MessageUtil.formatTime(audioPlayer.getTrackPosition()) + "/" + MessageUtil.formatTime(audioPlayer.getNowPlaying().getTrack().getDuration()) + "]", true);
+        builder.addField(time);
 
         String descMessage = youtubeVideo.getSnippet().getLocalized().getDescription();
         if (descMessage.length() > 800)
             descMessage = descMessage.substring(0, 800) + " [...]";
         MessageEmbed.Field description = new MessageEmbed.Field("Description", descMessage, false);
         builder.addField(description);
+        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getNowPlaying().getInvoker().getEffectiveName()),
+                audioPlayer.getNowPlaying().getInvoker().getUser().getAvatarUrl());
         return builder.build();
     }
 
-    private static MessageEmbed getDefaultEmbed(AudioTrack audioTrack, Color color) {
+    public static MessageEmbed getDefaultEmbed(GuildAudioPlayer audioPlayer, Color color) {
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(audioTrack.getInfo().title);
+        builder.setTitle(audioPlayer.getNowPlaying().getTrack().getInfo().title);
         builder.setColor(color);
-        builder.setAuthor(audioTrack.getInfo().author);
+        builder.setAuthor(audioPlayer.getNowPlaying().getTrack().getInfo().author);
+        MessageEmbed.Field time = new MessageEmbed.Field("Time",
+                "[" + MessageUtil.formatTime(audioPlayer.getTrackPosition()) + "/" + MessageUtil.formatTime(audioPlayer.getNowPlaying().getTrack().getDuration()) + "]",
+                true);
+        builder.addField(time);
         MessageEmbed.Field source = new MessageEmbed.Field("",
-                "Loaded from " + audioTrack.getSourceManager().getSourceName() + ".", false);
+                "Loaded from " + audioPlayer.getNowPlaying().getTrack().getSourceManager().getSourceName() + ".", false);
         builder.addField(source);
+        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getNowPlaying().getInvoker().getEffectiveName()),
+                audioPlayer.getNowPlaying().getInvoker().getUser().getAvatarUrl());
         return builder.build();
     }
 }

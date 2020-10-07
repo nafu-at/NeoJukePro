@@ -18,10 +18,7 @@ package page.nafuchoco.neojukepro.core.player;
 
 import page.nafuchoco.neojukepro.core.module.NeoModule;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CustomSourceRegistry {
@@ -33,6 +30,6 @@ public class CustomSourceRegistry {
     }
 
     public List<CustomAudioSourceManager> getSources() {
-        return audioSourceManagers.values().stream().flatMap(v -> v.stream()).distinct().collect(Collectors.toList());
+        return audioSourceManagers.values().stream().flatMap(Collection::stream).distinct().collect(Collectors.toList());
     }
 }

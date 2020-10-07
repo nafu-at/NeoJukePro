@@ -120,7 +120,7 @@ public class Launcher implements NeoJukeLauncher {
         shardManagerBuilder.addEventListeners(new GuildVoiceJoinEventHandler());
         shardManagerBuilder.addEventListeners(new GuildVoiceLeaveEventHandler());
 
-        moduleManager = new ModuleManager("modules");
+        moduleManager = new ModuleManager(this, "modules");
         moduleManager.loadAllModules();
 
         try {
