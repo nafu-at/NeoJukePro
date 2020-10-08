@@ -65,7 +65,7 @@ public class ListCommand extends CommandExecutor {
 
             long totalTime = 0;
             for (GuildTrackContext track : tracks)
-                totalTime += track.getTrack().getDuration();
+                totalTime += track.getTrack().getDuration() - track.getStartPosition();
 
             if (audioPlayer.getNowPlaying() != null)
                 sb.append(MessageManager.getMessage("command.list.playing") + audioPlayer.getNowPlaying().getTrack().getInfo().title + "\n");
@@ -75,7 +75,7 @@ public class ListCommand extends CommandExecutor {
                 if (tracks.size() >= count && sb.length() < 1800) {
                     GuildTrackContext track = tracks.get(count - 1);
                     sb.append("\n`[" + count + "]` **" + track.getTrack().getInfo().title
-                            + " (" + track.getInvoker().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration()) + "]`");
+                            + " (" + track.getInvoker().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration() - track.getStartPosition()) + "]`");
                 }
             }
             context.getChannel().sendMessage(sb.toString()).queue();
