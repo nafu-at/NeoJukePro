@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 group 'page.nafuchoco'
@@ -79,34 +79,34 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'ch.qos.logback:logback-core:1.2.3'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
-    implementation 'io.sentry:sentry-logback:1.7.29'
-    compileOnly 'org.projectlombok:lombok:1.18.10'
-    annotationProcessor 'org.projectlombok:lombok:1.18.10'
-    testCompileOnly 'org.projectlombok:lombok:1.18.10'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.10'
+    implementation 'io.sentry:sentry-logback:3.0.0'
+    compileOnly 'org.projectlombok:lombok:1.18.14'
+    annotationProcessor 'org.projectlombok:lombok:1.18.14'
+    testCompileOnly 'org.projectlombok:lombok:1.18.14'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.14'
 
     // ClientLib
     implementation 'com.squareup.okhttp3:okhttp:4.8.1'
-    api('net.dv8tion:JDA:4.2.0_178') {
+    api('net.dv8tion:JDA:4.2.0_208') {
         exclude module: 'opus-java'
     }
     api 'com.github.devoxin:lavaplayer:1.3.54.3'
-    api 'com.github.FredBoat:Lavalink-Client:41e1025'
+    api 'com.github.FredBoat:Lavalink-Client:6ccbeb1'
 
     // Parser
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.2'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.3'
 
     // Commons Library
-    implementation 'commons-io:commons-io:2.6'
-    implementation 'commons-codec:commons-codec:1.14'
-    implementation 'org.apache.commons:commons-lang3:3.9'
+    implementation 'commons-io:commons-io:2.8.0'
+    implementation 'commons-codec:commons-codec:1.15'
+    implementation 'org.apache.commons:commons-lang3:3.11'
 
     // SQL
     implementation 'com.zaxxer:HikariCP:3.4.5'
     implementation 'mysql:mysql-connector-java:8.0.21'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.6.2'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.0'
 
     // Other
     implementation 'de.vandermeer:asciitable:0.3.2'

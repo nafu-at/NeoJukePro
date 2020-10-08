@@ -18,6 +18,7 @@ package page.nafuchoco.neojukepro.core;
 
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import io.sentry.Sentry;
+import io.sentry.SentryOptions;
 import lavalink.client.io.jda.JdaLavalink;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
@@ -81,8 +82,11 @@ public class Launcher implements NeoJukeLauncher {
             return;
         }
 
-        if (!StringUtils.isEmpty(config.getAdvancedConfig().getSentryDsn()))
-            Sentry.init(config.getAdvancedConfig().getSentryDsn());
+        if (!StringUtils.isEmpty(config.getAdvancedConfig().getSentryDsn())) {
+            SentryOptions options = new SentryOptions();
+            options.setDsn(config.getAdvancedConfig().getSentryDsn());
+            Sentry.init(options);
+        }
 
         MessageManager.setDefaultLocale(config.getBasicConfig().getLanguage());
 
