@@ -68,7 +68,7 @@ public class ListCommand extends CommandExecutor {
                 totalTime += track.getTrack().getDuration() - track.getStartPosition();
 
             if (audioPlayer.getNowPlaying() != null)
-                sb.append(MessageManager.getMessage("command.list.playing") + audioPlayer.getNowPlaying().getTrack().getInfo().title + "\n");
+                sb.append(MessageUtil.format(MessageManager.getMessage("command.list.playing"), audioPlayer.getNowPlaying().getTrack().getInfo().title) + "\n");
             sb.append(MessageUtil.format(MessageManager.getMessage("command.list.list"),
                     tracks.size(), page, listPage, MessageUtil.formatTime(totalTime)));
             for (int count = range * page - range + 1; count <= range * page; count++) {
@@ -79,6 +79,8 @@ public class ListCommand extends CommandExecutor {
                 }
             }
             context.getChannel().sendMessage(sb.toString()).queue();
+        } else if (audioPlayer.getNowPlaying() != null) {
+            context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.list.playing"), audioPlayer.getNowPlaying().getTrack().getInfo().title)).queue();
         } else {
             context.getChannel().sendMessage(MessageManager.getMessage("command.list.nothing")).queue();
         }
