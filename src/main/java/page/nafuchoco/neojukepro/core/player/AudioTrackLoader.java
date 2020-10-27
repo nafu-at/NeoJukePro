@@ -27,16 +27,21 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
+import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
+import page.nafuchoco.neojukepro.core.command.URLUtils;
 import page.nafuchoco.neojukepro.core.config.MusicSourceSection;
 
+import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
 
+@Slf4j
 public class AudioTrackLoader implements AudioLoadResultHandler {
     private static final MusicSourceSection musicSource = Main.getLauncher().getConfig().getBasicConfig().getMusicSource();
 
@@ -71,7 +76,15 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
         if (!checkAudioSource(track))
             return;
 
-        audioPlayer.play(new GuildTrackContext(invoker.getGuild(), invoker, track), desiredNumber);
+        int position = 0;
+        try {
+            log.debug(URLUtils.parseUrl(loadTrackUrl).toString());
+            String time = URLUtils.parseUrl(loadTrackUrl).getQuery().get("t");
+            position = time != null ? NumberUtils.toInt(time.replace("s", "")) : 0;
+        } catch (MalformedURLException e) {
+            // nothing.
+        }
+        audioPlayer.play(new GuildTrackContext(invoker.getGuild(), invoker, position * 1000, track), desiredNumber);
         if (audioPlayer.getTrackProvider().getQueues().isEmpty())
             MessageUtil.sendMessage(audioPlayer.getGuild(),
                     MessageUtil.format(MessageManager.getMessage("player.playing"), track.getInfo().title));
@@ -86,10 +99,18 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
         AudioTrack firstTrack = playlist.getSelectedTrack();
         playlist.getTracks().forEach(track -> {
             if (!track.equals(firstTrack))
-                contextList.add(new GuildTrackContext(invoker.getGuild(), invoker, track));
+                contextList.add(new GuildTrackContext(invoker.getGuild(), invoker, 0, track));
         });
-        if (firstTrack != null)
-            contextList.add(0, new GuildTrackContext(invoker.getGuild(), invoker, firstTrack));
+        if (firstTrack != null) {
+            int position = 0;
+            try {
+                String time = URLUtils.parseUrl(loadTrackUrl).getQuery().get("t");
+                position = time != null ? NumberUtils.toInt(time.replace("s", "")) : 0;
+            } catch (MalformedURLException e) {
+                // nothing.
+            }
+            contextList.add(0, new GuildTrackContext(invoker.getGuild(), invoker, position * 1000, firstTrack));
+        }
         audioPlayer.play(contextList, desiredNumber);
         MessageUtil.sendMessage(audioPlayer.getGuild(),
                 MessageUtil.format(MessageManager.getMessage("player.playlist.add"), playlist.getTracks().size(), playlist.getName()));

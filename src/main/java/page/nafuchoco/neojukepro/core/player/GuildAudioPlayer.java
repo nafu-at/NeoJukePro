@@ -104,11 +104,14 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
     public void play() {
         if (nowPlaying == null) {
             nowPlaying = trackProvider.provideTrack();
-            if (nowPlaying != null)
+            if (nowPlaying != null) {
                 player.playTrack(nowPlaying.getTrack());
+                player.seekTo(nowPlaying.getStartPosition());
+            }
         } else if (player.isPaused() && nowPlaying != null && player.getPlayingTrack() == null) {
             nowPlaying = nowPlaying.makeClone();
             player.playTrack(nowPlaying.getTrack());
+            player.seekTo(nowPlaying.getStartPosition());
         }
         if (player.isPaused())
             player.setPaused(false);
@@ -117,6 +120,7 @@ public class GuildAudioPlayer extends PlayerEventListenerAdapter {
     public void play(GuildTrackContext context, int desiredNumber) {
         if (nowPlaying == null) {
             player.playTrack(context.getTrack());
+            player.seekTo(context.getStartPosition());
             nowPlaying = context;
         } else {
             trackProvider.queue(context, desiredNumber);

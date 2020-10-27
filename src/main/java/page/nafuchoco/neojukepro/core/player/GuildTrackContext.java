@@ -23,11 +23,13 @@ import net.dv8tion.jda.api.entities.Member;
 public class GuildTrackContext {
     private final Guild guild;
     private final Member invoker;
+    private final int startPosition;
     private final AudioTrack track;
 
-    public GuildTrackContext(Guild guild, Member invoker, AudioTrack track) {
+    public GuildTrackContext(Guild guild, Member invoker, int startPosition, AudioTrack track) {
         this.guild = guild;
         this.invoker = invoker;
+        this.startPosition = startPosition;
         this.track = track;
     }
 
@@ -39,12 +41,16 @@ public class GuildTrackContext {
         return invoker;
     }
 
+    public int getStartPosition() {
+        return startPosition;
+    }
+
     public AudioTrack getTrack() {
         return track;
     }
 
     public GuildTrackContext makeClone() {
-        return new GuildTrackContext(guild, invoker, track.makeClone());
+        return new GuildTrackContext(guild, invoker, startPosition, track.makeClone());
     }
 
     @Override

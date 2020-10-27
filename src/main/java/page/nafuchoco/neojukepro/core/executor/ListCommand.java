@@ -65,20 +65,22 @@ public class ListCommand extends CommandExecutor {
 
             long totalTime = 0;
             for (GuildTrackContext track : tracks)
-                totalTime += track.getTrack().getDuration();
+                totalTime += track.getTrack().getDuration() - track.getStartPosition();
 
             if (audioPlayer.getNowPlaying() != null)
-                sb.append(MessageManager.getMessage("command.list.playing") + audioPlayer.getNowPlaying().getTrack().getInfo().title + "\n");
+                sb.append(MessageUtil.format(MessageManager.getMessage("command.list.playing"), audioPlayer.getNowPlaying().getTrack().getInfo().title) + "\n");
             sb.append(MessageUtil.format(MessageManager.getMessage("command.list.list"),
                     tracks.size(), page, listPage, MessageUtil.formatTime(totalTime)));
             for (int count = range * page - range + 1; count <= range * page; count++) {
                 if (tracks.size() >= count && sb.length() < 1800) {
                     GuildTrackContext track = tracks.get(count - 1);
                     sb.append("\n`[" + count + "]` **" + track.getTrack().getInfo().title
-                            + " (" + track.getInvoker().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration()) + "]`");
+                            + " (" + track.getInvoker().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration() - track.getStartPosition()) + "]`");
                 }
             }
             context.getChannel().sendMessage(sb.toString()).queue();
+        } else if (audioPlayer.getNowPlaying() != null) {
+            context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.list.playing"), audioPlayer.getNowPlaying().getTrack().getInfo().title)).queue();
         } else {
             context.getChannel().sendMessage(MessageManager.getMessage("command.list.nothing")).queue();
         }
