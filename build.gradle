@@ -87,11 +87,11 @@ dependencies {
 
     // ClientLib
     implementation 'com.squareup.okhttp3:okhttp:4.8.1'
-    api('net.dv8tion:JDA:4.2.0_208') {
+    api('net.dv8tion:JDA:4.2.0_212') {
         exclude module: 'opus-java'
     }
-    api 'com.github.devoxin:lavaplayer:1.3.59'
-    api 'com.github.FredBoat:Lavalink-Client:6ccbeb1'
+    api 'com.sedmelluq:lavaplayer:1.3.53'
+    api 'com.github.FredBoat:Lavalink-Client:92a858d'
 
     // Parser
     implementation 'com.fasterxml.jackson.core:jackson-core:2.11.3'

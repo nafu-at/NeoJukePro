@@ -41,6 +41,10 @@ public class Main {
                     debugMode = true;
                     break;
 
+                case "nodb":
+                    BootOptions.setNoDb(true);
+                    break;
+
                 default:
                     if (prop.startsWith("lang=")) {
                         String[] s = prop.split("=");
