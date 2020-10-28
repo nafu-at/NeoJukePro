@@ -13,6 +13,7 @@ NeoJukeProはSimpleJukeの正統な後継として開発された新しいDiscor
 - [x] Java11以降の実行環境
 - [x] MariaDB 5.5以降 若しくは MySQL 5.5以降
 - [x] Discordアカウント
+    + [x] Presence Intent と Server Members Intentを有効にする必要があります。
 
 ### プログラムの不具合を発見した場合
 当リポジトリにIssueを立てて報告してください。  

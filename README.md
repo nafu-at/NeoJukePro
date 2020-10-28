@@ -13,6 +13,7 @@ We rebuilt it from scratch to make it simpler, clearer, more functional, and mor
 - [x] Java11 or later execution environment.
 - [x] MariaDB 5.5 or later or MySQL 5.5 or later.
 - [x] Discord account.
+    + [x] Presence Intent and Server Members Intent must be enabled.
 
 ### If you find a problem with the program
 Please submit an Issue to our repository and report it.  
