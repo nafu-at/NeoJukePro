@@ -54,10 +54,10 @@ public class SystemCommand extends CommandExecutor {
         builder.append("  -> Free:             " + free + "MB\n");
         builder.append("Max. reserved memory:  " + max + "MB\n\n");
         builder.append("====== Statistic Info ======\n");
-        builder.append("Server Count:         " + shardManager.getGuilds().size() + "\n");
-        builder.append("User Count:           " + shardManager.getUsers().size() + "\n");
-        builder.append("Text Channels:        " + shardManager.getTextChannels().size() + "\n");
-        builder.append("Voice Channels:       " + shardManager.getVoiceChannels().size() + "\n");
+        builder.append("Server Count:         " + shardManager.getGuildCache().size() + "\n");
+        builder.append("User Count:           " + shardManager.getUserCache().size() + "\n");
+        builder.append("Text Channels:        " + shardManager.getTextChannelCache().size() + "\n");
+        builder.append("Voice Channels:       " + shardManager.getVoiceChannelCache().size() + "\n");
         builder.append("Active Players:       " + launcher.getPlayerRegistry().getPlayers().size() + "\n\n");
         builder.append("```");
         context.getChannel().sendMessage(builder.toString()).queue();

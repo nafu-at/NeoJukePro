@@ -26,7 +26,7 @@ import okhttp3.Response;
 import java.io.IOException;
 
 public class DiscordAPIClient {
-    private static final String APP_URL = "https://discord.com/api/v6/oauth2/applications/@me";
+    private static final String APP_URL = "https://discord.com/api/v8/oauth2/applications/@me";
 
     private final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 

@@ -22,6 +22,7 @@ import io.sentry.SentryOptions;
 import lavalink.client.io.jda.JdaLavalink;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +52,7 @@ import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.EnumSet;
 
 @Slf4j
 public class Launcher implements NeoJukeLauncher {
@@ -118,7 +120,7 @@ public class Launcher implements NeoJukeLauncher {
         customSourceRegistry = new CustomSourceRegistry();
         commandRegistry = new CommandRegistry();
         DefaultShardManagerBuilder shardManagerBuilder =
-                DefaultShardManagerBuilder.createDefault(config.getBasicConfig().getDiscordToken());
+                DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), EnumSet.allOf(GatewayIntent.class));
         shardManagerBuilder.addEventListeners(new MessageReceivedEventHandler(
                 new CommandExecuteAuth(config.getBasicConfig().getBotAdmins(), appInfo, usersPermTable), commandRegistry));
         shardManagerBuilder.addEventListeners(new GuildVoiceJoinEventHandler());
