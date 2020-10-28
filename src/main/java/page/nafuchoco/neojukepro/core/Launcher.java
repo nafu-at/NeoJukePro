@@ -34,6 +34,8 @@ import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
 import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
+import page.nafuchoco.neojukepro.core.database.instead.GuildSettingsTableInstead;
+import page.nafuchoco.neojukepro.core.database.instead.GuildUsersPermTableInstead;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceJoinEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceLeaveEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.MessageReceivedEventHandler;
@@ -90,22 +92,28 @@ public class Launcher implements NeoJukeLauncher {
 
         MessageManager.setDefaultLocale(config.getBasicConfig().getLanguage());
 
-        log.info(MessageManager.getMessage("system.db.connection"));
-        DatabaseSection database = config.getBasicConfig().getDatabase();
-        connector = new DatabaseConnector(
-                database.getDatabaseType().getAddressPrefix() + database.getAddress(), database.getDatabase(),
-                database.getUsername(), database.getPassword());
-        settingsTable = new GuildSettingsTable(connector);
-        usersPermTable = new GuildUsersPermTable(connector);
+        if (!BootOptions.isNoDb()) {
+            log.info(MessageManager.getMessage("system.db.connection"));
+            DatabaseSection database = config.getBasicConfig().getDatabase();
+            connector = new DatabaseConnector(
+                    database.getDatabaseType().getAddressPrefix() + database.getAddress(), database.getDatabase(),
+                    database.getUsername(), database.getPassword());
+            settingsTable = new GuildSettingsTable(connector);
+            usersPermTable = new GuildUsersPermTable(connector);
 
-        try {
-            settingsTable.createTable();
-            usersPermTable.createTable();
-            CommandCache.registerCache(null, "settingsTable", settingsTable);
-        } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.initialize.error"));
-            return;
+            try {
+                settingsTable.createTable();
+                usersPermTable.createTable();
+            } catch (SQLException e) {
+                log.error(MessageManager.getMessage("system.db.initialize.error"));
+                return;
+            }
+        } else {
+            log.warn(MessageManager.getMessage("system.db.nodbmode"));
+            settingsTable = new GuildSettingsTableInstead();
+            usersPermTable = new GuildUsersPermTableInstead();
         }
+        CommandCache.registerCache(null, "settingsTable", settingsTable);
 
         DiscordAppInfo appInfo;
         try {
@@ -169,7 +177,8 @@ public class Launcher implements NeoJukeLauncher {
                 lavalink.shutdown();
             }
             shardManager.shutdown();
-            connector.close();
+            if (connector != null)
+                connector.close();
             log.info("See you again!");
         }));
     }
