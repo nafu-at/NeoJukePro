@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'java-library'
-    id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
@@ -38,36 +37,6 @@ javadoc {
     options.encoding = 'UTF-8'
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/nafu-at/NeoJukePro")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            from components.java
-
-            pom {
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-            }
-
-            artifact sourcesJar
-            artifact javadocJar
-        }
-    }
-}
-
 repositories {
     mavenCentral()
     jcenter()
@@ -90,7 +59,7 @@ dependencies {
     api('net.dv8tion:JDA:4.2.0_212') {
         exclude module: 'opus-java'
     }
-    api 'com.sedmelluq:lavaplayer:1.3.53'
+    api 'com.sedmelluq:lavaplayer:1.3.59'
     api 'com.github.FredBoat:Lavalink-Client:92a858d'
 
     // Parser

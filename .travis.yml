@@ -18,10 +18,6 @@ jobs:
       before_deploy:
         - ./gradlew shadowJar
       deploy:
-        - provider: script
-          script: ./gradlew publish
-          on:
-            tags: true
         - provider: releases
           edge: true
           file_glob: true
