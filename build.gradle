@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'java-library'
-    id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
@@ -36,36 +35,6 @@ task javadocJar(type: Jar, dependsOn: 'javadoc') {
 javadoc {
     options.charSet = 'UTF-8'
     options.encoding = 'UTF-8'
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/nafu-at/NeoJukePro")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            from components.java
-
-            pom {
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-            }
-
-            artifact sourcesJar
-            artifact javadocJar
-        }
-    }
 }
 
 repositories {
