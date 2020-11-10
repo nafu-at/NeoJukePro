@@ -12,7 +12,7 @@ jobs:
       jdk: openjdk11
       script: skip
       before_deploy:
-        - ./gradlew shadowJar
+        - ./gradlew beforeDeploy
       deploy:
         - provider: releases
           edge: true
