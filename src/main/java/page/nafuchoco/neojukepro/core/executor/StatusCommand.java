@@ -34,7 +34,7 @@ public class StatusCommand extends CommandExecutor {
         NeoGuildPlayerOptions playerOptions = context.getNeoGuild().getSettings().getPlayerOptions();
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         StringBuilder builder = new StringBuilder(MessageUtil.format(MessageManager.getMessage("command.status")) + "\n```");
-        builder.append("Playing Track: " + audioPlayer.getPlayingTrack() + "\n");
+        builder.append("Playing Track: " + audioPlayer.getPlayingTrack().getTrack().getInfo().title + "\n");
         builder.append("Registered Queues: " + audioPlayer.getTrackProvider().getQueues().size() + "\n");
         builder.append("Pause: " + audioPlayer.isPaused() + "\n");
         builder.append("Volume: " + audioPlayer.getVolume() + "\n");

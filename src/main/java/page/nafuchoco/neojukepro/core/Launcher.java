@@ -38,6 +38,7 @@ import page.nafuchoco.neojukepro.core.database.dummy.DummyNeoGuildSettingsTable;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceLeaveEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.MessageReceivedEventHandler;
 import page.nafuchoco.neojukepro.core.executor.*;
+import page.nafuchoco.neojukepro.core.executor.system.DeleteCommand;
 import page.nafuchoco.neojukepro.core.executor.system.ShutdownCommand;
 import page.nafuchoco.neojukepro.core.executor.system.SystemCommand;
 import page.nafuchoco.neojukepro.core.executor.system.UpdateCommand;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executor.system;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
@@ -29,15 +29,18 @@ public class DeleteCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         TextChannel channel = context.getChannel();
-        channel.getHistory().retrievePast(100).queue(messages -> messages.forEach(message -> {
-            if (message.getAuthor().equals(context.getMessage().getJDA().getSelfUser()))
+        channel.getHistory().retrievePast(50).queue(messages -> messages.forEach(message -> {
+            if (message.getAuthor().equals(context.getMessage().getJDA().getSelfUser())) {
                 message.delete().submit();
+            } else if (message.getContentRaw().startsWith(context.getNeoGuild().getSettings().getCommandPrefix())) {
+                message.delete().submit();
+            }
         }));
     }
 
     @Override
     public String getDescription() {
-        return "Delete the last 100 messages posted by the Bot.";
+        return "Delete the last 50 messages posted by a bot command or bot.";
     }
 
     @Override

@@ -17,9 +17,11 @@
 package page.nafuchoco.neojukepro.core.player;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode(callSuper = false)
 public class LoadedTrackContext extends TrackContext {
     private final TrackContext trackContext;
     private final long startPosition;
