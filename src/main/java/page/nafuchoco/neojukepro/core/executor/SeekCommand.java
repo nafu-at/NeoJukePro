@@ -16,15 +16,11 @@
 
 package page.nafuchoco.neojukepro.core.executor;
 
-import page.nafuchoco.neojukepro.core.Main;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
 
 public class SeekCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public SeekCommand(String name, String... aliases) {
         super(name, aliases);
@@ -33,9 +29,8 @@ public class SeekCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         if (context.getArgs().length != 0) {
-            GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
-            if (audioPlayer.getNowPlaying() != null)
-                audioPlayer.seekTo(MessageUtil.parseTimeToMillis(context.getArgs()[0]));
+            if (context.getNeoGuild().getAudioPlayer().getPlayingTrack() != null)
+                context.getNeoGuild().getAudioPlayer().seekTo(MessageUtil.parseTimeToMillis(context.getArgs()[0]));
         }
     }
 

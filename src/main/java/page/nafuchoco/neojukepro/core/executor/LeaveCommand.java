@@ -16,14 +16,11 @@
 
 package page.nafuchoco.neojukepro.core.executor;
 
-import page.nafuchoco.neojukepro.core.Main;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 public class LeaveCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public LeaveCommand(String name, String... aliases) {
         super(name, aliases);
@@ -31,7 +28,7 @@ public class LeaveCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         audioPlayer.setPaused(true);
         audioPlayer.leaveChannel();
     }

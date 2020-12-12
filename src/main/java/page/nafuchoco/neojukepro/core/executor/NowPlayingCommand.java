@@ -20,25 +20,27 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
-import page.nafuchoco.neojukepro.core.command.*;
+import page.nafuchoco.neojukepro.core.command.CommandContext;
+import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
-import page.nafuchoco.neojukepro.core.player.GuildTrackContext;
+import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.core.player.TrackEmbedUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 public class NowPlayingCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final YouTubeAPIClient client;
 
     static {
         YouTubeAPIClient apiClient;
         try {
-            apiClient = new YouTubeAPIClient(launcher.getConfig().getAdvancedConfig().getGoogleAPIToken());
+            apiClient = new YouTubeAPIClient(Main.getLauncher().getConfig().getAdvancedConfig().getGoogleAPIToken());
         } catch (IllegalArgumentException e) {
             apiClient = null;
         }
@@ -51,16 +53,16 @@ public class NowPlayingCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
-        if (audioPlayer.getNowPlaying() != null) {
-            GuildTrackContext trackContext = audioPlayer.getNowPlaying();
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        if (audioPlayer.getPlayingTrack() != null) {
+            LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
             if (trackContext != null) {
                 AudioTrack audioTrack = trackContext.getTrack();
                 if (context.getArgs().length == 0) {
                     try {
                         context.getChannel().sendMessage(TrackEmbedUtil.getTrackEmbed(audioPlayer)).queue();
                     } catch (IOException e) {
-                        ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
+                        ExceptionUtil.sendStackTrace(context.getNeoGuild().getJDAGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
                     }
                 } else switch (context.getArgs()[0]) {
                     case "thumbnail":
@@ -73,7 +75,7 @@ public class NowPlayingCommand extends CommandExecutor {
                                     context.getChannel().sendFile(thumbnail, "thumbnail.jpg").queue();
                                 }
                             } catch (IOException e) {
-                                ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
+                                ExceptionUtil.sendStackTrace(context.getNeoGuild().getJDAGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
                             }
                         } else {
                             context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.nosupport")).queue();
@@ -84,7 +86,7 @@ public class NowPlayingCommand extends CommandExecutor {
                     case "t":
                         context.getChannel().sendMessage(
                                 MessageUtil.format(MessageManager.getMessage("command.list.playing"),
-                                        audioPlayer.getNowPlaying().getTrack().getInfo().title) + "\n" +
+                                        audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n" +
                                         MessageUtil.format(MessageManager.getMessage("command.nowplay.currenttime"),
                                                 MessageUtil.formatTime(audioPlayer.getTrackPosition()),
                                                 MessageUtil.formatTime(audioTrack.getDuration() - audioPlayer.getTrackPosition()))).queue();

@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.playlist;
+package page.nafuchoco.neojukepro.core.player;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import net.dv8tion.jda.api.entities.Member;
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
-public class PlaylistItem {
-    @JsonProperty("name")
-    private final String name;
-    @JsonProperty("url")
-    private final String url;
-
-    public PlaylistItem(String name, String url) {
-        this.name = name;
-        this.url = url;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUrl() {
-        return url;
-    }
+@AllArgsConstructor
+@Getter
+@EqualsAndHashCode
+public class TrackContext {
+    private final NeoGuild neoGuild;
+    private final Member invoker;
+    private final int interruptNumber;
+    private final String trackUrl;
 }

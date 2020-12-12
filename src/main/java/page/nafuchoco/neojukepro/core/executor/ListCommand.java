@@ -16,19 +16,16 @@
 
 package page.nafuchoco.neojukepro.core.executor;
 
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
-import page.nafuchoco.neojukepro.core.player.GuildTrackContext;
+import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 import java.util.List;
 
 public class ListCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public ListCommand(String name, String... aliases) {
         super(name, aliases);
@@ -36,8 +33,8 @@ public class ListCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
-        List<GuildTrackContext> tracks = audioPlayer.getTrackProvider().getQueues();
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        List<LoadedTrackContext> tracks = audioPlayer.getTrackProvider().getQueues();
         if (!tracks.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             int range = 15;
@@ -64,23 +61,27 @@ public class ListCommand extends CommandExecutor {
             }
 
             long totalTime = 0;
-            for (GuildTrackContext track : tracks)
+            for (LoadedTrackContext track : tracks)
                 totalTime += track.getTrack().getDuration() - track.getStartPosition();
 
-            if (audioPlayer.getNowPlaying() != null)
-                sb.append(MessageUtil.format(MessageManager.getMessage("command.list.playing"), audioPlayer.getNowPlaying().getTrack().getInfo().title) + "\n");
+            if (audioPlayer.getPlayingTrack() != null)
+                sb.append(MessageUtil.format(
+                        MessageManager.getMessage("command.list.playing"),
+                        audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n");
             sb.append(MessageUtil.format(MessageManager.getMessage("command.list.list"),
                     tracks.size(), page, listPage, MessageUtil.formatTime(totalTime)));
             for (int count = range * page - range + 1; count <= range * page; count++) {
                 if (tracks.size() >= count && sb.length() < 1800) {
-                    GuildTrackContext track = tracks.get(count - 1);
+                    LoadedTrackContext track = tracks.get(count - 1);
                     sb.append("\n`[" + count + "]` **" + track.getTrack().getInfo().title
                             + " (" + track.getInvoker().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration() - track.getStartPosition()) + "]`");
                 }
             }
             context.getChannel().sendMessage(sb.toString()).queue();
-        } else if (audioPlayer.getNowPlaying() != null) {
-            context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.list.playing"), audioPlayer.getNowPlaying().getTrack().getInfo().title)).queue();
+        } else if (audioPlayer.getPlayingTrack() != null) {
+            context.getChannel().sendMessage(
+                    MessageUtil.format(MessageManager.getMessage("command.list.playing"),
+                            audioPlayer.getPlayingTrack().getTrack().getInfo().title)).queue();
         } else {
             context.getChannel().sendMessage(MessageManager.getMessage("command.list.nothing")).queue();
         }

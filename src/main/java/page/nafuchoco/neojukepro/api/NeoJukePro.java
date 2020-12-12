@@ -21,15 +21,20 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
+import page.nafuchoco.neojukepro.core.guild.NeoGuildRegistry;
 import page.nafuchoco.neojukepro.core.module.ModuleManager;
 import page.nafuchoco.neojukepro.core.player.CustomSourceRegistry;
-import page.nafuchoco.neojukepro.core.player.GuildPlayerRegistry;
 
 public interface NeoJukePro {
 
     NeoJukeConfig getConfig();
 
     DatabaseConnector getConnector();
+
+    /**
+     * @since v2.0
+     */
+    NeoGuildRegistry getGuildRegistry();
 
     CustomSourceRegistry getCustomSourceRegistry();
 
@@ -40,6 +45,4 @@ public interface NeoJukePro {
     ShardManager getShardManager();
 
     JdaLavalink getLavaLink();
-
-    GuildPlayerRegistry getPlayerRegistry();
 }

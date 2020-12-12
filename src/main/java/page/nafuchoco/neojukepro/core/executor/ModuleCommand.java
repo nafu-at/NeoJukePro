@@ -21,9 +21,8 @@ import de.vandermeer.asciithemes.TA_GridThemes;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.module.ModuleDescription;
@@ -35,7 +34,6 @@ import java.util.regex.Pattern;
 
 @Slf4j
 public class ModuleCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final Pattern NOMBER_REGEX = Pattern.compile("^\\d+$");
 
     public ModuleCommand(String name, String... aliases) {
@@ -44,11 +42,12 @@ public class ModuleCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
+        NeoJukePro neoJukePro = context.getNeoJukePro();
         if (context.getArgs().length == 0) {
-            context.getChannel().sendMessage(renderModuleList(1)).queue();
+            context.getChannel().sendMessage(renderModuleList(neoJukePro.getModuleManager().getModules(), 1)).queue();
         } else switch (context.getArgs()[0].toLowerCase()) {
             case "load":
-                if (launcher.getModuleManager().loadModule(new File(context.getArgs()[1])))
+                if (neoJukePro.getModuleManager().loadModule(new File(context.getArgs()[1])))
                     context.getChannel().sendMessage(MessageManager.getMessage("command.module.load.success")).queue();
                 else
                     context.getChannel().sendMessage(MessageManager.getMessage("command.module.load.failed")).queue();
@@ -57,12 +56,12 @@ public class ModuleCommand extends CommandExecutor {
             case "unload":
                 switch (context.getArgs()[1].toLowerCase()) {
                     case "all":
-                        launcher.getModuleManager().unloadAllModules();
+                        neoJukePro.getModuleManager().unloadAllModules();
                         break;
 
                     default:
                         try {
-                            launcher.getModuleManager().unloadModule(context.getArgs()[1]);
+                            neoJukePro.getModuleManager().unloadModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
                             context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
                         }
@@ -73,12 +72,12 @@ public class ModuleCommand extends CommandExecutor {
             case "enable":
                 switch (context.getArgs()[1].toLowerCase()) {
                     case "all":
-                        launcher.getModuleManager().enableAllModules();
+                        neoJukePro.getModuleManager().enableAllModules();
                         break;
 
                     default:
                         try {
-                            launcher.getModuleManager().enableModule(context.getArgs()[1]);
+                            neoJukePro.getModuleManager().enableModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
                             context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
                         }
@@ -89,12 +88,12 @@ public class ModuleCommand extends CommandExecutor {
             case "disable":
                 switch (context.getArgs()[1].toLowerCase()) {
                     case "all":
-                        launcher.getModuleManager().disableAllModules();
+                        neoJukePro.getModuleManager().disableAllModules();
                         break;
 
                     default:
                         try {
-                            launcher.getModuleManager().disableModule(context.getArgs()[1]);
+                            neoJukePro.getModuleManager().disableModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
                             context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
                         }
@@ -104,9 +103,10 @@ public class ModuleCommand extends CommandExecutor {
 
             default:
                 if (NOMBER_REGEX.matcher(context.getArgs()[0]).find()) {
-                    context.getChannel().sendMessage(renderModuleList(Integer.parseInt(context.getArgs()[0]))).queue();
+                    context.getChannel().sendMessage(
+                            renderModuleList(neoJukePro.getModuleManager().getModules(), Integer.parseInt(context.getArgs()[0]))).queue();
                 } else {
-                    NeoModule module = launcher.getModuleManager().getModule(context.getArgs()[0]);
+                    NeoModule module = neoJukePro.getModuleManager().getModule(context.getArgs()[0]);
                     if (module == null) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
                     } else {
@@ -130,7 +130,7 @@ public class ModuleCommand extends CommandExecutor {
         }
     }
 
-    public String renderModuleList(int page) {
+    public String renderModuleList(List<NeoModule> modules, int page) {
         int range = 10;
         try {
             if (page < 1)
@@ -138,8 +138,6 @@ public class ModuleCommand extends CommandExecutor {
         } catch (NumberFormatException e) {
             return MessageManager.getMessage("command.page.specify");
         }
-
-        List<NeoModule> modules = launcher.getModuleManager().getModules();
 
         int listPage = modules.size() / range;
         if (modules.size() % range >= 1)

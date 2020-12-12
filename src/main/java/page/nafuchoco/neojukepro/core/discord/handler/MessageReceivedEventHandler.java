@@ -16,30 +16,23 @@
 
 package page.nafuchoco.neojukepro.core.discord.handler;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.*;
-import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 
 @Slf4j
+@AllArgsConstructor
 public final class MessageReceivedEventHandler extends ListenerAdapter {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
+    private final NeoJukePro neoJukePro;
     private final CommandExecuteAuth authManager;
-    private CommandRegistry registry;
-
-    public MessageReceivedEventHandler(CommandExecuteAuth authManager, CommandRegistry registry) {
-        this.authManager = authManager;
-        this.registry = registry;
-    }
+    private final CommandRegistry registry;
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -52,16 +45,9 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 !event.getTextChannel().canTalk())
             return;
 
-        String prefix = null;
-        boolean robot = false;
-        GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
-        try {
-            prefix = settingsTable.getGuildSetting(event.getGuild().getIdLong(), "prefix");
-            robot = BooleanUtils.toBoolean(settingsTable.getGuildSetting(event.getGuild().getIdLong(), "robot"));
-        } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
-        }
-        prefix = StringUtils.defaultString(prefix, launcher.getConfig().getBasicConfig().getPrefix());
+        NeoGuild neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
+        String prefix = neoGuild.getSettings().getCommandPrefix();
+        boolean robot = neoGuild.getSettings().isRobotMode();
 
         String raw = event.getMessage().getContentRaw();
         String input;
@@ -82,7 +68,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
 
         String[] commands = input.split("; ");
         for (String commandString : commands) {
-            CommandContext context = parseCommand(commandString, event);
+            CommandContext context = parseCommand(neoGuild, commandString, event);
             if (context == null) {
                 event.getChannel().sendMessage(MessageUtil.format(
                         MessageManager.getMessage("command.nocommand"), commandString, prefix)).queue();
@@ -103,10 +89,10 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 }
             }
         }
-        MessageUtil.cacheChannel(event.getGuild(), event.getChannel());
+        neoGuild.setLastJoinedChannel(event.getTextChannel());
     }
 
-    private CommandContext parseCommand(String commandString, MessageReceivedEvent event) {
+    private CommandContext parseCommand(NeoGuild neoGuild, String commandString, MessageReceivedEvent event) {
         // コマンドオプションを分割
         String[] args = commandString.split("\\p{javaSpaceChar}+");
         if (args.length == 0)
@@ -119,22 +105,14 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
             return null;
         else
             return new CommandContext(
-                    event.getGuild(),
+                    neoJukePro,
+                    neoGuild,
                     event.getTextChannel(),
                     event.getMember(),
                     event.getMessage(),
                     commandTrigger,
                     Arrays.copyOfRange(args, 1, args.length),
                     command);
-    }
-
-    /**
-     * Register a command registry in the handler.
-     *
-     * @param registry The command registry to register.
-     */
-    public void setRegistry(CommandRegistry registry) {
-        this.registry = registry;
     }
 
     /**

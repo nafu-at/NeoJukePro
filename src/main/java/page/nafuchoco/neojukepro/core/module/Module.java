@@ -27,101 +27,102 @@ import java.util.List;
 public interface Module {
 
     /**
-     * このモジュールがロードされる際に呼び出されます。
-     * この時点ではBotの機能の殆どは使用することができませんが、
-     * 今後のBotの挙動を変更することができます。
+     * This is called when the module is loaded.
+     * At this point, most of the features of the bot are not available, but you can change the behavior of the bot.
      */
     void onLoad();
 
     /**
-     * このモジュールが有効化される際に呼び出されます。
+     * Called when this module is enabled.
      */
     void onEnable();
 
     /**
-     * このモジュールが無効化される際に呼び出されます。
+     * Called when this module is disabled.
      */
     void onDisable();
 
     /**
-     * @return
+     * Returns the enabled status of the module.
+     *
+     * @return enabled status of the module
      */
     boolean isEnable();
 
     /**
-     * カスタムされたAudioSourceManagerを登録します。
-     * このメソッドはonLoad内でのみ使用することができます。
+     * Register a customized AudioSourceManager.
+     * This method can only be used within onLoad.
      *
      * @param customAudioSourceManager 登録するAudioSourceManager
      */
     void registerAudioSourceManager(CustomAudioSourceManager customAudioSourceManager);
 
     /**
-     * コマンドを登録します。
+     * Register the CommandExecutor.
      *
-     * @param executor 登録するコマンド実行クラス
+     * @param executor CommandExecutor class to be registered
      */
     void registerCommand(CommandExecutor executor);
 
     /**
-     * すべてのコマンドを登録します。
+     * Register all CommandExecutors.
      *
-     * @param executors コマンド実行クラスが格納されたList
+     * @param executors List containing the CommandExecutor
      */
     void registerCommands(List<CommandExecutor> executors);
 
     /**
-     * 指定したコマンド実行クラスに関連するすべてのコマンドの登録を解除します。
+     * Unregisters all commands related to the specified CommandExecutor class.
      *
-     * @param executor 削除するコマンド実行クラス
+     * @param executor CommandExecutor class that wants to be unregistered
      */
     void removeCommand(CommandExecutor executor);
 
     /**
-     * このモジュールに紐付けられたすべてのコマンドの登録を解除します。
+     * Unregisters all CommandExecutor classes registered from this module.
      */
     void removeCommands();
 
     /**
-     * このモジュールの詳細情報を返します。
+     * Returns a description of this module.
      *
-     * @return モジュールの詳細情報
+     * @return module description
      */
     ModuleDescription getDescription();
 
     /**
-     * Botのコントローラークラスを返します。
+     * Returns the Bot's controller class.
      *
-     * @return Botのコントローラークラス
+     * @return Bot's controller class
      */
-    NeoJukePro getNeoJuke();
+    NeoJukePro getNeoJukePro();
 
     /**
-     * このモジュールの埋め込みリソースを取得します。
+     * Get the embedded resources for this module.
      *
-     * @param filename リソースのファイル名
-     * @return 見つかった場合はファイル、それ以外の場合はnull
+     * @param filename Resource file name
+     * @return InputStream of the file, or null if the file is not found
      */
     InputStream getResources(String filename);
 
     /**
-     * プラグインデータのファイルが格納されているフォルダを返します。
+     * Returns a folder to store the plugin data files.
      *
-     * @return ファイルが格納されているフォルダ
+     * @return Folder for storing plugin data files.
      */
     File getDataFolder();
 
     /**
-     * このBotのロガーに関連付けられているモジュールロガーを返します。
+     * Returns the module logger associated with this Bot's logger.
      *
-     * @return このモジュールに関連付けられたロガー
+     * @return Module logger associated with this bot's logger
      */
     NeoModuleLogger getModuleLogger();
 
     /**
-     * モジュールをロードしたクラスローダーを取得します。
+     * Returns the class loader that loaded the module.
      *
-     * @return モジュールをロードしたクラスローダー
+     * @return The class loader that loaded the module
      */
     ClassLoader getClassLoder();
 }

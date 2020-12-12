@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.database.instead;
+package page.nafuchoco.neojukepro.core.database.instead.dummy;
 
 import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
-import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
+import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class GuildSettingsTableInstead extends GuildSettingsTable {
-    private final Map<Long, Map<String, String>> tableMap;
+public class DummyGuildUsersPermTable extends GuildUsersPermTable {
+    private final Map<Long, Map<Long, Integer>> tableMap;
 
-    public GuildSettingsTableInstead() {
+    public DummyGuildUsersPermTable() {
         super(null);
         tableMap = new HashMap<>();
     }
@@ -39,34 +37,34 @@ public class GuildSettingsTableInstead extends GuildSettingsTable {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Long> getGuilds() throws SQLException {
-        return new ArrayList<>(tableMap.keySet());
-    }
-
-    @Override
-    public Map<String, String> getGuildSettings(long guildId) throws SQLException {
+    private Map<Long, Integer> getGuildSettings(long guildId) {
         return tableMap.computeIfAbsent(guildId, key -> new HashMap<>());
     }
 
     @Override
-    public String getGuildSetting(long guildId, String name) throws SQLException {
-        return getGuildSettings(guildId).get(name);
+    public int getUserPermission(long guildId, long userId) throws SQLException {
+        return getGuildSettings(guildId).getOrDefault(userId, -1);
     }
 
     @Override
-    public void setGuildSetting(long guildId, String name, String value) throws SQLException {
-        getGuildSettings(guildId).put(name, value);
+    public void setUserPermission(long guildId, long userId, int permissionCode) throws SQLException {
+        getGuildSettings(guildId).put(userId, permissionCode);
     }
 
     @Override
-    public void deleteSettings(long guildId) throws SQLException {
+    public void deleteGuildUsers(long guildId) throws SQLException {
         tableMap.remove(guildId);
     }
 
+    @Deprecated
     @Override
-    public void deleteSetting(long guildId, String name) throws SQLException {
-        getGuildSettings(guildId).remove(name);
+    public void deleteUser(long userId) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteGuildUser(long guildId, long userId) throws SQLException {
+        getGuildSettings(guildId).remove(userId);
     }
 
     @Deprecated

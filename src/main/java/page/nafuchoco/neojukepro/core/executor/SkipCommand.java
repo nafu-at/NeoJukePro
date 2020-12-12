@@ -16,17 +16,13 @@
 
 package page.nafuchoco.neojukepro.core.executor;
 
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
-import page.nafuchoco.neojukepro.core.player.GuildTrackContext;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 public class SkipCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public SkipCommand(String name, String... aliases) {
         super(name, aliases);
@@ -34,8 +30,8 @@ public class SkipCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
-        if (audioPlayer.getNowPlaying() != null) {
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        if (audioPlayer.getPlayingTrack() != null) {
             if (!context.getMessage().getMentionedMembers().isEmpty()) {
                 int skipcount =
                         context.getMessage().getMentionedMembers().stream().mapToInt(member -> audioPlayer.skip(member).size()).sum();
@@ -61,10 +57,9 @@ public class SkipCommand extends CommandExecutor {
                     }
                 }
             } else {
-                GuildTrackContext nowPlaying = audioPlayer.getNowPlaying();
                 audioPlayer.skip();
                 context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip"),
-                        nowPlaying.getTrack().getInfo().title)).queue();
+                        context.getNeoGuild().getAudioPlayer().getPlayingTrack().getTrack().getInfo().title)).queue();
             }
         }
     }

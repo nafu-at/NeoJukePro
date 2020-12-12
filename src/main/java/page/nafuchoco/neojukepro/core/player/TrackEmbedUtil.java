@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.command;
+package page.nafuchoco.neojukepro.core.player;
 
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioTrack;
@@ -29,11 +29,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
-import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
-import page.nafuchoco.neojukepro.core.player.GuildTrackContext;
 
 import java.awt.*;
 import java.io.IOException;
@@ -62,8 +60,8 @@ public class TrackEmbedUtil {
         client = apiClient;
     }
 
-    public static MessageEmbed getTrackEmbed(GuildAudioPlayer audioPlayer) throws IOException {
-        GuildTrackContext trackContext = audioPlayer.getNowPlaying();
+    public static MessageEmbed getTrackEmbed(NeoGuildPlayer audioPlayer) throws IOException {
+        LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
         if (trackContext != null) {
             AudioTrack audioTrack = trackContext.getTrack();
             if (audioTrack instanceof YoutubeAudioTrack) {
@@ -89,12 +87,12 @@ public class TrackEmbedUtil {
         return null;
     }
 
-    public static MessageEmbed getYouTubeEmbed(GuildAudioPlayer audioPlayer) throws IOException {
+    public static MessageEmbed getYouTubeEmbed(NeoGuildPlayer audioPlayer) throws IOException {
         if (client == null)
             return getDefaultEmbed(audioPlayer, YOUTUBE);
 
         YouTubeObjectItem youtubeVideo = client.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_VIDEO,
-                audioPlayer.getNowPlaying().getTrack().getIdentifier()).getItems()[0];
+                audioPlayer.getPlayingTrack().getTrack().getIdentifier()).getItems()[0];
         YouTubeObjectItem youtubeChannel = client.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_CHANNEL,
                 youtubeVideo.getSnippet().getChannelID()).getItems()[0];
 
@@ -107,7 +105,7 @@ public class TrackEmbedUtil {
                 youtubeChannel.getSnippet().getThumbnails().getHigh().getURL());
         builder.setThumbnail(youtubeVideo.getSnippet().getThumbnails().getHigh().getURL());
         MessageEmbed.Field time = new MessageEmbed.Field("Time",
-                "[" + MessageUtil.formatTime(audioPlayer.getTrackPosition()) + "/" + MessageUtil.formatTime(audioPlayer.getNowPlaying().getTrack().getDuration()) + "]", true);
+                "[" + MessageUtil.formatTime(audioPlayer.getTrackPosition()) + "/" + MessageUtil.formatTime(audioPlayer.getPlayingTrack().getTrack().getDuration()) + "]", true);
         builder.addField(time);
 
         String descMessage = youtubeVideo.getSnippet().getLocalized().getDescription();
@@ -115,25 +113,25 @@ public class TrackEmbedUtil {
             descMessage = descMessage.substring(0, 800) + " [...]";
         MessageEmbed.Field description = new MessageEmbed.Field("Description", descMessage, false);
         builder.addField(description);
-        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getNowPlaying().getInvoker().getEffectiveName()),
-                audioPlayer.getNowPlaying().getInvoker().getUser().getAvatarUrl());
+        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getPlayingTrack().getInvoker().getEffectiveName()),
+                audioPlayer.getPlayingTrack().getInvoker().getUser().getAvatarUrl());
         return builder.build();
     }
 
-    public static MessageEmbed getDefaultEmbed(GuildAudioPlayer audioPlayer, Color color) {
+    public static MessageEmbed getDefaultEmbed(NeoGuildPlayer audioPlayer, Color color) {
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(audioPlayer.getNowPlaying().getTrack().getInfo().title);
+        builder.setTitle(audioPlayer.getPlayingTrack().getTrack().getInfo().title);
         builder.setColor(color);
-        builder.setAuthor(audioPlayer.getNowPlaying().getTrack().getInfo().author);
+        builder.setAuthor(audioPlayer.getPlayingTrack().getTrack().getInfo().author);
         MessageEmbed.Field time = new MessageEmbed.Field("Time",
-                "[" + MessageUtil.formatTime(audioPlayer.getTrackPosition()) + "/" + MessageUtil.formatTime(audioPlayer.getNowPlaying().getTrack().getDuration()) + "]",
+                "[" + MessageUtil.formatTime(audioPlayer.getTrackPosition()) + "/" + MessageUtil.formatTime(audioPlayer.getPlayingTrack().getTrack().getDuration()) + "]",
                 true);
         builder.addField(time);
         MessageEmbed.Field source = new MessageEmbed.Field("",
-                "Loaded from " + audioPlayer.getNowPlaying().getTrack().getSourceManager().getSourceName() + ".", false);
+                "Loaded from " + audioPlayer.getPlayingTrack().getTrack().getSourceManager().getSourceName() + ".", false);
         builder.addField(source);
-        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getNowPlaying().getInvoker().getEffectiveName()),
-                audioPlayer.getNowPlaying().getInvoker().getUser().getAvatarUrl());
+        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getPlayingTrack().getInvoker().getEffectiveName()),
+                audioPlayer.getPlayingTrack().getInvoker().getUser().getAvatarUrl());
         return builder.build();
     }
 }

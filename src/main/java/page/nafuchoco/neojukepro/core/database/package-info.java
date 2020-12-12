@@ -15,7 +15,4 @@
  */
 
 package page.nafuchoco.neojukepro.core.database;
-
-public enum RepeatType {
-    NONE, SINGLE, ALL
-}
+// TODO: 2020/12/08 新データベース構造への移行用のソースコードの実装

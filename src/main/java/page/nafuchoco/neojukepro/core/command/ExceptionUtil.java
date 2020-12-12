@@ -19,13 +19,17 @@ package page.nafuchoco.neojukepro.core.command;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.MDC;
+import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @Slf4j
 public class ExceptionUtil {
+    private static final NeoJukeLauncher launcher = Main.getLauncher();
+
     private ExceptionUtil() {
         throw new IllegalStateException();
     }
@@ -53,7 +57,7 @@ public class ExceptionUtil {
         builder.append(trace);
         builder.append("```");
 
-        MessageUtil.sendMessage(guild, builder.toString());
+        launcher.getGuildRegistry().getNeoGuild(guild).sendMessageToLatest(builder.toString());
 
         if (toLog) {
             StringBuilder sb = new StringBuilder();

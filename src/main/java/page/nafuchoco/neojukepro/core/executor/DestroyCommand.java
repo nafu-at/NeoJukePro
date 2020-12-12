@@ -19,20 +19,20 @@ package page.nafuchoco.neojukepro.core.executor;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 
-public class PauseCommand extends CommandExecutor {
+public class DestroyCommand extends CommandExecutor {
 
-    public PauseCommand(String name, String... aliases) {
+    public DestroyCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        context.getNeoGuild().getAudioPlayer().setPaused(!context.getNeoGuild().getAudioPlayer().isPaused());
+        context.getNeoGuild().destroyAudioPlayer();
     }
 
     @Override
     public String getDescription() {
-        return "Pauses the playing track.";
+        return "Destroy the player.";
     }
 
     @Override

@@ -19,8 +19,6 @@ package page.nafuchoco.neojukepro.core.executor;
 import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
-import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
@@ -33,13 +31,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SearchCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final YouTubeAPIClient client;
 
     static {
         YouTubeAPIClient apiClient;
         try {
-            apiClient = new YouTubeAPIClient(launcher.getConfig().getAdvancedConfig().getGoogleAPIToken());
+            apiClient = new YouTubeAPIClient(Main.getLauncher().getConfig().getAdvancedConfig().getGoogleAPIToken());
         } catch (IllegalArgumentException e) {
             apiClient = null;
         }
@@ -56,7 +53,7 @@ public class SearchCommand extends CommandExecutor {
             context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.disabled")).queue();
         } else if (context.getArgs().length != 0) {
             if (context.getArgs()[0].equalsIgnoreCase("next")) {
-                List<Object> objects = (List<Object>) CommandCache.deleteCache(context.getGuild(), "searchResults");
+                List<Object> objects = (List<Object>) context.getNeoGuild().getGuildTempRegistry().deleteTemp("searchResults");
                 YouTubeSearchResults results;
                 String keyword;
 
@@ -94,14 +91,14 @@ public class SearchCommand extends CommandExecutor {
                     String finalKeyword = keyword;
                     YouTubeSearchResults finalResults = results;
                     context.getChannel().sendMessage(message.toString()).queue(send ->
-                            CommandCache.registerCache(context.getGuild(), "searchResults", Arrays.asList(finalResults,
-                                    finalKeyword, context.getMessage(), send)));
+                            context.getNeoGuild().getGuildTempRegistry().registerTemp(
+                                    "searchResults", Arrays.asList(finalResults, finalKeyword, context.getMessage(), send)));
                 } catch (IOException e) {
-                    ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.play.search.failed"));
+                    ExceptionUtil.sendStackTrace(context.getNeoGuild().getJDAGuild(), e, MessageManager.getMessage("command.play.search.failed"));
                 }
 
             } else if (context.getArgs()[0].equalsIgnoreCase("prev")) {
-                List<Object> objects = (List<Object>) CommandCache.deleteCache(context.getGuild(), "searchResults");
+                List<Object> objects = (List<Object>) context.getNeoGuild().getGuildTempRegistry().deleteTemp("searchResults");
                 YouTubeSearchResults results;
                 String keyword;
 
@@ -139,10 +136,10 @@ public class SearchCommand extends CommandExecutor {
                     String finalKeyword = keyword;
                     YouTubeSearchResults finalResults = results;
                     context.getChannel().sendMessage(message.toString()).queue(send ->
-                            CommandCache.registerCache(context.getGuild(), "searchResults", Arrays.asList(finalResults,
-                                    finalKeyword, context.getMessage(), send)));
+                            context.getNeoGuild().getGuildTempRegistry().registerTemp(
+                                    "searchResults", Arrays.asList(finalResults, finalKeyword, context.getMessage(), send)));
                 } catch (IOException e) {
-                    ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.play.search.failed"));
+                    ExceptionUtil.sendStackTrace(context.getNeoGuild().getJDAGuild(), e, MessageManager.getMessage("command.play.search.failed"));
                 }
             } else {
                 StringBuilder builder = new StringBuilder();
@@ -150,7 +147,7 @@ public class SearchCommand extends CommandExecutor {
                     builder.append(arg + " ");
                 try {
                     YouTubeSearchResults result =
-                            new YouTubeAPIClient(launcher.getConfig().getAdvancedConfig().getGoogleAPIToken()).searchVideos(builder.toString());
+                            new YouTubeAPIClient(context.getNeoJukePro().getConfig().getAdvancedConfig().getGoogleAPIToken()).searchVideos(builder.toString());
                     if (result == null || result.getItems().length == 0) {
                         context.getChannel().sendMessage(MessageManager.getMessage("command.play.search.notfound")).queue();
                         return;
@@ -166,9 +163,10 @@ public class SearchCommand extends CommandExecutor {
                     message.append("\n\n" + MessageManager.getMessage("command.play.search.select"));
 
                     context.getChannel().sendMessage(message.toString()).queue(send ->
-                            CommandCache.registerCache(context.getGuild(), "searchResults", Arrays.asList(result, builder.toString(), context.getMessage(), send)));
+                            context.getNeoGuild().getGuildTempRegistry().registerTemp(
+                                    "searchResults", Arrays.asList(result, builder.toString(), context.getMessage(), send)));
                 } catch (IOException e) {
-                    ExceptionUtil.sendStackTrace(context.getGuild(), e, MessageManager.getMessage("command.play.search.failed"));
+                    ExceptionUtil.sendStackTrace(context.getNeoGuild().getJDAGuild(), e, MessageManager.getMessage("command.play.search.failed"));
                 }
             }
         }

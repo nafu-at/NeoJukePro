@@ -6,21 +6,24 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/35ee3810e0b647de90d3251fad96bcc4)](https://www.codacy.com/gh/nafu-at/NeoJukePro/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nafu-at/NeoJukePro&amp;utm_campaign=Badge_Grade)
 
 NeoJukePro is a new Discord Music Bot developed as a successor to SimpleJuke.  
-We rebuilt it from scratch to make it simpler, clearer, more functional, and more stable.  
+We rebuilt it from scratch to make it simpler, clearer, more functional, and more stable.
 
 ## Operation requirements
+
 - [x] Windows, MacOS, Linux, and other common PC operating systems.
 - [x] Java11 or later execution environment.
 - [x] MariaDB 5.5 or later or MySQL 5.5 or later.
 - [x] Discord account.
     + [x] Presence Intent and Server Members Intent must be enabled.
 
-### If you find a problem with the program
+## If you find a problem with the program
+
 Please submit an Issue to our repository and report it.  
 Pull requests for bug fixes, feature additions, etc. are also welcome.  
 Please be careful not to change the original code style when modifying the source code.
 
-### License.
+## License.
+
 The original source code of this program is released under the Apache License 2.0.
 
         Copyright 2020 NAFU_at.
@@ -39,26 +42,34 @@ The original source code of this program is released under the Apache License 2.
 
 ---
 
-### Thaad Party License
-#### MIT License
+## Thaad Party License
+
+### MIT License
+
 - SLF4J api
 - Lavalink-Client
 
-#### The 3-Clause BSD License
+### The 3-Clause BSD License
+
 - Sentry Java For Logback
 
-#### GNU General Public License, version 2
+### GNU General Public License, version 2
+
 **(The Universal FOSS Exception, Version 1.0)**
+
 - MySQL Connector/J
 
-#### GNU Lesser General Public License 2.1
+### GNU Lesser General Public License 2.1
+
 - Logback
 - MariaDB Connector/J
 
-#### Apache Lisence, Version 2.0
+### Apache Lisence, Version 2.0
+
 - JDA
 - lavaplayer
 - OkHttp3
+- Gson
 - Jackson Core
 - Jackson Databind
 - jackson-dataformat-yaml

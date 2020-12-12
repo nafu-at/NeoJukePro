@@ -25,10 +25,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class GuildTrackProvider {
-    private final BlockingQueue<GuildTrackContext> queue = new LinkedBlockingQueue<>();
-    private final GuildAudioPlayer audioPlayer;
+    private final BlockingQueue<LoadedTrackContext> queue = new LinkedBlockingQueue<>();
+    private final NeoGuildPlayer audioPlayer;
 
-    public GuildTrackProvider(GuildAudioPlayer audioPlayer) {
+    public GuildTrackProvider(NeoGuildPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
     }
 
@@ -37,61 +37,59 @@ public class GuildTrackProvider {
      *
      * @return 登録されているすべてのキューを格納したList
      */
-    public List<GuildTrackContext> getQueues() {
+    public List<LoadedTrackContext> getQueues() {
         return new ArrayList<>(queue);
     }
 
-    public GuildTrackContext provideTrack() {
+    public LoadedTrackContext provideTrack() {
         return queue.poll();
     }
 
     /**
      * 指定番号が1以下の場合は先頭に追加。
-     *
-     * @param context
-     * @param desiredNumber 指定された数字から-1して登録すること。
      */
-    public void queue(GuildTrackContext context, int desiredNumber) {
-        List<GuildTrackContext> tracks = getQueues();
+    public void queue(LoadedTrackContext trackContext) {
+        List<LoadedTrackContext> tracks = getQueues();
 
-        if (desiredNumber <= 1 || desiredNumber > tracks.size()) {
-            queue.offer(context);
-            if (audioPlayer.isShuffle())
+        if (trackContext.getInterruptNumber() <= 1 || trackContext.getInterruptNumber() > tracks.size()) {
+            queue.offer(trackContext);
+            if (audioPlayer.getNeoGuild().getSettings().getPlayerOptions().isShuffle())
                 shuffle();
         } else {
-            List<GuildTrackContext> before;
-            List<GuildTrackContext> after;
-            if (desiredNumber == 1) {
+            List<LoadedTrackContext> before;
+            List<LoadedTrackContext> after;
+            if (trackContext.getInterruptNumber() == 1) {
                 before = new ArrayList<>(); // empty list
                 after = tracks;
             } else {
-                before = tracks.subList(0, desiredNumber - 1);
-                after = tracks.subList(desiredNumber - 1, tracks.size());
+                before = tracks.subList(0, trackContext.getInterruptNumber() - 1);
+                after = tracks.subList(trackContext.getInterruptNumber() - 1, tracks.size());
             }
 
             queue.clear();
             queue.addAll(before);
-            queue.add(context);
+            queue.add(trackContext);
             queue.addAll(after);
         }
     }
 
-    public void queue(List<GuildTrackContext> contextList, int desiredNumber) {
-        List<GuildTrackContext> tracks = getQueues();
+    public void queue(List<LoadedTrackContext> contextList) {
+        List<LoadedTrackContext> tracks = getQueues();
+        int interruptNumber = contextList.get(0).getInterruptNumber();
 
-        if (desiredNumber <= 1 || desiredNumber > tracks.size()) {
+        if (interruptNumber <= 1 || interruptNumber > tracks.size()) {
             queue.addAll(contextList);
-            if (audioPlayer.isShuffle())
+            if (audioPlayer.getNeoGuild().getSettings().getPlayerOptions().isShuffle())
                 shuffle();
         } else {
-            List<GuildTrackContext> before;
-            List<GuildTrackContext> after;
-            if (desiredNumber == 1) {
+            List<LoadedTrackContext> before;
+            List<LoadedTrackContext> after;
+            if (interruptNumber == 1) {
                 before = new ArrayList<>(); // empty list
                 after = tracks;
             } else {
-                before = tracks.subList(0, desiredNumber - 1);
-                after = tracks.subList(desiredNumber - 1, tracks.size());
+                before = tracks.subList(0, interruptNumber - 1);
+                after = tracks.subList(interruptNumber - 1, tracks.size());
             }
 
             queue.clear();
@@ -105,7 +103,7 @@ public class GuildTrackProvider {
         if (queue.isEmpty())
             return;
 
-        List<GuildTrackContext> queues = getQueues();
+        List<LoadedTrackContext> queues = getQueues();
 
         Collections.shuffle(queues);
         queue.clear();
@@ -116,23 +114,22 @@ public class GuildTrackProvider {
         queue.clear();
     }
 
-    public List<GuildTrackContext> skip(int below) {
+    public List<LoadedTrackContext> skip(int below) {
         return skip(below, queue.size());
     }
 
-    public List<GuildTrackContext> skip(int from, int to) {
-        List<GuildTrackContext> tracks = getQueues();
-        List<GuildTrackContext> toDelete = new ArrayList<>();
-        for (int index = from - 1; index < to; index++) {
+    public List<LoadedTrackContext> skip(int from, int to) {
+        List<LoadedTrackContext> tracks = getQueues();
+        List<LoadedTrackContext> toDelete = new ArrayList<>();
+        for (int index = from - 1; index < to; index++)
             toDelete.add(tracks.get(index));
-        }
         toDelete.forEach(queue::remove);
         return toDelete;
     }
 
-    public List<GuildTrackContext> skip(Member invoker) {
-        List<GuildTrackContext> tracks = getQueues();
-        List<GuildTrackContext> toDelete = new ArrayList<>();
+    public List<LoadedTrackContext> skip(Member invoker) {
+        List<LoadedTrackContext> tracks = getQueues();
+        List<LoadedTrackContext> toDelete = new ArrayList<>();
         tracks.forEach(track -> {
             if (track.getInvoker().equals(invoker))
                 toDelete.add(track);

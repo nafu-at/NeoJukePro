@@ -16,15 +16,12 @@
 
 package page.nafuchoco.neojukepro.core.executor;
 
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 public class StopCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public StopCommand(String name, String... aliases) {
         super(name, aliases);
@@ -32,11 +29,10 @@ public class StopCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         audioPlayer.stop();
         context.getChannel().sendMessage(MessageManager.getMessage("command.stop")).queue();
         audioPlayer.leaveChannel();
-        launcher.getPlayerRegistry().destroyPlayer(context.getGuild());
     }
 
     @Override

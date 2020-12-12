@@ -16,9 +16,8 @@
 
 package page.nafuchoco.neojukepro.core.executor;
 
-import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class HelpCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final Pattern NOMBER_REGEX = Pattern.compile("^\\d+$");
 
 
@@ -37,17 +35,19 @@ public class HelpCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
+        NeoJukePro neoJukePro = context.getNeoJukePro();
         if (context.getArgs().length == 0) {
-            context.getChannel().sendMessage(printCommandList(1)).queue();
+            context.getChannel().sendMessage(printCommandList(neoJukePro.getCommandRegistry().getCommands(), 1)).queue();
         } else {
             if (NOMBER_REGEX.matcher(context.getArgs()[0]).find()) {
                 try {
-                    context.getChannel().sendMessage(printCommandList(Integer.parseInt(context.getArgs()[0]))).queue();
+                    context.getChannel().sendMessage(
+                            printCommandList(neoJukePro.getCommandRegistry().getCommands(), Integer.parseInt(context.getArgs()[0]))).queue();
                 } catch (NumberFormatException e) {
                     context.getChannel().sendMessage(MessageManager.getMessage("command.page.specify")).queue();
                 }
             } else {
-                CommandExecutor executor = launcher.getCommandRegistry().getExecutor(context.getArgs()[0]);
+                CommandExecutor executor = neoJukePro.getCommandRegistry().getExecutor(context.getArgs()[0]);
                 if (executor != null) {
                     StringBuilder builder = new StringBuilder("```");
                     builder.append(executor.getName() + ": " + executor.getDescription() + "\n");
@@ -61,8 +61,7 @@ public class HelpCommand extends CommandExecutor {
         }
     }
 
-    private String printCommandList(int page) {
-        List<CommandExecutor> commands = launcher.getCommandRegistry().getCommands();
+    private String printCommandList(List<CommandExecutor> commands, int page) {
         int range = 10;
         int listPage = commands.size() / range;
         if (commands.size() % range >= 1)

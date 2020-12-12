@@ -18,7 +18,6 @@ package page.nafuchoco.neojukepro.core.executor.system;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
@@ -33,10 +32,10 @@ public class ShutdownCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         if (context.getArgs().length == 0) {
             String pass = RandomStringUtils.randomAlphanumeric(6);
-            CommandCache.registerCache(context.getGuild(), "shutdownKey", pass);
+            context.getNeoGuild().getGuildTempRegistry().registerTemp("shutdownKey", pass);
             context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.shutdown.key"), pass)).queue();
         } else {
-            if (context.getArgs()[0].equals(CommandCache.getCache(context.getGuild(), "shutdownKey")))
+            if (context.getArgs()[0].equals(context.getNeoGuild().getGuildTempRegistry().deleteTemp("shutdownKey")))
                 Runtime.getRuntime().exit(0);
             else
                 context.getChannel().sendMessage(MessageManager.getMessage("command.shutdown.key.incorrect")).queue();

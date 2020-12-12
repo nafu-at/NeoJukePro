@@ -18,9 +18,7 @@ package page.nafuchoco.neojukepro.core.executor;
 
 import lavalink.client.io.LavalinkSocket;
 import lavalink.client.io.jda.JdaLavalink;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
@@ -32,7 +30,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 public class NodesCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public NodesCommand(String name, String... aliases) {
         super(name, aliases);
@@ -40,8 +37,8 @@ public class NodesCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        if (launcher.getConfig().getAdvancedConfig().isUseNodeServer()) {
-            JdaLavalink lavalink = launcher.getLavaLink();
+        if (context.getNeoJukePro().getConfig().getAdvancedConfig().isUseNodeServer()) {
+            JdaLavalink lavalink = context.getNeoJukePro().getLavaLink();
             if (context.getArgs().length == 0) {
                 StringBuilder builder = new StringBuilder();
                 List<LavalinkSocket> nodes = lavalink.getNodes();

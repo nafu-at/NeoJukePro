@@ -16,13 +16,21 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
-import net.dv8tion.jda.api.entities.Guild;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import page.nafuchoco.neojukepro.api.NeoJukePro;
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class CommandContext {
-    private final Guild guild;
+    private final NeoJukePro neoJukePro;
+    private final NeoGuild neoGuild;
     private final TextChannel channel;
     private final Member invoker;
     private final Message message;
@@ -31,27 +39,16 @@ public class CommandContext {
     private final String[] args;
     private final CommandExecutor command;
 
-    public CommandContext(Guild guild,
-                          TextChannel channel,
-                          Member invoker,
-                          Message msg,
-                          String trigger,
-                          String[] args,
-                          CommandExecutor command) {
-        this.guild = guild;
-        this.channel = channel;
-        this.invoker = invoker;
-        this.message = msg;
-        this.trigger = trigger;
-        this.args = args;
-        this.command = command;
+    public NeoJukePro getNeoJukePro() {
+        return neoJukePro;
     }
 
     /**
      * @return Command Executed Guild
+     * @since v2.0
      */
-    public Guild getGuild() {
-        return guild;
+    public NeoGuild getNeoGuild() {
+        return neoGuild;
     }
 
     /**

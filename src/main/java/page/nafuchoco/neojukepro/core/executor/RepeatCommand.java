@@ -17,21 +17,12 @@
 package page.nafuchoco.neojukepro.core.executor;
 
 import lombok.extern.slf4j.Slf4j;
-import page.nafuchoco.neojukepro.core.Main;
-import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
-import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
-import page.nafuchoco.neojukepro.core.database.RepeatType;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
-
-import java.sql.SQLException;
+import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
 
 @Slf4j
 public class RepeatCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public RepeatCommand(String name, String... aliases) {
         super(name, aliases);
@@ -39,24 +30,15 @@ public class RepeatCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
-        if (audioPlayer == null)
-            return;
         if (context.getArgs().length != 0) {
-            RepeatType repeattype;
+            NeoGuildPlayerOptions.RepeatMode repeatMode;
             try {
-                repeattype = RepeatType.valueOf(context.getArgs()[0].toUpperCase());
+                repeatMode = NeoGuildPlayerOptions.RepeatMode.valueOf(context.getArgs()[0].toUpperCase());
             } catch (IllegalArgumentException e) {
-                repeattype = RepeatType.NONE;
+                repeatMode = NeoGuildPlayerOptions.RepeatMode.NONE;
             }
-            audioPlayer.setRepeatType(repeattype);
+            context.getNeoGuild().getSettings().setRepeatMode(repeatMode);
             context.getChannel().sendMessage("Repeat mode has been changed.").queue();
-            GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
-            try {
-                settingsTable.setGuildSetting(context.getGuild().getIdLong(), "repeat", repeattype.name());
-            } catch (SQLException e) {
-                log.error(MessageManager.getMessage("system.db.save.error"));
-            }
         }
     }
 

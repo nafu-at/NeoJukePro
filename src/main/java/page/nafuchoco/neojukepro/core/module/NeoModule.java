@@ -126,7 +126,7 @@ public abstract class NeoModule implements Module {
     }
 
     @Override
-    public NeoJukePro getNeoJuke() {
+    public NeoJukePro getNeoJukePro() {
         return launcher;
     }
 

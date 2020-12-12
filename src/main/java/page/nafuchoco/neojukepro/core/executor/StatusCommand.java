@@ -16,16 +16,14 @@
 
 package page.nafuchoco.neojukepro.core.executor;
 
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
+import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 public class StatusCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public StatusCommand(String name, String... aliases) {
         super(name, aliases);
@@ -33,14 +31,15 @@ public class StatusCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
+        NeoGuildPlayerOptions playerOptions = context.getNeoGuild().getSettings().getPlayerOptions();
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         StringBuilder builder = new StringBuilder(MessageUtil.format(MessageManager.getMessage("command.status")) + "\n```");
-        builder.append("Playing Track: " + audioPlayer.getNowPlaying() + "\n");
+        builder.append("Playing Track: " + audioPlayer.getPlayingTrack() + "\n");
         builder.append("Registered Queues: " + audioPlayer.getTrackProvider().getQueues().size() + "\n");
         builder.append("Pause: " + audioPlayer.isPaused() + "\n");
         builder.append("Volume: " + audioPlayer.getVolume() + "\n");
-        builder.append("Shuffle: " + audioPlayer.isShuffle() + "\n");
-        builder.append("Repeat Mode: " + audioPlayer.getRepeatType() + "\n");
+        builder.append("Shuffle: " + playerOptions.isShuffle() + "\n");
+        builder.append("Repeat Mode: " + playerOptions.getRepeatMode() + "\n");
         builder.append("```");
         context.getChannel().sendMessage(builder.toString()).queue();
     }

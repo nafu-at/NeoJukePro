@@ -20,7 +20,7 @@ import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 public class RePlayCommand extends CommandExecutor {
     private static final NeoJukeLauncher launcher = Main.getLauncher();
@@ -31,9 +31,9 @@ public class RePlayCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
-        if (audioPlayer.getNowPlaying() != null) {
-            audioPlayer.play(audioPlayer.getNowPlaying().makeClone(), 1);
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        if (audioPlayer.getPlayingTrack() != null) {
+            audioPlayer.play(audioPlayer.getPlayingTrack().makeClone(1));
             audioPlayer.skip();
         }
     }

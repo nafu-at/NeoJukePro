@@ -66,6 +66,7 @@ dependencies {
     api 'com.github.FredBoat:Lavalink-Client:92a858d'
 
     // Parser
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.11.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.3'

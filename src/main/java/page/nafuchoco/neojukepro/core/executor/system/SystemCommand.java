@@ -17,8 +17,6 @@
 package page.nafuchoco.neojukepro.core.executor.system;
 
 import net.dv8tion.jda.api.sharding.ShardManager;
-import page.nafuchoco.neojukepro.core.Main;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 
@@ -27,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 public class SystemCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 
     public SystemCommand(String name, String... aliases) {
@@ -43,7 +40,7 @@ public class SystemCommand extends CommandExecutor {
         long useing = total - free;
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
 
-        ShardManager shardManager = launcher.getShardManager();
+        ShardManager shardManager = context.getNeoJukePro().getShardManager();
 
         StringBuilder builder = new StringBuilder();
         builder.append("This Bot has been running for " + formatTime(uptime) + " minutes since it was started.\n");
@@ -58,7 +55,6 @@ public class SystemCommand extends CommandExecutor {
         builder.append("User Count:           " + shardManager.getUserCache().size() + "\n");
         builder.append("Text Channels:        " + shardManager.getTextChannelCache().size() + "\n");
         builder.append("Voice Channels:       " + shardManager.getVoiceChannelCache().size() + "\n");
-        builder.append("Active Players:       " + launcher.getPlayerRegistry().getPlayers().size() + "\n\n");
         builder.append("```");
         context.getChannel().sendMessage(builder.toString()).queue();
     }

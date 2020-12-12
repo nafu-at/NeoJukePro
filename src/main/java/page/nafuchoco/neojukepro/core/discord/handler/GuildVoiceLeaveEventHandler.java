@@ -19,16 +19,19 @@ package page.nafuchoco.neojukepro.core.discord.handler;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 import javax.annotation.Nonnull;
 
 public final class GuildVoiceLeaveEventHandler extends ListenerAdapter {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
+    private final NeoJukePro neoJukePro;
+
+    public GuildVoiceLeaveEventHandler(NeoJukePro neoJukePro) {
+        this.neoJukePro = neoJukePro;
+    }
 
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
@@ -39,10 +42,10 @@ public final class GuildVoiceLeaveEventHandler extends ListenerAdapter {
             if (!member.getUser().isBot())
                 return;
 
-        MessageUtil.sendMessage(event.getEntity().getGuild(), MessageManager.getMessage("player.autoleave"));
-        GuildAudioPlayer player =
-                launcher.getPlayerRegistry().getGuildAudioPlayer(event.getEntity().getGuild());
-        player.setPaused(true);
-        player.leaveChannel();
+        NeoGuild neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
+        neoGuild.sendMessageToLatest(MessageManager.getMessage("player.autoleave"));
+        NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
+        audioPlayer.setPaused(true);
+        audioPlayer.leaveChannel();
     }
 }

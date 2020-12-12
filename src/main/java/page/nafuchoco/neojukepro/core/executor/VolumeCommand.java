@@ -20,14 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
-import page.nafuchoco.neojukepro.core.command.CommandCache;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
-
-import java.sql.SQLException;
 
 @Slf4j
 public class VolumeCommand extends CommandExecutor {
@@ -39,20 +34,17 @@ public class VolumeCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
         if (context.getArgs().length != 0) {
             try {
                 int volume = Integer.parseInt(context.getArgs()[0]);
-                audioPlayer.setVolume(volume);
-                GuildSettingsTable settingsTable = (GuildSettingsTable) CommandCache.getCache(null, "settingsTable");
-                settingsTable.setGuildSetting(context.getGuild().getIdLong(), "volume", String.valueOf(volume));
+                context.getNeoGuild().getSettings().setVolumeLevel(volume);
             } catch (NumberFormatException e) {
                 context.getChannel().sendMessage(MessageManager.getMessage("command.volume.correct")).queue();
-            } catch (SQLException e) {
-                log.error(MessageManager.getMessage("system.db.save.error"));
             }
         }
-        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.volume.corrent"), audioPlayer.getVolume())).queue();
+        context.getChannel().sendMessage(MessageUtil.format(
+                MessageManager.getMessage("command.volume.corrent"),
+                context.getNeoGuild().getSettings().getPlayerOptions().getVolumeLevel())).queue();
     }
 
     @Override

@@ -19,16 +19,14 @@ package page.nafuchoco.neojukepro.core.executor;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang3.math.NumberUtils;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.player.AudioTrackLoader;
-import page.nafuchoco.neojukepro.core.player.GuildAudioPlayer;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.core.player.TrackContext;
 
 public class InterruptCommand extends CommandExecutor {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     public InterruptCommand(String name, String... aliases) {
         super(name, aliases);
@@ -36,9 +34,9 @@ public class InterruptCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        GuildAudioPlayer audioPlayer = launcher.getPlayerRegistry().getGuildAudioPlayer(context.getGuild());
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         if (context.getArgs().length >= 2) {
-            if (!context.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
+            if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
                 VoiceChannel targetChannel = context.getInvoker().getVoiceState().getChannel();
                 if (targetChannel == null) {
                     context.getChannel().sendMessage(MessageManager.getMessage("command.join.before")).queue();
@@ -46,9 +44,9 @@ public class InterruptCommand extends CommandExecutor {
                 }
                 audioPlayer.joinChannel(targetChannel);
             }
-            audioPlayer.play(new AudioTrackLoader(context.getArgs()[1], context.getInvoker(),
-                    NumberUtils.toInt(context.getArgs()[0], 0)));
-            if (context.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE))
+            audioPlayer.play(new AudioTrackLoader(
+                    new TrackContext(context.getNeoGuild(), context.getInvoker(), NumberUtils.toInt(context.getArgs()[0], 0), context.getArgs()[1])));
+            if (context.getNeoGuild().getJDAGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE))
                 context.getMessage().delete().submit();
         }
     }
