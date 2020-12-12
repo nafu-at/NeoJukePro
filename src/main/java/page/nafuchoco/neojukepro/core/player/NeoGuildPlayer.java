@@ -154,7 +154,7 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
 
     public List<LoadedTrackContext> skip(int from, int to) {
         List<LoadedTrackContext> deleted;
-        if (from == 0) {
+        if (from <= 0) {
             deleted = trackProvider.skip(from + 1, to);
             skip();
         } else {

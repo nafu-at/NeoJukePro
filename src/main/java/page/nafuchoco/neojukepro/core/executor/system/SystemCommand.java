@@ -37,24 +37,28 @@ public class SystemCommand extends CommandExecutor {
         long max = Runtime.getRuntime().maxMemory() / 1048576L;
         long total = Runtime.getRuntime().totalMemory() / 1048576L;
         long free = Runtime.getRuntime().freeMemory() / 1048576L;
-        long useing = total - free;
+        long used = total - free;
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
 
         ShardManager shardManager = context.getNeoJukePro().getShardManager();
 
         StringBuilder builder = new StringBuilder();
-        builder.append("This Bot has been running for " + formatTime(uptime) + " minutes since it was started.\n");
+        builder.append("This Bot has been running for " + formatTime(uptime) + " since it was started.\n");
         builder.append("```\n");
+        builder.append("====== System Info ======\n");
+        builder.append("Operating System:      " + System.getProperty("os.name") + "\n");
+        builder.append("JVM Version:           " + System.getProperty("java.version") + "\n");
         builder.append("====== Memory Info ======\n");
         builder.append("Reserved memory:       " + total + "MB\n");
-        builder.append("  -> Used:             " + useing + "MB\n");
+        builder.append("  -> Used:             " + used + "MB\n");
         builder.append("  -> Free:             " + free + "MB\n");
         builder.append("Max. reserved memory:  " + max + "MB\n\n");
         builder.append("====== Statistic Info ======\n");
-        builder.append("Server Count:         " + shardManager.getGuildCache().size() + "\n");
-        builder.append("User Count:           " + shardManager.getUserCache().size() + "\n");
-        builder.append("Text Channels:        " + shardManager.getTextChannelCache().size() + "\n");
-        builder.append("Voice Channels:       " + shardManager.getVoiceChannelCache().size() + "\n");
+        builder.append("Guild Count:           " + shardManager.getGuildCache().size() + "\n");
+        builder.append("Active Guilds:         " + context.getNeoJukePro().getGuildRegistry().getNeoGuilds().size() + "\n");
+        builder.append("User Count:            " + shardManager.getUserCache().size() + "\n");
+        builder.append("Text Channels:         " + shardManager.getTextChannelCache().size() + "\n");
+        builder.append("Voice Channels:        " + shardManager.getVoiceChannelCache().size() + "\n");
         builder.append("```");
         context.getChannel().sendMessage(builder.toString()).queue();
     }

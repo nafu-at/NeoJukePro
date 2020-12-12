@@ -45,13 +45,10 @@ public class GuildTrackProvider {
         return queue.poll();
     }
 
-    /**
-     * 指定番号が1以下の場合は先頭に追加。
-     */
     public void queue(LoadedTrackContext trackContext) {
         List<LoadedTrackContext> tracks = getQueues();
 
-        if (trackContext.getInterruptNumber() <= 1 || trackContext.getInterruptNumber() > tracks.size()) {
+        if (trackContext.getInterruptNumber() < 1 || trackContext.getInterruptNumber() > tracks.size()) {
             queue.offer(trackContext);
             if (audioPlayer.getNeoGuild().getSettings().getPlayerOptions().isShuffle())
                 shuffle();
@@ -77,7 +74,7 @@ public class GuildTrackProvider {
         List<LoadedTrackContext> tracks = getQueues();
         int interruptNumber = contextList.get(0).getInterruptNumber();
 
-        if (interruptNumber <= 1 || interruptNumber > tracks.size()) {
+        if (interruptNumber < 1 || interruptNumber > tracks.size()) {
             queue.addAll(contextList);
             if (audioPlayer.getNeoGuild().getSettings().getPlayerOptions().isShuffle())
                 shuffle();

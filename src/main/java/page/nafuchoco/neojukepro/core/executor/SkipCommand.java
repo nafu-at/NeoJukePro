@@ -57,9 +57,9 @@ public class SkipCommand extends CommandExecutor {
                     }
                 }
             } else {
-                audioPlayer.skip();
                 context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip"),
                         context.getNeoGuild().getAudioPlayer().getPlayingTrack().getTrack().getInfo().title)).queue();
+                audioPlayer.skip();
             }
         }
     }

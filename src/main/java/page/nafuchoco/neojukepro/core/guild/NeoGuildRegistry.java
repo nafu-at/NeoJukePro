@@ -56,7 +56,7 @@ public class NeoGuildRegistry {
             } catch (SQLException e) {
                 log.warn(MessageManager.getMessage("system.db.retrieving.error"), e);
             }
-            if (guildSettings == null)
+            if (guildSettings == null) {
                 guildSettings = new NeoGuildSettings(
                         neoJukePro,
                         settingsTable,
@@ -65,6 +65,12 @@ public class NeoGuildRegistry {
                         false,
                         false,
                         new NeoGuildPlayerOptions(100, NeoGuildPlayerOptions.RepeatMode.NONE, false));
+                try {
+                    settingsTable.registerGuildSettings(guildSettings);
+                } catch (SQLException e) {
+                    log.error(MessageManager.getMessage("system.db.communicate.error"));
+                }
+            }
 
             return new NeoGuild(getNeoJukePro(), key, guildSettings);
         });
