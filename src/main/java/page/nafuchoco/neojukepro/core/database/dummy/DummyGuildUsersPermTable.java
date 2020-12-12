@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.database.instead.dummy;
+package page.nafuchoco.neojukepro.core.database.dummy;
 
 import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
