@@ -124,5 +124,5 @@ public interface Module {
      *
      * @return The class loader that loaded the module
      */
-    ClassLoader getClassLoder();
+    ClassLoader getClassLoader();
 }

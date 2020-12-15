@@ -59,7 +59,7 @@ public class NeoGuildSettings {
 
     private final NeoGuildPlayerOptions playerOptions;
     private final Map<Module, Map<String, Object>> customField = new HashMap<>();
-    
+
     public void setCommandPrefix(String commandPrefix) {
         this.commandPrefix = commandPrefix;
         try {
@@ -233,7 +233,7 @@ public class NeoGuildSettings {
         }
 
         @Override
-        public ClassLoader getClassLoder() {
+        public ClassLoader getClassLoader() {
             throw new UnsupportedOperationException("This module class is a dummy for data retention.");
         }
 

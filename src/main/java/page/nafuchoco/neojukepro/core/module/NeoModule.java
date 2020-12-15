@@ -143,7 +143,7 @@ public abstract class NeoModule implements Module {
     }
 
     @Override
-    public ModuleClassLoader getClassLoder() {
+    public ModuleClassLoader getClassLoader() {
         return (ModuleClassLoader) classLoader;
     }
 
