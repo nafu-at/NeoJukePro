@@ -23,8 +23,6 @@ import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
-import java.sql.SQLException;
-
 @Slf4j
 public class SettingsCommand extends CommandExecutor {
 
@@ -34,39 +32,35 @@ public class SettingsCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        try {
-            if (context.getArgs().length < 2) {
+        if (context.getArgs().length < 2) {
+            context.getChannel().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
+        } else switch (context.getArgs()[0]) {
+            case "prefix":
+                if (context.getArgs()[1].equals("default"))
+                    context.getNeoGuild().getSettings().setCommandPrefix(context.getNeoJukePro().getConfig().getBasicConfig().getPrefix());
+                else
+                    context.getNeoGuild().getSettings().setCommandPrefix(context.getArgs()[1]);
+                context.getChannel().sendMessage(MessageManager.getMessage("command.set.prefix.set")).queue();
+                break;
+
+            case "robot":
+                context.getNeoGuild().getSettings().setRobotMode(BooleanUtils.toBoolean(context.getArgs()[1]));
+                context.getChannel().sendMessage(MessageManager.getMessage("command.set.robot.set")).queue();
+                break;
+
+            case "jukebox":
+                context.getNeoGuild().getSettings().setJukeboxMode(BooleanUtils.toBoolean(context.getArgs()[1]));
+                context.getChannel().sendMessage(MessageManager.getMessage("command.set.autoplay.set")).queue();
+                break;
+
+            default:
                 context.getChannel().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
-            } else switch (context.getArgs()[0]) {
-                case "prefix":
-                    if (context.getArgs()[1].equals("default"))
-                        context.getNeoGuild().getSettings().setCommandPrefix(context.getNeoJukePro().getConfig().getBasicConfig().getPrefix());
-                    else
-                        context.getNeoGuild().getSettings().setCommandPrefix(context.getArgs()[1]);
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.set.prefix.set")).queue();
-                    break;
+                break;
 
-                case "robot":
-                    context.getNeoGuild().getSettings().setRobotMode(BooleanUtils.toBoolean(context.getArgs()[1]));
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.set.robot.set")).queue();
-                    break;
-
-                case "jukebox":
-                    context.getNeoGuild().getSettings().setJukeboxMode(BooleanUtils.toBoolean(context.getArgs()[1]));
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.set.autoplay.set")).queue();
-                    break;
-
-                default:
-                    context.getChannel().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
-                    break;
-
-            }
-        } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
         }
     }
 
-    private String getGuildSettings(NeoGuild neoGuild) throws SQLException {
+    private String getGuildSettings(NeoGuild neoGuild) {
         StringBuilder builder = new StringBuilder(MessageManager.getMessage("command.set.current") + "\n```\n");
         builder.append("Prefix: " + neoGuild.getSettings().getCommandPrefix() + "\n");
         builder.append("RobotMode: " + neoGuild.getSettings().isRobotMode() + "\n");

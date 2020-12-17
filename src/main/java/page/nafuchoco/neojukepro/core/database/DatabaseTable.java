@@ -27,7 +27,7 @@ public abstract class DatabaseTable {
     private final String tablename;
     private final DatabaseConnector connector;
 
-    public DatabaseTable(String prefix, String tablename, DatabaseConnector connector) {
+    protected DatabaseTable(String prefix, String tablename, DatabaseConnector connector) {
         this.tablename = prefix + tablename;
         this.connector = connector;
     }
@@ -35,7 +35,7 @@ public abstract class DatabaseTable {
     /**
      * @since 1.2
      */
-    public DatabaseTable(String tablename, DatabaseConnector connector) {
+    protected DatabaseTable(String tablename, DatabaseConnector connector) {
         this.tablename = PREFIX + tablename;
         this.connector = connector;
     }

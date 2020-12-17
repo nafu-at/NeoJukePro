@@ -42,6 +42,7 @@ import page.nafuchoco.neojukepro.core.executor.system.DeleteCommand;
 import page.nafuchoco.neojukepro.core.executor.system.ShutdownCommand;
 import page.nafuchoco.neojukepro.core.executor.system.SystemCommand;
 import page.nafuchoco.neojukepro.core.executor.system.UpdateCommand;
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildRegistry;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAPIClient;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAppInfo;
@@ -174,7 +175,7 @@ public class Launcher implements NeoJukeLauncher {
             log.info("Shutting down the system...");
             moduleManager.disableAllModules();
             if (lavalink != null) {
-                guildRegistry.getNeoGuilds().forEach(neoGuild -> neoGuild.destroyAudioPlayer());
+                guildRegistry.getNeoGuilds().forEach(NeoGuild::destroyAudioPlayer);
                 lavalink.shutdown();
             }
             shardManager.shutdown();

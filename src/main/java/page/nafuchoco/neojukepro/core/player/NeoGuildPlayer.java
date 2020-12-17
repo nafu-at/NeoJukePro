@@ -100,7 +100,7 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
                 player.playTrack(playingTrack.getTrack());
                 player.seekTo(playingTrack.getStartPosition());
             }
-        } else if (player.isPaused() && playingTrack != null && player.getPlayingTrack() == null) {
+        } else if (player.isPaused() && player.getPlayingTrack() == null) {
             playingTrack = playingTrack.makeClone(0);
             player.playTrack(playingTrack.getTrack());
             player.seekTo(playingTrack.getStartPosition());
@@ -221,14 +221,13 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
     @Override
     public synchronized void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason == AudioTrackEndReason.FINISHED || endReason == AudioTrackEndReason.STOPPED) {
-            if (endReason == AudioTrackEndReason.FINISHED) {
-                if (playingTrack != null &&
-                        getNeoGuild().getSettings().getPlayerOptions().getRepeatMode() == NeoGuildPlayerOptions.RepeatMode.SINGLE) {
-                    LoadedTrackContext newTrack = playingTrack.makeClone(0);
-                    playingTrack = null;
-                    play(newTrack);
-                    return;
-                }
+            if (endReason == AudioTrackEndReason.FINISHED
+                    && playingTrack != null
+                    && getNeoGuild().getSettings().getPlayerOptions().getRepeatMode() == NeoGuildPlayerOptions.RepeatMode.SINGLE) {
+                LoadedTrackContext newTrack = playingTrack.makeClone(0);
+                playingTrack = null;
+                play(newTrack);
+                return;
             }
 
             if (playingTrack != null && getNeoGuild().getSettings().getPlayerOptions().getRepeatMode() == NeoGuildPlayerOptions.RepeatMode.ALL) {
@@ -239,16 +238,15 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
                     && playingTrack.getTrack() instanceof YoutubeAudioTrack
                     && trackProvider.getQueues().isEmpty()
                     && client != null
-                    && getNeoJukePro().getConfig().getAdvancedConfig().isEnableRelatedVideoSearch()) {
-                if (getNeoGuild().getSettings().isJukeboxMode()) {
-                    try {
+                    && getNeoJukePro().getConfig().getAdvancedConfig().isEnableRelatedVideoSearch()
+                    && getNeoGuild().getSettings().isJukeboxMode()) {
+                try {
 
-                        YouTubeSearchResults results =
-                                client.searchVideos(YouTubeAPIClient.SearchType.RELATED, playingTrack.getTrack().getIdentifier(), null);
-                        play(new AudioTrackLoader(new TrackContext(getNeoGuild(), getPlayingTrack().getInvoker(), 0, "https://www.youtube.com/watch?v=" + results.getItems()[RandomUtils.nextInt(0, 4)].getID().getVideoID())));
-                    } catch (IOException e) {
-                        log.warn(MessageManager.getMessage("command.play.search.failed"));
-                    }
+                    YouTubeSearchResults results =
+                            client.searchVideos(YouTubeAPIClient.SearchType.RELATED, playingTrack.getTrack().getIdentifier(), null);
+                    play(new AudioTrackLoader(new TrackContext(getNeoGuild(), getPlayingTrack().getInvoker(), 0, "https://www.youtube.com/watch?v=" + results.getItems()[RandomUtils.nextInt(0, 4)].getID().getVideoID())));
+                } catch (IOException e) {
+                    log.warn(MessageManager.getMessage("command.play.search.failed"));
                 }
             }
 

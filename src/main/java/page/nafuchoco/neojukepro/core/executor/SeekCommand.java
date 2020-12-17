@@ -28,9 +28,9 @@ public class SeekCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        if (context.getArgs().length != 0) {
-            if (context.getNeoGuild().getAudioPlayer().getPlayingTrack() != null)
-                context.getNeoGuild().getAudioPlayer().seekTo(MessageUtil.parseTimeToMillis(context.getArgs()[0]));
+        if (context.getArgs().length != 0
+                && context.getNeoGuild().getAudioPlayer().getPlayingTrack() != null) {
+            context.getNeoGuild().getAudioPlayer().seekTo(MessageUtil.parseTimeToMillis(context.getArgs()[0]));
         }
     }
 

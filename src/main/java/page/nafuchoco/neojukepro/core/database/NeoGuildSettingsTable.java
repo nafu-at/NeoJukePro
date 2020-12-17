@@ -25,8 +25,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class NeoGuildSettingsTable extends DatabaseTable {
     private static final Gson gson = new Gson();
@@ -64,7 +62,6 @@ public class NeoGuildSettingsTable extends DatabaseTable {
      * @throws SQLException Thrown if the guild setting fails to be obtained.
      */
     public NeoGuildSettings getGuildSettings(long guildId) throws SQLException {
-        Map<String, String> map = new HashMap<>();
         try (Connection connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "SELECT * FROM " + getTablename() + " WHERE guild_id = ?")) {

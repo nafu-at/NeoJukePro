@@ -30,11 +30,9 @@ public class DeleteCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         TextChannel channel = context.getChannel();
         channel.getHistory().retrievePast(50).queue(messages -> messages.forEach(message -> {
-            if (message.getAuthor().equals(context.getMessage().getJDA().getSelfUser())) {
+            if (message.getAuthor().equals(context.getMessage().getJDA().getSelfUser())
+                    || message.getContentRaw().startsWith(context.getNeoGuild().getSettings().getCommandPrefix()))
                 message.delete().submit();
-            } else if (message.getContentRaw().startsWith(context.getNeoGuild().getSettings().getCommandPrefix())) {
-                message.delete().submit();
-            }
         }));
     }
 

@@ -16,8 +16,6 @@
 
 package page.nafuchoco.neojukepro.core.guild;
 
-import net.dv8tion.jda.api.entities.Guild;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +36,7 @@ public class NeoGuildTempRegistry {
         return tempRegistry.get(key);
     }
 
-    public Set<Map.Entry<String, Object>> getTemps(Guild guild) {
+    public Set<Map.Entry<String, Object>> getTemps() {
         return tempRegistry.entrySet();
     }
 
