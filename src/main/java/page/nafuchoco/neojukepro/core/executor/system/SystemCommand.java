@@ -47,7 +47,7 @@ public class SystemCommand extends CommandExecutor {
         builder.append("```\n");
         builder.append("====== System Info ======\n");
         builder.append("Operating System:      " + System.getProperty("os.name") + "\n");
-        builder.append("JVM Version:           " + System.getProperty("java.version") + "\n");
+        builder.append("JVM Version:           " + System.getProperty("java.version") + "\n\n");
         builder.append("====== Memory Info ======\n");
         builder.append("Reserved memory:       " + total + "MB\n");
         builder.append("  -> Used:             " + used + "MB\n");
