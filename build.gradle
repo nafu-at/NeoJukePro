@@ -58,7 +58,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.14'
 
     // ClientLib
-    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
     api('net.dv8tion:JDA:4.2.0_212') {
         exclude module: 'opus-java'
     }
