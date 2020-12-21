@@ -21,16 +21,16 @@ jar {
 }
 
 shadowJar {
-    archiveName = "NeoJukePro.${extension}"
+    archiveFileName.set("NeoJukePro." + archiveExtension.get())
 }
 
 task sourcesJar(type: Jar, dependsOn: 'classes') {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier.set('sources')
 }
 task javadocJar(type: Jar, dependsOn: 'javadoc') {
     from javadoc.destinationDir
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
 }
 javadoc {
     options.charSet = 'UTF-8'
