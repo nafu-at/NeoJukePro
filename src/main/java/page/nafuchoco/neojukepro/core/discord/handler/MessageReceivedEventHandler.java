@@ -18,6 +18,7 @@ package page.nafuchoco.neojukepro.core.discord.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
@@ -27,7 +28,9 @@ import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -107,6 +110,13 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
             return null;
         String commandTrigger = args[0];
 
+        // メンションされたユーザーの一覧
+        List<Member> mentioned = Arrays.stream(args)
+                .filter(arg -> MENTION_REGEX.matcher(arg).find())
+                .map(member -> neoGuild.getJDAGuild().getMember(
+                        neoJukePro.getShardManager().getUserById(member.substring(3, member.length() - 1))))
+                .collect(Collectors.toList());
+
         // メンションを削除
         args = Arrays.stream(args).filter(arg -> !MENTION_REGEX.matcher(arg).find()).toArray(String[]::new);
 
@@ -123,6 +133,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                     event.getMessage(),
                     commandTrigger,
                     Arrays.copyOfRange(args, 1, args.length),
+                    mentioned,
                     command);
     }
 

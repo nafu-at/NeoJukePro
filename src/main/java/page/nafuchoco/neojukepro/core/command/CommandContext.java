@@ -19,11 +19,14 @@ package page.nafuchoco.neojukepro.core.command;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
+
+import java.util.List;
 
 @AllArgsConstructor
 @ToString
@@ -37,6 +40,7 @@ public class CommandContext {
 
     private final String trigger;
     private final String[] args;
+    private final List<Member> mentioned;
     private final CommandExecutor command;
 
     public NeoJukePro getNeoJukePro() {
@@ -85,6 +89,14 @@ public class CommandContext {
      */
     public String[] getArgs() {
         return args;
+    }
+
+    /**
+     * @return List of Mentioned Members
+     * @since v2.0
+     */
+    public List<Member> getMentioned() {
+        return mentioned;
     }
 
     /**

@@ -30,7 +30,7 @@ public class UserPermCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        if (context.getArgs().length != 0 && !context.getMessage().getMentionedMembers().isEmpty()) {
+        if (context.getArgs().length != 0 && !context.getMentioned().isEmpty()) {
             try {
                 int permissions = Integer.parseInt(context.getArgs()[0]);
                 if (permissions >= 0 && permissions <= 255) {
