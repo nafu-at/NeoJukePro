@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 くまねこそふと.
+ * Copyright 2020 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
@@ -74,7 +74,7 @@ public class ListCommand extends CommandExecutor {
                 if (tracks.size() >= count && sb.length() < 1800) {
                     LoadedTrackContext track = tracks.get(count - 1);
                     sb.append("\n`[" + count + "]` **" + track.getTrack().getInfo().title
-                            + " (" + track.getInvoker().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration() - track.getStartPosition()) + "]`");
+                            + " (" + track.getInvoker().getJDAMember().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration() - track.getStartPosition()) + "]`");
                 }
             }
             context.getChannel().sendMessage(sb.toString()).queue();

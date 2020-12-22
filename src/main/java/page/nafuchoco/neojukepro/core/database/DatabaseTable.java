@@ -16,27 +16,16 @@
 
 package page.nafuchoco.neojukepro.core.database;
 
-import page.nafuchoco.neojukepro.core.Main;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public abstract class DatabaseTable {
-    private static final String PREFIX = Main.getLauncher().getConfig().getBasicConfig().getDatabase().getTablePrefix();
     private final String tablename;
     private final DatabaseConnector connector;
 
     protected DatabaseTable(String prefix, String tablename, DatabaseConnector connector) {
         this.tablename = prefix + tablename;
-        this.connector = connector;
-    }
-
-    /**
-     * @since 1.2
-     */
-    protected DatabaseTable(String tablename, DatabaseConnector connector) {
-        this.tablename = PREFIX + tablename;
         this.connector = connector;
     }
 

@@ -31,13 +31,13 @@ public class NeoGuildSettingsTable extends DatabaseTable {
 
     private final NeoJukePro neoJukePro;
 
-    public NeoGuildSettingsTable(NeoJukePro neoJukePro, String tablename, DatabaseConnector connector) {
-        super(tablename, connector);
+    public NeoGuildSettingsTable(NeoJukePro neoJukePro, String prefix, String tablename, DatabaseConnector connector) {
+        super(prefix, tablename, connector);
         this.neoJukePro = neoJukePro;
     }
 
-    public NeoGuildSettingsTable(NeoJukePro neoJukePro, DatabaseConnector connector) {
-        super("neo_guild_settings", connector);
+    public NeoGuildSettingsTable(NeoJukePro neoJukePro, String prefix, DatabaseConnector connector) {
+        super(prefix, "neo_guild_settings", connector);
         this.neoJukePro = neoJukePro;
     }
 

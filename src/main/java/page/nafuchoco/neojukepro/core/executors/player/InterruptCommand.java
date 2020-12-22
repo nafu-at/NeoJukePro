@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -37,7 +37,7 @@ public class InterruptCommand extends CommandExecutor {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         if (context.getArgs().length >= 2) {
             if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
-                VoiceChannel targetChannel = context.getInvoker().getVoiceState().getChannel();
+                VoiceChannel targetChannel = context.getInvoker().getJDAMember().getVoiceState().getChannel();
                 if (targetChannel == null) {
                     context.getChannel().sendMessage(MessageManager.getMessage("command.join.before")).queue();
                     return;

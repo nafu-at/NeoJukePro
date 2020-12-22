@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 PandaSoft.Dev Social Networks.
+ * Copyright 2020 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.system;
 
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciithemes.TA_GridThemes;

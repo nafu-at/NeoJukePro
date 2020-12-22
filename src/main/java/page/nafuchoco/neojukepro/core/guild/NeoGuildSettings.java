@@ -25,7 +25,6 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.database.NeoGuildSettingsTable;
@@ -65,7 +64,7 @@ public class NeoGuildSettings {
         try {
             settingsTable.updateCommandPrefixSetting(guildId, commandPrefix);
         } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }
     }
 
@@ -74,7 +73,7 @@ public class NeoGuildSettings {
         try {
             settingsTable.updateRobotModeSetting(guildId, robotMode);
         } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }
     }
 
@@ -83,7 +82,7 @@ public class NeoGuildSettings {
         try {
             settingsTable.updateJukeboxModeSetting(guildId, jukeboxMode);
         } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }
     }
 
@@ -93,7 +92,7 @@ public class NeoGuildSettings {
         try {
             settingsTable.updatePlayerOptions(guildId, getPlayerOptions());
         } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }
     }
 
@@ -102,7 +101,7 @@ public class NeoGuildSettings {
         try {
             settingsTable.updatePlayerOptions(guildId, getPlayerOptions());
         } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }
     }
 
@@ -113,7 +112,7 @@ public class NeoGuildSettings {
         try {
             settingsTable.updatePlayerOptions(guildId, getPlayerOptions());
         } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }
     }
 
@@ -122,7 +121,7 @@ public class NeoGuildSettings {
         try {
             settingsTable.updateCustomField(guildId, serializeCustomFieldToJson());
         } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }
     }
 
@@ -131,7 +130,7 @@ public class NeoGuildSettings {
         try {
             settingsTable.updateCustomField(guildId, serializeCustomFieldToJson());
         } catch (SQLException e) {
-            log.error(MessageManager.getMessage("system.db.communicate.error"));
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }
     }
 
@@ -148,7 +147,7 @@ public class NeoGuildSettings {
         Gson gson = new Gson();
         JsonObject customFieldJson = gson.fromJson(jsonString, JsonObject.class);
         for (String moduleName : customFieldJson.keySet()) {
-            Module module = Main.getLauncher().getModuleManager().getModule(moduleName);
+            Module module = getNeoJukePro().getModuleManager().getModule(moduleName);
             if (module == null)
                 module = new DummyNeoModule(moduleName);
             Map<String, Object> field = gson.fromJson(customFieldJson.get(moduleName).getAsString(), new TypeToken<Map<String, Object>>() {

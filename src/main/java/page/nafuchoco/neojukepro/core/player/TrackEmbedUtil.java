@@ -113,8 +113,9 @@ public class TrackEmbedUtil {
             descMessage = descMessage.substring(0, 800) + " [...]";
         MessageEmbed.Field description = new MessageEmbed.Field("Description", descMessage, false);
         builder.addField(description);
-        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getPlayingTrack().getInvoker().getEffectiveName()),
-                audioPlayer.getPlayingTrack().getInvoker().getUser().getAvatarUrl());
+        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"),
+                audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getEffectiveName()),
+                audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getUser().getAvatarUrl());
         return builder.build();
     }
 
@@ -130,8 +131,9 @@ public class TrackEmbedUtil {
         MessageEmbed.Field source = new MessageEmbed.Field("",
                 "Loaded from " + audioPlayer.getPlayingTrack().getTrack().getSourceManager().getSourceName() + ".", false);
         builder.addField(source);
-        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"), audioPlayer.getPlayingTrack().getInvoker().getEffectiveName()),
-                audioPlayer.getPlayingTrack().getInvoker().getUser().getAvatarUrl());
+        builder.setFooter(MessageUtil.format(MessageManager.getMessage("command.nowplay.request"),
+                audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getEffectiveName()),
+                audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getUser().getAvatarUrl());
         return builder.build();
     }
 }

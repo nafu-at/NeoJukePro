@@ -14,37 +14,31 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor.system;
+package page.nafuchoco.neojukepro.core.executors.player;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.MessageUtil;
 
-public class ShutdownCommand extends CommandExecutor {
+public class ShuffleCommand extends CommandExecutor {
 
-    public ShutdownCommand(String name, String... aliases) {
+    public ShuffleCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        if (context.getArgs().length == 0) {
-            String pass = RandomStringUtils.randomAlphanumeric(6);
-            context.getNeoGuild().getGuildTempRegistry().registerTemp("shutdownKey", pass);
-            context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.shutdown.key"), pass)).queue();
-        } else {
-            if (context.getArgs()[0].equals(context.getNeoGuild().getGuildTempRegistry().deleteTemp("shutdownKey")))
-                Runtime.getRuntime().exit(0);
-            else
-                context.getChannel().sendMessage(MessageManager.getMessage("command.shutdown.key.incorrect")).queue();
-        }
+        context.getNeoGuild().getSettings().setShuffle(!context.getNeoGuild().getSettings().getPlayerOptions().isShuffle());
+        context.getChannel().sendMessage(
+                MessageUtil.format(
+                        MessageManager.getMessage("command.shuffle"),
+                        context.getNeoGuild().getSettings().getPlayerOptions().isShuffle())).queue();
     }
 
     @Override
     public String getDescription() {
-        return "Exit the system.";
+        return "Shuffle the registered queues.";
     }
 
     @Override
@@ -54,6 +48,6 @@ public class ShutdownCommand extends CommandExecutor {
 
     @Override
     public int getRequiredPerm() {
-        return 254;
+        return 0;
     }
 }

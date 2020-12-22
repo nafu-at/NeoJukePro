@@ -24,14 +24,16 @@ import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.*;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
+import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 @Slf4j
 @AllArgsConstructor
 public final class MessageReceivedEventHandler extends ListenerAdapter {
+    private static final Pattern MENTION_REGEX = Pattern.compile("<@!?[0-9]{18}>");
     private final NeoJukePro neoJukePro;
-    private final CommandExecuteAuth authManager;
     private final CommandRegistry registry;
 
     @Override
@@ -46,6 +48,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
             return;
 
         NeoGuild neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
+        NeoGuildMember neoGuildMember = neoGuild.getGuildMemberRegistry().getNeoGuildMember(event.getMember().getIdLong());
         String prefix = neoGuild.getSettings().getCommandPrefix();
         boolean robot = neoGuild.getSettings().isRobotMode();
 
@@ -66,9 +69,11 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         if (input.isEmpty())
             return;
 
+        neoGuild.setLastJoinedChannel(event.getTextChannel());
+
         String[] commands = input.split("; ");
         for (String commandString : commands) {
-            CommandContext context = parseCommand(neoGuild, commandString, event);
+            CommandContext context = parseCommand(neoGuild, neoGuildMember, commandString, event);
             if (context == null) {
                 event.getChannel().sendMessage(MessageUtil.format(
                         MessageManager.getMessage("command.nocommand"), commandString, prefix)).queue();
@@ -76,8 +81,12 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 log.debug("Command Received: {}", context.toString());
 
                 // コマンドの実行権限の確認
-                if (authManager.getUserPerm(event.getMember()) <
-                        context.getCommand().getRequiredPerm()) {
+                // 0 = Normal User.
+                // 252 = Guild Admin.
+                // 253 = Guild Owner.
+                // 254 = Bot Admin.
+                // 255 = Bot Owner.
+                if (neoGuildMember.getUserPermission() < context.getCommand().getRequiredPerm()) {
                     event.getChannel().sendMessage(MessageManager.getMessage("command.nopermission")).queue();
                     continue;
                 }
@@ -89,15 +98,17 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 }
             }
         }
-        neoGuild.setLastJoinedChannel(event.getTextChannel());
     }
 
-    private CommandContext parseCommand(NeoGuild neoGuild, String commandString, MessageReceivedEvent event) {
+    private CommandContext parseCommand(NeoGuild neoGuild, NeoGuildMember neoGuildMember, String commandString, MessageReceivedEvent event) {
         // コマンドオプションを分割
         String[] args = commandString.split("\\p{javaSpaceChar}+");
         if (args.length == 0)
             return null;
         String commandTrigger = args[0];
+
+        // メンションを削除
+        args = Arrays.stream(args).filter(arg -> !MENTION_REGEX.matcher(arg).find()).toArray(String[]::new);
 
         // コマンドクラスの取得
         CommandExecutor command = registry.getExecutor(commandTrigger.toLowerCase());
@@ -108,7 +119,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                     neoJukePro,
                     neoGuild,
                     event.getTextChannel(),
-                    event.getMember(),
+                    neoGuildMember,
                     event.getMessage(),
                     commandTrigger,
                     Arrays.copyOfRange(args, 1, args.length),

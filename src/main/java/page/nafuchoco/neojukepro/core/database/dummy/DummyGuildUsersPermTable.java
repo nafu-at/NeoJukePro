@@ -27,7 +27,7 @@ public class DummyGuildUsersPermTable extends GuildUsersPermTable {
     private final Map<Long, Map<Long, Integer>> tableMap;
 
     public DummyGuildUsersPermTable() {
-        super(null);
+        super(null, null);
         tableMap = new HashMap<>();
     }
 

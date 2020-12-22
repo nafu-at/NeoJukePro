@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
-import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
-public class ShuffleCommand extends CommandExecutor {
+public class LeaveCommand extends CommandExecutor {
 
-    public ShuffleCommand(String name, String... aliases) {
+    public LeaveCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        context.getNeoGuild().getSettings().setShuffle(!context.getNeoGuild().getSettings().getPlayerOptions().isShuffle());
-        context.getChannel().sendMessage(
-                MessageUtil.format(
-                        MessageManager.getMessage("command.shuffle"),
-                        context.getNeoGuild().getSettings().getPlayerOptions().isShuffle())).queue();
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        audioPlayer.setPaused(true);
+        audioPlayer.leaveChannel();
     }
 
     @Override
     public String getDescription() {
-        return "Shuffle the registered queues.";
+        return "Exits the Bot from the voice channel.";
     }
 
     @Override

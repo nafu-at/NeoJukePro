@@ -25,7 +25,7 @@ import java.sql.SQLException;
 public class DummyNeoGuildSettingsTable extends NeoGuildSettingsTable {
 
     public DummyNeoGuildSettingsTable() {
-        super(null, null);
+        super(null, null, null);
     }
 
     @Override

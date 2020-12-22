@@ -36,8 +36,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
+import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMemberRegistry;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 /**
@@ -49,6 +50,7 @@ public class NeoGuild {
     private final NeoJukePro neoJukePro;
     private final long discordGuildId;
     private final NeoGuildSettings settings;
+    private final NeoGuildMemberRegistry guildMemberRegistry;
     private final NeoGuildTempRegistry guildTempRegistry;
     private final AudioPlayerManager audioPlayerManager;
 
@@ -57,10 +59,11 @@ public class NeoGuild {
     private TextChannel lastJoinedChannel;
     private NeoGuildPlayer audioPlayer;
 
-    public NeoGuild(NeoJukePro neoJukePro, long discordGuildId, NeoGuildSettings settings) {
+    public NeoGuild(NeoJukePro neoJukePro, long discordGuildId, NeoGuildSettings settings, GuildUsersPermTable permTable) {
         this.neoJukePro = neoJukePro;
         this.discordGuildId = discordGuildId;
         this.settings = settings;
+        this.guildMemberRegistry = new NeoGuildMemberRegistry(neoJukePro, permTable, this);
         guildTempRegistry = new NeoGuildTempRegistry();
         audioPlayerManager = new DefaultAudioPlayerManager();
 
@@ -80,15 +83,11 @@ public class NeoGuild {
     }
 
     public Guild getJDAGuild() {
-        return Main.getLauncher().getShardManager().getGuildById(discordGuildId);
+        return getNeoJukePro().getShardManager().getGuildById(discordGuildId);
     }
 
     public void setLastJoinedChannel(TextChannel lastJoinedChannel) {
         this.lastJoinedChannel = lastJoinedChannel;
-    }
-
-    public NeoGuildTempRegistry getGuildTempRegistry() {
-        return guildTempRegistry;
     }
 
     public NeoGuildPlayer getAudioPlayer() {

@@ -14,39 +14,39 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
-public class StatusCommand extends CommandExecutor {
+public class JoinCommand extends CommandExecutor {
 
-    public StatusCommand(String name, String... aliases) {
+    public JoinCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        NeoGuildPlayerOptions playerOptions = context.getNeoGuild().getSettings().getPlayerOptions();
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        StringBuilder builder = new StringBuilder(MessageUtil.format(MessageManager.getMessage("command.status")) + "\n```");
-        builder.append("Playing Track: " + audioPlayer.getPlayingTrack().getTrack().getInfo().title + "\n");
-        builder.append("Registered Queues: " + audioPlayer.getTrackProvider().getQueues().size() + "\n");
-        builder.append("Pause: " + audioPlayer.isPaused() + "\n");
-        builder.append("Volume: " + audioPlayer.getVolume() + "\n");
-        builder.append("Shuffle: " + playerOptions.isShuffle() + "\n");
-        builder.append("Repeat Mode: " + playerOptions.getRepeatMode() + "\n");
-        builder.append("```");
-        context.getChannel().sendMessage(builder.toString()).queue();
+        VoiceChannel targetChannel = context.getInvoker().getJDAMember().getVoiceState().getChannel();
+        try {
+            if (targetChannel == null)
+                context.getChannel().sendMessage(MessageManager.getMessage("command.join.before")).queue();
+            else
+                audioPlayer.joinChannel(targetChannel);
+        } catch (InsufficientPermissionException e) {
+            context.getChannel().sendMessage(
+                    MessageManager.getMessage("command.channel.permission")).queue();
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Displays the current state of the player.";
+        return "Connect the bot to the voice channel.";
     }
 
     @Override

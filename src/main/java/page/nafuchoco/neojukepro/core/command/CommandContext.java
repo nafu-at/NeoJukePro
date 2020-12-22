@@ -19,11 +19,11 @@ package page.nafuchoco.neojukepro.core.command;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
+import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
 
 @AllArgsConstructor
 @ToString
@@ -32,7 +32,7 @@ public class CommandContext {
     private final NeoJukePro neoJukePro;
     private final NeoGuild neoGuild;
     private final TextChannel channel;
-    private final Member invoker;
+    private final NeoGuildMember invoker;
     private final Message message;
 
     private final String trigger;
@@ -60,8 +60,9 @@ public class CommandContext {
 
     /**
      * @return Command executed member
+     * @since v2.0
      */
-    public Member getInvoker() {
+    public NeoGuildMember getInvoker() {
         return invoker;
     }
 

@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 
-public class DestroyCommand extends CommandExecutor {
+public class PauseCommand extends CommandExecutor {
 
-    public DestroyCommand(String name, String... aliases) {
+    public PauseCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        context.getNeoGuild().destroyAudioPlayer();
+        context.getNeoGuild().getAudioPlayer().setPaused(!context.getNeoGuild().getAudioPlayer().isPaused());
     }
 
     @Override
     public String getDescription() {
-        return "Destroy the player.";
+        return "Pauses the playing track.";
     }
 
     @Override

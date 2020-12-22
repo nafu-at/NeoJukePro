@@ -14,39 +14,30 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
-public class JoinCommand extends CommandExecutor {
+public class RePlayCommand extends CommandExecutor {
 
-    public JoinCommand(String name, String... aliases) {
+    public RePlayCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        VoiceChannel targetChannel = context.getInvoker().getVoiceState().getChannel();
-        try {
-            if (targetChannel == null)
-                context.getChannel().sendMessage(MessageManager.getMessage("command.join.before")).queue();
-            else
-                audioPlayer.joinChannel(targetChannel);
-        } catch (InsufficientPermissionException e) {
-            context.getChannel().sendMessage(
-                    MessageManager.getMessage("command.channel.permission")).queue();
+        if (audioPlayer.getPlayingTrack() != null) {
+            audioPlayer.play(audioPlayer.getPlayingTrack().makeClone(1));
+            audioPlayer.skip();
         }
     }
 
     @Override
     public String getDescription() {
-        return "Connect the bot to the voice channel.";
+        return "Play the currently playing track again.";
     }
 
     @Override

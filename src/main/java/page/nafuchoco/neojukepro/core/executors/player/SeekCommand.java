@@ -14,33 +14,35 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 
-public class LeaveCommand extends CommandExecutor {
+public class SeekCommand extends CommandExecutor {
 
-    public LeaveCommand(String name, String... aliases) {
+    public SeekCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        audioPlayer.setPaused(true);
-        audioPlayer.leaveChannel();
+        if (context.getArgs().length != 0
+                && context.getNeoGuild().getAudioPlayer().getPlayingTrack() != null) {
+            context.getNeoGuild().getAudioPlayer().seekTo(MessageUtil.parseTimeToMillis(context.getArgs()[0]));
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Exits the Bot from the voice channel.";
+        return "Seek the currently playing track.";
     }
 
     @Override
     public String getHelp() {
-        return null;
+        return getName() + "[<ToTime>]\n----\n" +
+                "[<ToTime>]: Seek the currently playing track.";
     }
 
     @Override

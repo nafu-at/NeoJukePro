@@ -14,30 +14,37 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.system;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.core.command.MessageUtil;
 
-public class StopCommand extends CommandExecutor {
+public class ShutdownCommand extends CommandExecutor {
 
-    public StopCommand(String name, String... aliases) {
+    public ShutdownCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        audioPlayer.stop();
-        context.getChannel().sendMessage(MessageManager.getMessage("command.stop")).queue();
-        audioPlayer.leaveChannel();
+        if (context.getArgs().length == 0) {
+            String pass = RandomStringUtils.randomAlphanumeric(6);
+            context.getNeoGuild().getGuildTempRegistry().registerTemp("shutdownKey", pass);
+            context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.shutdown.key"), pass)).queue();
+        } else {
+            if (context.getArgs()[0].equals(context.getNeoGuild().getGuildTempRegistry().deleteTemp("shutdownKey")))
+                Runtime.getRuntime().exit(0);
+            else
+                context.getChannel().sendMessage(MessageManager.getMessage("command.shutdown.key.incorrect")).queue();
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Stops the player.";
+        return "Exit the system.";
     }
 
     @Override
@@ -47,6 +54,6 @@ public class StopCommand extends CommandExecutor {
 
     @Override
     public int getRequiredPerm() {
-        return 0;
+        return 254;
     }
 }

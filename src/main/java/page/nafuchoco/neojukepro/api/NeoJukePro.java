@@ -22,6 +22,7 @@ import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildRegistry;
+import page.nafuchoco.neojukepro.core.http.discord.DiscordAppInfo;
 import page.nafuchoco.neojukepro.core.module.ModuleManager;
 import page.nafuchoco.neojukepro.core.player.CustomSourceRegistry;
 
@@ -30,6 +31,11 @@ public interface NeoJukePro {
     NeoJukeConfig getConfig();
 
     DatabaseConnector getConnector();
+
+    /**
+     * @since v2.0
+     */
+    DiscordAppInfo getDiscordAppInfo();
 
     /**
      * @since v2.0

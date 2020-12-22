@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor.system;
+package page.nafuchoco.neojukepro.core.executors.system;
 
 import net.dv8tion.jda.api.sharding.ShardManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;

@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
-public class PauseCommand extends CommandExecutor {
+public class StopCommand extends CommandExecutor {
 
-    public PauseCommand(String name, String... aliases) {
+    public StopCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        context.getNeoGuild().getAudioPlayer().setPaused(!context.getNeoGuild().getAudioPlayer().isPaused());
+        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        audioPlayer.stop();
+        context.getChannel().sendMessage(MessageManager.getMessage("command.stop")).queue();
+        audioPlayer.leaveChannel();
     }
 
     @Override
     public String getDescription() {
-        return "Pauses the playing track.";
+        return "Stops the player.";
     }
 
     @Override

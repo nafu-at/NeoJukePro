@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
 import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.core.Main;

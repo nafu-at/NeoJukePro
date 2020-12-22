@@ -19,7 +19,6 @@ package page.nafuchoco.neojukepro.core.guild;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.database.NeoGuildSettingsTable;
@@ -61,7 +60,7 @@ public class NeoGuildRegistry {
                         neoJukePro,
                         settingsTable,
                         key,
-                        Main.getLauncher().getConfig().getBasicConfig().getPrefix(),
+                        getNeoJukePro().getConfig().getBasicConfig().getPrefix(),
                         false,
                         false,
                         new NeoGuildPlayerOptions(100, NeoGuildPlayerOptions.RepeatMode.NONE, false));
@@ -72,7 +71,7 @@ public class NeoGuildRegistry {
                 }
             }
 
-            return new NeoGuild(getNeoJukePro(), key, guildSettings);
+            return new NeoGuild(getNeoJukePro(), key, guildSettings, permTable);
         });
     }
 

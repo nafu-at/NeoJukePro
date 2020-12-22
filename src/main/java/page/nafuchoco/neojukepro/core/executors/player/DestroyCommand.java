@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 くまねこそふと.
+ * Copyright 2020 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,35 +14,30 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executor;
+package page.nafuchoco.neojukepro.core.executors.player;
 
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
 
-public class SeekCommand extends CommandExecutor {
+public class DestroyCommand extends CommandExecutor {
 
-    public SeekCommand(String name, String... aliases) {
+    public DestroyCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        if (context.getArgs().length != 0
-                && context.getNeoGuild().getAudioPlayer().getPlayingTrack() != null) {
-            context.getNeoGuild().getAudioPlayer().seekTo(MessageUtil.parseTimeToMillis(context.getArgs()[0]));
-        }
+        context.getNeoGuild().destroyAudioPlayer();
     }
 
     @Override
     public String getDescription() {
-        return "Seek the currently playing track.";
+        return "Destroy the player.";
     }
 
     @Override
     public String getHelp() {
-        return getName() + "[<ToTime>]\n----\n" +
-                "[<ToTime>]: Seek the currently playing track.";
+        return null;
     }
 
     @Override
