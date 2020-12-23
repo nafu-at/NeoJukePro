@@ -97,7 +97,7 @@ public class Launcher implements NeoJukeLauncher {
             log.info(MessageManager.getMessage("system.db.connection"));
             DatabaseSection database = config.getBasicConfig().getDatabase();
             connector = new DatabaseConnector(
-                    database.getDatabaseType().getAddressPrefix() + database.getAddress(), database.getDatabase(),
+                    database.getDatabaseType(), database.getAddress(), database.getDatabase(),
                     database.getUsername(), database.getPassword());
             settingsTable = new NeoGuildSettingsTable(this, database.getTablePrefix(), connector);
             usersPermTable = new GuildUsersPermTable(database.getTablePrefix(), connector);
