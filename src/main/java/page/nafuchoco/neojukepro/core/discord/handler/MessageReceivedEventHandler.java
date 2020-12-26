@@ -51,7 +51,6 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
             return;
 
         NeoGuild neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
-        NeoGuildMember neoGuildMember = neoGuild.getGuildMemberRegistry().getNeoGuildMember(event.getMember().getIdLong());
         String prefix = neoGuild.getSettings().getCommandPrefix();
         boolean robot = neoGuild.getSettings().isRobotMode();
 
@@ -72,6 +71,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         if (input.isEmpty())
             return;
 
+        NeoGuildMember neoGuildMember = neoGuild.getGuildMemberRegistry().getNeoGuildMember(event.getMember().getIdLong());
         neoGuild.setLastJoinedChannel(event.getTextChannel());
 
         String[] commands = input.split("; ");
