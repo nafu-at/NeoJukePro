@@ -59,7 +59,7 @@ dependencies {
 
     // ClientLib
     implementation 'com.squareup.okhttp3:okhttp:4.8.1'
-    api('net.dv8tion:JDA:4.2.0_212') {
+    api('net.dv8tion:JDA:4.2.0_225') {
         exclude module: 'opus-java'
     }
     api 'com.sedmelluq:lavaplayer:1.3.61'
