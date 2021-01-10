@@ -1,0 +1,4 @@
+0:
+  table: neo_guild_settings
+  action: ADD
+  option: lang VARCHAR(5)

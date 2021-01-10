@@ -25,11 +25,12 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.config.DatabaseSection;
 import page.nafuchoco.neojukepro.core.config.LavalinkConfigSection;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
-import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
+import page.nafuchoco.neojukepro.core.database.*;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.database.NeoGuildSettingsTable;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyGuildUsersPermTable;
@@ -60,6 +61,7 @@ public class Launcher implements NeoJukeLauncher {
     private NeoJukeConfig config;
 
     private DatabaseConnector connector;
+    private NeoJukeTable neoJukeTable;
     private NeoGuildSettingsTable settingsTable;
     private GuildUsersPermTable usersPermTable;
 
@@ -99,15 +101,28 @@ public class Launcher implements NeoJukeLauncher {
             connector = new DatabaseConnector(
                     database.getDatabaseType(), database.getAddress(), database.getDatabase(),
                     database.getUsername(), database.getPassword());
+            neoJukeTable = new NeoJukeTable(database.getTablePrefix(), connector);
             settingsTable = new NeoGuildSettingsTable(this, database.getTablePrefix(), connector);
             usersPermTable = new GuildUsersPermTable(database.getTablePrefix(), connector);
 
             try {
+                neoJukeTable.createTable();
                 settingsTable.createTable();
                 usersPermTable.createTable();
             } catch (SQLException e) {
                 log.error(MessageManager.getMessage("system.db.initialize.error"));
                 return;
+            }
+
+            try {
+                if (!settingsTable.getGuilds().isEmpty()) {
+                    DatabaseMigrateManager migrateManager = new DatabaseMigrateManager(
+                            this,
+                            neoJukeTable, settingsTable, usersPermTable);
+                    migrateManager.migrate(NumberUtils.toInt(neoJukeTable.getOption("migrate"), -1) + 1);
+                }
+            } catch (IOException | SQLException e) {
+                log.warn(MessageManager.getMessage("system.db.migrate.error"), e);
             }
         } else {
             log.warn(MessageManager.getMessage("system.db.nodbmode"));
