@@ -39,10 +39,15 @@ public class Main {
             switch (prop.toLowerCase()) {
                 case "debug":
                     debugMode = true;
+                    BootOptions.setDebug(true);
                     break;
 
                 case "nodb":
                     BootOptions.setNoDb(true);
+                    break;
+
+                case "nologin":
+                    BootOptions.setNoLogin(true);
                     break;
 
                 default:

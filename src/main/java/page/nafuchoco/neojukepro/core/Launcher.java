@@ -31,8 +31,6 @@ import page.nafuchoco.neojukepro.core.config.DatabaseSection;
 import page.nafuchoco.neojukepro.core.config.LavalinkConfigSection;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.*;
-import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
-import page.nafuchoco.neojukepro.core.database.NeoGuildSettingsTable;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyGuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyNeoGuildSettingsTable;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceEventHandler;
