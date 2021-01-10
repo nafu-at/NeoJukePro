@@ -35,12 +35,16 @@ public class JoinCommand extends CommandExecutor {
         VoiceChannel targetChannel = context.getInvoker().getJDAMember().getVoiceState().getChannel();
         try {
             if (targetChannel == null)
-                context.getChannel().sendMessage(MessageManager.getMessage("command.join.before")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.join.before")).queue();
             else
                 audioPlayer.joinChannel(targetChannel);
         } catch (InsufficientPermissionException e) {
             context.getChannel().sendMessage(
-                    MessageManager.getMessage("command.channel.permission")).queue();
+                    MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.channel.permission")).queue();
         }
     }
 

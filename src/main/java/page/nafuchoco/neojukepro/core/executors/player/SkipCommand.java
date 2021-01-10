@@ -35,7 +35,9 @@ public class SkipCommand extends CommandExecutor {
             if (!context.getMessage().getMentionedMembers().isEmpty()) {
                 int skipcount =
                         context.getMessage().getMentionedMembers().stream().mapToInt(member -> audioPlayer.skip(member).size()).sum();
-                context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip.skip.count"), skipcount)).queue();
+                context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.skip.skip.count"), skipcount)).queue();
             } else if (context.getArgs().length >= 1) {
                 String indexS = context.getArgs()[0];
                 if (indexS.contains("-")) {
@@ -43,21 +45,29 @@ public class SkipCommand extends CommandExecutor {
                     if (split.length == 1 && indexS.endsWith("-")) {
                         int below = Integer.parseInt(indexS.replace("-", ""));
                         audioPlayer.skip(below);
-                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip.below"), below)).queue();
+                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.skip.below"), below)).queue();
                     } else {
                         audioPlayer.skip(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip.between"), split[0], split[1])).queue();
+                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.skip.between"), split[0], split[1])).queue();
                     }
                 } else {
                     try {
-                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip"),
+                        context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.skip"),
                                 audioPlayer.skip(Integer.parseInt(indexS), Integer.parseInt(indexS)).get(0).getTrack().getInfo().title)).queue();
                     } catch (IllegalArgumentException e) {
                         // nothing
                     }
                 }
             } else {
-                context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.skip"),
+                context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.skip"),
                         context.getNeoGuild().getAudioPlayer().getPlayingTrack().getTrack().getInfo().title)).queue();
                 audioPlayer.skip();
             }

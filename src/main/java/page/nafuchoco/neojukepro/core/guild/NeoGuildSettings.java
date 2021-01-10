@@ -52,6 +52,7 @@ public class NeoGuildSettings {
 
     private final long guildId;
 
+    private String lang;
     private String commandPrefix;
     private boolean robotMode;
     private boolean jukeboxMode;
@@ -63,6 +64,15 @@ public class NeoGuildSettings {
         this.commandPrefix = commandPrefix;
         try {
             settingsTable.updateCommandPrefixSetting(guildId, commandPrefix);
+        } catch (SQLException e) {
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
+        }
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
+        try {
+            settingsTable.updateLanguageSetting(guildId, lang);
         } catch (SQLException e) {
             log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }

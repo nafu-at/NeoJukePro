@@ -57,9 +57,10 @@ public class NeoGuildRegistry {
             }
             if (guildSettings == null) {
                 guildSettings = new NeoGuildSettings(
-                        neoJukePro,
+                        getNeoJukePro(),
                         settingsTable,
                         key,
+                        getNeoJukePro().getConfig().getBasicConfig().getLanguage(),
                         getNeoJukePro().getConfig().getBasicConfig().getPrefix(),
                         false,
                         false,

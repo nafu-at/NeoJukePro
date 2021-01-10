@@ -31,7 +31,9 @@ public class StopCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         audioPlayer.stop();
-        context.getChannel().sendMessage(MessageManager.getMessage("command.stop")).queue();
+        context.getChannel().sendMessage(MessageManager.getMessage(
+                context.getNeoGuild().getSettings().getLang(),
+                "command.stop")).queue();
         audioPlayer.leaveChannel();
     }
 

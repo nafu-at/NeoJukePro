@@ -19,7 +19,6 @@ package page.nafuchoco.neojukepro.core.executors.system;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
@@ -33,7 +32,9 @@ public class StatusCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         NeoGuildPlayerOptions playerOptions = context.getNeoGuild().getSettings().getPlayerOptions();
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        StringBuilder builder = new StringBuilder(MessageUtil.format(MessageManager.getMessage("command.status")) + "\n```");
+        StringBuilder builder = new StringBuilder(MessageManager.getMessage(
+                context.getNeoGuild().getSettings().getLang(),
+                "command.status") + "\n```");
         if (audioPlayer.getPlayingTrack() != null)
             builder.append("Playing Track: " + audioPlayer.getPlayingTrack().getTrack().getInfo().title + "\n");
         builder.append("Registered Queues: " + audioPlayer.getTrackProvider().getQueues().size() + "\n");

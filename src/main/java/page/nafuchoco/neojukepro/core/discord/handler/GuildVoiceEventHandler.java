@@ -45,7 +45,7 @@ public final class GuildVoiceEventHandler extends ListenerAdapter {
                 return;
 
         NeoGuild neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
-        neoGuild.sendMessageToLatest(MessageManager.getMessage("player.autoleave"));
+        neoGuild.sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.autoleave"));
         NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
         audioPlayer.setPaused(true);
         audioPlayer.leaveChannel();
@@ -61,7 +61,7 @@ public final class GuildVoiceEventHandler extends ListenerAdapter {
                 return;
 
         NeoGuild neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
-        neoGuild.sendMessageToLatest(MessageManager.getMessage("player.autoleave"));
+        neoGuild.sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.autoleave"));
         NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
         audioPlayer.setPaused(true);
         audioPlayer.leaveChannel();

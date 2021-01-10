@@ -32,7 +32,7 @@ public class ShuffleCommand extends CommandExecutor {
         context.getNeoGuild().getSettings().setShuffle(!context.getNeoGuild().getSettings().getPlayerOptions().isShuffle());
         context.getChannel().sendMessage(
                 MessageUtil.format(
-                        MessageManager.getMessage("command.shuffle"),
+                        MessageManager.getMessage(context.getNeoGuild().getSettings().getLang(), "command.shuffle"),
                         context.getNeoGuild().getSettings().getPlayerOptions().isShuffle())).queue();
     }
 

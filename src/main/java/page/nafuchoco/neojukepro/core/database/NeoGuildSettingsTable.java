@@ -25,6 +25,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NeoGuildSettingsTable extends DatabaseTable {
     private static final Gson gson = new Gson();
@@ -42,7 +44,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     }
 
     public void createTable() throws SQLException {
-        super.createTable("guild_id BIGINT NOT NULL, " +
+        super.createTable("guild_id BIGINT NOT NULL, lang VARCHAR(5) NOT NULL, " +
                 "command_prefix VARCHAR(16) NULL, robot_mode BOOL, jukebox_mode BOOL, player_options LONGTEXT NOT NULL, custom_field LONGTEXT NULL");
         try (Connection connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
@@ -51,6 +53,27 @@ public class NeoGuildSettingsTable extends DatabaseTable {
         } catch (SQLException e) {
             if (!e.getMessage().contains("Duplicate key"))
                 throw e;
+        }
+    }
+
+    /**
+     * Get the list of guilds where the settings are saved.
+     *
+     * @return List of guilds where settings are saved.
+     * @throws SQLException Thrown if the guild setting fails to be obtained.
+     * @since v2.0
+     */
+    public List<Long> getGuilds() throws SQLException {
+        List<Long> guilds = new ArrayList<>();
+        try (Connection connection = getConnector().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
+                     "SELECT guild_id FROM " + getTablename())) {
+            try (ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    guilds.add(resultSet.getLong("guild_id"));
+                }
+                return guilds;
+            }
         }
     }
 
@@ -68,11 +91,21 @@ public class NeoGuildSettingsTable extends DatabaseTable {
             ps.setLong(1, guildId);
             try (ResultSet resultSet = ps.executeQuery()) {
                 while (resultSet.next()) {
+                    String lang = resultSet.getString("lang");
                     String commandPrefix = resultSet.getString("command_prefix");
                     boolean robotMode = resultSet.getBoolean("robot_mode");
                     boolean jukeboxMode = resultSet.getBoolean("jukebox_mode");
-                    NeoGuildPlayerOptions playerOptions = gson.fromJson(resultSet.getString("player_options"), NeoGuildPlayerOptions.class);
-                    NeoGuildSettings guildSettings = new NeoGuildSettings(neoJukePro, this, guildId, commandPrefix, robotMode, jukeboxMode, playerOptions);
+                    NeoGuildPlayerOptions playerOptions =
+                            gson.fromJson(resultSet.getString("player_options"), NeoGuildPlayerOptions.class);
+                    NeoGuildSettings guildSettings = new NeoGuildSettings(
+                            neoJukePro,
+                            this,
+                            guildId,
+                            lang,
+                            commandPrefix,
+                            robotMode,
+                            jukeboxMode,
+                            playerOptions);
                     guildSettings.deserializeCustomFieldFromJson(resultSet.getString("custom_field"));
 
                     return guildSettings;
@@ -91,14 +124,15 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     public void registerGuildSettings(NeoGuildSettings settings) throws SQLException {
         try (Connection connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
-                     "INSERT INTO " + getTablename() + " (guild_id, command_prefix, robot_mode, jukebox_mode, player_options, custom_field) " +
-                             "VALUES (?, ?, ?, ?, ?, ?)")) {
+                     "INSERT INTO " + getTablename() + " (guild_id, lang, command_prefix, robot_mode, jukebox_mode, player_options, custom_field) " +
+                             "VALUES (?, ?, ?, ?, ?, ?, ?)")) {
             ps.setLong(1, settings.getGuildId());
-            ps.setString(2, settings.getCommandPrefix());
-            ps.setBoolean(3, settings.isRobotMode());
-            ps.setBoolean(4, settings.isJukeboxMode());
-            ps.setString(5, gson.toJson(settings.getPlayerOptions()));
-            ps.setString(6, settings.serializeCustomFieldToJson());
+            ps.setString(2, settings.getLang());
+            ps.setString(3, settings.getCommandPrefix());
+            ps.setBoolean(4, settings.isRobotMode());
+            ps.setBoolean(5, settings.isJukeboxMode());
+            ps.setString(6, gson.toJson(settings.getPlayerOptions()));
+            ps.setString(7, settings.serializeCustomFieldToJson());
             ps.execute();
         }
     }
@@ -109,6 +143,17 @@ public class NeoGuildSettingsTable extends DatabaseTable {
                      "UPDATE " + getTablename() + " SET command_prefix = ? WHERE guild_id = ?"
              )) {
             ps.setString(1, commandPrefix);
+            ps.setLong(2, guildId);
+            ps.execute();
+        }
+    }
+
+    public void updateLanguageSetting(long guildId, String lang) throws SQLException {
+        try (Connection connection = getConnector().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
+                     "UPDATE " + getTablename() + " SET lang = ? WHERE guild_id = ?"
+             )) {
+            ps.setString(1, lang);
             ps.setLong(2, guildId);
             ps.execute();
         }

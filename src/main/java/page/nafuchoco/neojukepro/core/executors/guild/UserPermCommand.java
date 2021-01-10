@@ -39,15 +39,21 @@ public class UserPermCommand extends CommandExecutor {
                         guildMember.setUserPermission(permissions);
                         context.getChannel().sendMessage(
                                 MessageUtil.format(
-                                        MessageManager.getMessage("command.userperm.set"),
+                                        MessageManager.getMessage(
+                                                context.getNeoGuild().getSettings().getLang(),
+                                                "command.userperm.set"),
                                         member.getEffectiveName(),
                                         permissions)).queue();
                     });
                 } else {
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.userperm.invalid")).queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.userperm.invalid")).queue();
                 }
             } catch (NumberFormatException e) {
-                context.getChannel().sendMessage(MessageManager.getMessage("command.userperm.invalid")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.userperm.invalid")).queue();
             }
         }
     }

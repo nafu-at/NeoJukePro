@@ -33,12 +33,18 @@ public class ShutdownCommand extends CommandExecutor {
         if (context.getArgs().length == 0) {
             String pass = RandomStringUtils.randomAlphanumeric(6);
             context.getNeoGuild().getGuildTempRegistry().registerTemp("shutdownKey", pass);
-            context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage("command.shutdown.key"), pass)).queue();
+            context.getChannel().sendMessage(MessageUtil.format(
+                    MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.shutdown.key"),
+                    pass)).queue();
         } else {
             if (context.getArgs()[0].equals(context.getNeoGuild().getGuildTempRegistry().deleteTemp("shutdownKey")))
                 Runtime.getRuntime().exit(0);
             else
-                context.getChannel().sendMessage(MessageManager.getMessage("command.shutdown.key.incorrect")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.shutdown.key.incorrect")).queue();
         }
     }
 

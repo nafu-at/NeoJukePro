@@ -48,9 +48,13 @@ public class ModuleCommand extends CommandExecutor {
         } else switch (context.getArgs()[0].toLowerCase()) {
             case "load":
                 if (neoJukePro.getModuleManager().loadModule(new File(context.getArgs()[1])))
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.module.load.success")).queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.module.load.success")).queue();
                 else
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.module.load.failed")).queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.module.load.failed")).queue();
                 break;
 
             case "unload":
@@ -63,7 +67,9 @@ public class ModuleCommand extends CommandExecutor {
                         try {
                             neoJukePro.getModuleManager().unloadModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
+                            context.getChannel().sendMessage(MessageManager.getMessage(
+                                    context.getNeoGuild().getSettings().getLang(),
+                                    "command.module.notregist")).queue();
                         }
                         break;
                 }
@@ -79,7 +85,9 @@ public class ModuleCommand extends CommandExecutor {
                         try {
                             neoJukePro.getModuleManager().enableModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
+                            context.getChannel().sendMessage(MessageManager.getMessage(
+                                    context.getNeoGuild().getSettings().getLang(),
+                                    "command.module.notregist")).queue();
                         }
                         break;
                 }
@@ -95,7 +103,9 @@ public class ModuleCommand extends CommandExecutor {
                         try {
                             neoJukePro.getModuleManager().disableModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
+                            context.getChannel().sendMessage(MessageManager.getMessage(
+                                    context.getNeoGuild().getSettings().getLang(),
+                                    "command.module.notregist")).queue();
                         }
                         break;
                 }
@@ -108,7 +118,9 @@ public class ModuleCommand extends CommandExecutor {
                 } else {
                     NeoModule module = neoJukePro.getModuleManager().getModule(context.getArgs()[0]);
                     if (module == null) {
-                        context.getChannel().sendMessage(MessageManager.getMessage("command.module.notregist")).queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.module.notregist")).queue();
                     } else {
                         ModuleDescription description = module.getDescription();
                         AsciiTable table = new AsciiTable();

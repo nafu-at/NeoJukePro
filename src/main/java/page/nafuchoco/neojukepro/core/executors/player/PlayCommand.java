@@ -46,14 +46,18 @@ public class PlayCommand extends CommandExecutor {
         if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
             VoiceChannel targetChannel = context.getInvoker().getJDAMember().getVoiceState().getChannel();
             if (targetChannel == null) {
-                context.getChannel().sendMessage(MessageManager.getMessage("command.join.before")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.join.before")).queue();
                 return;
             }
             try {
                 audioPlayer.joinChannel(targetChannel);
             } catch (InsufficientPermissionException e) {
                 context.getChannel().sendMessage(
-                        MessageManager.getMessage("command.channel.permission")).queue();
+                        MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.channel.permission")).queue();
                 return;
             }
         }

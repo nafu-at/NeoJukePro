@@ -62,7 +62,12 @@ public class NowPlayingCommand extends CommandExecutor {
                     try {
                         context.getChannel().sendMessage(TrackEmbedUtil.getTrackEmbed(audioPlayer)).queue();
                     } catch (IOException e) {
-                        ExceptionUtil.sendStackTrace(context.getNeoGuild().getJDAGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
+                        ExceptionUtil.sendStackTrace(
+                                context.getNeoGuild(),
+                                e,
+                                MessageManager.getMessage(
+                                        context.getNeoGuild().getSettings().getLang(),
+                                        "command.nowplay.failed"));
                     }
                 } else switch (context.getArgs()[0]) {
                     case "thumbnail":
@@ -71,23 +76,36 @@ public class NowPlayingCommand extends CommandExecutor {
                             try {
                                 InputStream thumbnail = getThumbnailStream(audioTrack.getIdentifier());
                                 if (thumbnail != null) {
-                                    context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.getthumbnail")).queue();
+                                    context.getChannel().sendMessage(MessageManager.getMessage(
+                                            context.getNeoGuild().getSettings().getLang(),
+                                            "command.nowplay.getthumbnail")).queue();
                                     context.getChannel().sendFile(thumbnail, "thumbnail.jpg").queue();
                                 }
                             } catch (IOException e) {
-                                ExceptionUtil.sendStackTrace(context.getNeoGuild().getJDAGuild(), e, MessageManager.getMessage("command.nowplay.failed"));
+                                ExceptionUtil.sendStackTrace(
+                                        context.getNeoGuild(),
+                                        e,
+                                        MessageManager.getMessage(
+                                                context.getNeoGuild().getSettings().getLang(),
+                                                "command.nowplay.failed"));
                             }
                         } else {
-                            context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.nosupport")).queue();
+                            context.getChannel().sendMessage(MessageManager.getMessage(
+                                    context.getNeoGuild().getSettings().getLang(),
+                                    "command.nowplay.nosupport")).queue();
                         }
                         break;
 
                     case "time":
                     case "t":
                         context.getChannel().sendMessage(
-                                MessageUtil.format(MessageManager.getMessage("command.list.playing"),
+                                MessageUtil.format(MessageManager.getMessage(
+                                        context.getNeoGuild().getSettings().getLang(),
+                                        "command.list.playing"),
                                         audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n" +
-                                        MessageUtil.format(MessageManager.getMessage("command.nowplay.currenttime"),
+                                        MessageUtil.format(MessageManager.getMessage(
+                                                context.getNeoGuild().getSettings().getLang(),
+                                                "command.nowplay.currenttime"),
                                                 MessageUtil.formatTime(audioPlayer.getTrackPosition()),
                                                 MessageUtil.formatTime(audioTrack.getDuration() - audioPlayer.getTrackPosition()))).queue();
                         break;
@@ -97,7 +115,9 @@ public class NowPlayingCommand extends CommandExecutor {
                 }
             }
         } else {
-            context.getChannel().sendMessage(MessageManager.getMessage("command.nowplay.nothing")).queue();
+            context.getChannel().sendMessage(MessageManager.getMessage(
+                    context.getNeoGuild().getSettings().getLang(),
+                    "command.nowplay.nothing")).queue();
         }
     }
 

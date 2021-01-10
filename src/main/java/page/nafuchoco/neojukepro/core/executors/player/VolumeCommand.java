@@ -36,11 +36,13 @@ public class VolumeCommand extends CommandExecutor {
                 int volume = Integer.parseInt(context.getArgs()[0]);
                 context.getNeoGuild().getSettings().setVolumeLevel(volume);
             } catch (NumberFormatException e) {
-                context.getChannel().sendMessage(MessageManager.getMessage("command.volume.correct")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.volume.correct")).queue();
             }
         }
         context.getChannel().sendMessage(MessageUtil.format(
-                MessageManager.getMessage("command.volume.corrent"),
+                MessageManager.getMessage(context.getNeoGuild().getSettings().getLang(), "command.volume.corrent"),
                 context.getNeoGuild().getSettings().getPlayerOptions().getVolumeLevel())).queue();
     }
 

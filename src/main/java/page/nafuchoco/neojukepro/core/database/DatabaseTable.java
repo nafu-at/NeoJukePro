@@ -24,7 +24,7 @@ public abstract class DatabaseTable {
     private final String tablename;
     private final DatabaseConnector connector;
 
-    protected DatabaseTable(String prefix, String tablename, DatabaseConnector connector) {
+    public DatabaseTable(String prefix, String tablename, DatabaseConnector connector) {
         this.tablename = prefix + tablename;
         this.connector = connector;
     }
@@ -64,6 +64,23 @@ public abstract class DatabaseTable {
         try (Connection connection = connector.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "ALTER TABLE " + tablename + " ADD " + name + " " + type)) {
+                ps.execute();
+            }
+        }
+    }
+
+    /**
+     * Add a column to the table.
+     *
+     * @param name         The name of the column to add
+     * @param type         Column data type
+     * @param defaultValue Column default value
+     * @throws SQLException Thrown when adding a column fails.
+     */
+    public void createTableColumn(String name, String type, String defaultValue) throws SQLException {
+        try (Connection connection = connector.getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "ALTER TABLE " + tablename + " ADD " + name + " " + type + "NOT NULL DEFAULT" + defaultValue)) {
                 ps.execute();
             }
         }

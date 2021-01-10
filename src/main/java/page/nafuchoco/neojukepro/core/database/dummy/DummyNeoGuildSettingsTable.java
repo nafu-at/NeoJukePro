@@ -21,6 +21,8 @@ import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildSettings;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DummyNeoGuildSettingsTable extends NeoGuildSettingsTable {
 
@@ -38,6 +40,11 @@ public class DummyNeoGuildSettingsTable extends NeoGuildSettingsTable {
 
     @Override
     public void createTable() throws SQLException {
+    }
+
+    @Override
+    public List<Long> getGuilds() throws SQLException {
+        return new ArrayList<>();
     }
 
     @Override

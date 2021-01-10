@@ -58,7 +58,9 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     protected void loadTrack() {
         if (audioPlayer == null)
-            throw new IllegalStateException(MessageManager.getMessage("player.loader.error"));
+            throw new IllegalStateException(MessageManager.getMessage(
+                    trackContext.getNeoGuild().getSettings().getLang(),
+                    "player.loader.error"));
         audioPlayer.getNeoGuild().getAudioPlayerManager().loadItemOrdered(this, trackContext.getTrackUrl(), this);
     }
 
@@ -80,9 +82,17 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
         }
         audioPlayer.play(new LoadedTrackContext(getTrackContext(), position * 1000, track));
         if (audioPlayer.getTrackProvider().getQueues().isEmpty())
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.playing"), track.getInfo().title));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.playing"),
+                    track.getInfo().title));
         else
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.addqueue"), track.getInfo().title));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.addqueue"),
+                    track.getInfo().title));
     }
 
     @Override
@@ -104,7 +114,11 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
             contextList.add(0, new LoadedTrackContext(getTrackContext(), position * 1000, firstTrack));
         }
         audioPlayer.play(contextList);
-        trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.playlist.add"), playlist.getTracks().size(), playlist.getName()));
+        trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                MessageManager.getMessage(
+                        trackContext.getNeoGuild().getSettings().getLang(),
+                        "player.playlist.add"),
+                playlist.getTracks().size(), playlist.getName()));
     }
 
     @Override
@@ -114,30 +128,62 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException exception) {
-        ExceptionUtil.sendStackTrace(audioPlayer.getNeoGuild().getJDAGuild(), exception, MessageManager.getMessage("player.loader.failed"));
+        ExceptionUtil.sendStackTrace(
+                audioPlayer.getNeoGuild(),
+                exception,
+                MessageManager.getMessage(
+                        trackContext.getNeoGuild().getSettings().getLang(),
+                        "player.loader.failed"));
     }
 
     private boolean checkAudioSource(AudioTrack track) {
         if (track instanceof YoutubeAudioTrack && !musicSource.enableYoutube()) {
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.source.disable"), "YouTube"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "YouTube"));
             return false;
         } else if (track instanceof SoundCloudAudioTrack && !musicSource.enableSoundCloud()) {
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.source.disable"), "SoundCloud"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "SoundCloud"));
             return false;
         } else if (track instanceof BandcampAudioTrack && !musicSource.enableBandCamp()) {
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.source.disable"), "BandCamp"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "BandCamp"));
             return false;
         } else if (track instanceof VimeoAudioTrack && !musicSource.enableVimeo()) {
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Vimeo"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "Vimeo"));
             return false;
         } else if (track instanceof TwitchStreamAudioTrack && !musicSource.enableTwitch()) {
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Twitch"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "Twitch"));
             return false;
         } else if (track instanceof HttpAudioTrack && !musicSource.enableHttp()) {
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.source.disable"), "HTTP"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "HTTP"));
             return false;
         } else if (track instanceof LocalAudioTrack && !musicSource.enableLocal()) {
-            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Local"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "Local"));
             return false;
         }
         return true;

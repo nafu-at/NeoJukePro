@@ -47,7 +47,9 @@ public class ListCommand extends CommandExecutor {
                         page = 1;
                     }
                 } catch (NumberFormatException e) {
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.page.specify")).queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.page.specify")).queue();
                 }
             }
 
@@ -56,7 +58,9 @@ public class ListCommand extends CommandExecutor {
                 listPage++;
 
             if (page > listPage) {
-                context.getChannel().sendMessage(MessageManager.getMessage("command.page.large")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.page.large")).queue();
                 return;
             }
 
@@ -66,9 +70,13 @@ public class ListCommand extends CommandExecutor {
 
             if (audioPlayer.getPlayingTrack() != null)
                 sb.append(MessageUtil.format(
-                        MessageManager.getMessage("command.list.playing"),
+                        MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.list.playing"),
                         audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n");
-            sb.append(MessageUtil.format(MessageManager.getMessage("command.list.list"),
+            sb.append(MessageUtil.format(MessageManager.getMessage(
+                    context.getNeoGuild().getSettings().getLang(),
+                    "command.list.list"),
                     tracks.size(), page, listPage, MessageUtil.formatTime(totalTime)));
             for (int count = range * page - range + 1; count <= range * page; count++) {
                 if (tracks.size() >= count && sb.length() < 1800) {
@@ -80,10 +88,14 @@ public class ListCommand extends CommandExecutor {
             context.getChannel().sendMessage(sb.toString()).queue();
         } else if (audioPlayer.getPlayingTrack() != null) {
             context.getChannel().sendMessage(
-                    MessageUtil.format(MessageManager.getMessage("command.list.playing"),
+                    MessageUtil.format(MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.list.playing"),
                             audioPlayer.getPlayingTrack().getTrack().getInfo().title)).queue();
         } else {
-            context.getChannel().sendMessage(MessageManager.getMessage("command.list.nothing")).queue();
+            context.getChannel().sendMessage(MessageManager.getMessage(
+                    context.getNeoGuild().getSettings().getLang(),
+                    "command.list.nothing")).queue();
         }
     }
 

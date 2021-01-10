@@ -42,7 +42,12 @@ public class NodesCommand extends CommandExecutor {
             if (context.getArgs().length == 0) {
                 StringBuilder builder = new StringBuilder();
                 List<LavalinkSocket> nodes = lavalink.getNodes();
-                builder.append(MessageUtil.format(MessageManager.getMessage("command.nodes.list"), nodes.size()) + "\n");
+                builder.append(
+                        MessageUtil.format(
+                                MessageManager.getMessage(
+                                        context.getNeoGuild().getSettings().getLang(),
+                                        "command.nodes.list"),
+                                nodes.size()) + "\n");
                 builder.append("```");
                 for (int i = 0; nodes.size() > i; i++) {
                     LavalinkSocket node = nodes.get(i);
@@ -65,18 +70,27 @@ public class NodesCommand extends CommandExecutor {
                         }
                         context.getMessage().delete().submit();
                         context.getChannel().sendMessage(MessageUtil.format(
-                                MessageManager.getMessage("command.nodes.add"), lavalink.getNodes().size() - 1)).queue();
+                                MessageManager.getMessage(
+                                        context.getNeoGuild().getSettings().getLang(),
+                                        "command.nodes.add"),
+                                lavalink.getNodes().size() - 1)).queue();
                     } catch (URISyntaxException e) {
-                        context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.notcorrect")).queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.nodes.notcorrect")).queue();
                     }
                     break;
 
                 case "remove":
                     try {
                         lavalink.removeNode(Integer.parseInt(context.getArgs()[1]));
-                        context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.remove")).queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.nodes.remove")).queue();
                     } catch (NumberFormatException e) {
-                        context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.number")).queue();
+                        context.getChannel().sendMessage(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.nodes.number")).queue();
                     }
                     break;
 
@@ -84,7 +98,9 @@ public class NodesCommand extends CommandExecutor {
                     break;
             }
         } else {
-            context.getChannel().sendMessage(MessageManager.getMessage("command.nodes.disabled")).queue();
+            context.getChannel().sendMessage(MessageManager.getMessage(
+                    context.getNeoGuild().getSettings().getLang(),
+                    "command.nodes.disabled")).queue();
         }
     }
 

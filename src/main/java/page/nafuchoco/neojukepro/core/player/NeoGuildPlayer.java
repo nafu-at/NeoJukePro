@@ -210,12 +210,12 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
 
     @Override
     public void onPlayerPause(IPlayer player) {
-        getNeoGuild().sendMessageToLatest(MessageManager.getMessage("player.pause"));
+        getNeoGuild().sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.pause"));
     }
 
     @Override
     public void onPlayerResume(IPlayer player) {
-        getNeoGuild().sendMessageToLatest(MessageManager.getMessage("player.resume"));
+        getNeoGuild().sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.resume"));
     }
 
     @Override

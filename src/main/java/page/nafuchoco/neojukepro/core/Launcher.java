@@ -128,6 +128,9 @@ public class Launcher implements NeoJukeLauncher {
             usersPermTable = new DummyGuildUsersPermTable();
         }
 
+        if (BootOptions.isDebug() && BootOptions.isNoLogin())
+            return;
+
         try {
             appInfo = new DiscordAPIClient().getBotApplicationInfo(config.getBasicConfig().getDiscordToken());
         } catch (IOException e) {

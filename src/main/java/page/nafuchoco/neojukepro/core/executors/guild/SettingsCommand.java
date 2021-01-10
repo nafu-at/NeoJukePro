@@ -40,18 +40,30 @@ public class SettingsCommand extends CommandExecutor {
                     context.getNeoGuild().getSettings().setCommandPrefix(context.getNeoJukePro().getConfig().getBasicConfig().getPrefix());
                 else
                     context.getNeoGuild().getSettings().setCommandPrefix(context.getArgs()[1]);
-                context.getChannel().sendMessage(MessageManager.getMessage("command.set.prefix.set")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.set.prefix.set")).queue();
                 break;
 
             case "robot":
                 context.getNeoGuild().getSettings().setRobotMode(BooleanUtils.toBoolean(context.getArgs()[1]));
-                context.getChannel().sendMessage(MessageManager.getMessage("command.set.robot.set")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.set.robot.set")).queue();
                 break;
 
             case "jukebox":
                 context.getNeoGuild().getSettings().setJukeboxMode(BooleanUtils.toBoolean(context.getArgs()[1]));
-                context.getChannel().sendMessage(MessageManager.getMessage("command.set.autoplay.set")).queue();
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.set.autoplay.set")).queue();
                 break;
+
+            case "lang":
+                context.getNeoGuild().getSettings().setLang(context.getArgs()[1]);
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.set.lang.set")).queue();
 
             default:
                 context.getChannel().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
@@ -61,8 +73,10 @@ public class SettingsCommand extends CommandExecutor {
     }
 
     private String getGuildSettings(NeoGuild neoGuild) {
-        StringBuilder builder = new StringBuilder(MessageManager.getMessage("command.set.current") + "\n```\n");
+        StringBuilder builder =
+                new StringBuilder(MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.set.current") + "\n```\n");
         builder.append("Prefix: " + neoGuild.getSettings().getCommandPrefix() + "\n");
+        builder.append("Lang: " + neoGuild.getSettings().getLang() + "\n");
         builder.append("RobotMode: " + neoGuild.getSettings().isRobotMode() + "\n");
         builder.append("JukeboxMode: " + neoGuild.getSettings().isJukeboxMode() + "\n");
         builder.append("```");

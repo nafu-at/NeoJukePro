@@ -106,7 +106,7 @@ public class NeoGuild {
                 audioPlayer.stop();
                 audioPlayer.leaveChannel();
             } else if (audioPlayer.getLink().getState() == Link.State.DESTROYED) {
-                sendMessageToLatest(MessageManager.getMessage("player.destroyed"));
+                sendMessageToLatest(MessageManager.getMessage(settings.getLang(), "player.destroyed"));
             } else {
                 audioPlayer.destroy();
             }

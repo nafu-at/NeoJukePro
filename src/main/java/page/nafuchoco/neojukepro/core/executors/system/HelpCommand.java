@@ -44,7 +44,9 @@ public class HelpCommand extends CommandExecutor {
                     context.getChannel().sendMessage(
                             printCommandList(neoJukePro.getCommandRegistry().getCommands(), Integer.parseInt(context.getArgs()[0]))).queue();
                 } catch (NumberFormatException e) {
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.page.specify")).queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.page.specify")).queue();
                 }
             } else {
                 CommandExecutor executor = neoJukePro.getCommandRegistry().getExecutor(context.getArgs()[0]);
@@ -55,7 +57,9 @@ public class HelpCommand extends CommandExecutor {
                     builder.append("```");
                     context.getChannel().sendMessage(builder.toString()).queue();
                 } else {
-                    context.getChannel().sendMessage(MessageManager.getMessage("command.help.nocommand")).queue();
+                    context.getChannel().sendMessage(MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.help.nocommand")).queue();
                 }
             }
         }
@@ -67,6 +71,7 @@ public class HelpCommand extends CommandExecutor {
         if (commands.size() % range >= 1)
             listPage++;
 
+        // TODO: 2021/01/10 言語設定の適用
         if (page > listPage)
             return MessageManager.getMessage("command.page.large");
 

@@ -79,7 +79,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
             CommandContext context = parseCommand(neoGuild, neoGuildMember, commandString, event);
             if (context == null) {
                 event.getChannel().sendMessage(MessageUtil.format(
-                        MessageManager.getMessage("command.nocommand"), commandString, prefix)).queue();
+                        MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.nocommand"), commandString, prefix)).queue();
             } else {
                 log.debug("Command Received: {}", context.toString());
 
@@ -90,14 +90,17 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 // 254 = Bot Admin.
                 // 255 = Bot Owner.
                 if (neoGuildMember.getUserPermission() < context.getCommand().getRequiredPerm()) {
-                    event.getChannel().sendMessage(MessageManager.getMessage("command.nopermission")).queue();
+                    event.getChannel().sendMessage(MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.nopermission")).queue();
                     continue;
                 }
 
                 try {
                     context.getCommand().onInvoke(context);
                 } catch (Exception e) {
-                    ExceptionUtil.sendStackTrace(event.getGuild(), e, MessageManager.getMessage("command.execute.failed"));
+                    ExceptionUtil.sendStackTrace(
+                            neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild()),
+                            e,
+                            MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.execute.failed"));
                 }
             }
         }
