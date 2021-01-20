@@ -21,6 +21,8 @@ import ch.qos.logback.classic.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 
+import java.io.Console;
+
 @Slf4j
 public class Main {
     private static boolean debugMode;
@@ -70,6 +72,18 @@ public class Main {
 
         launcher = new Launcher();
         launcher.launch();
+
+        new Thread(() -> {
+            Console console = System.console();
+            while (true) {
+                switch (console.readLine()) {
+                    case "exit":
+                    case "stop":
+                        Runtime.getRuntime().exit(0);
+                        break;
+                }
+            }
+        }).start();
     }
 
     public static boolean isDebugMode() {
