@@ -126,6 +126,24 @@ public class NeoGuildSettings {
         }
     }
 
+    public void disableSource(String sourceName) {
+        getPlayerOptions().disableSource(sourceName);
+        try {
+            settingsTable.updatePlayerOptions(guildId, getPlayerOptions());
+        } catch (SQLException e) {
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
+        }
+    }
+
+    public void enableSource(String sourceName) {
+        getPlayerOptions().enableSource(sourceName);
+        try {
+            settingsTable.updatePlayerOptions(guildId, getPlayerOptions());
+        } catch (SQLException e) {
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
+        }
+    }
+
     public void setCustomField(NeoModule module, Map<String, Object> field) {
         customField.put(module, field);
         try {

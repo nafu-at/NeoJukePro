@@ -67,7 +67,6 @@ public class NeoGuild {
         guildTempRegistry = new NeoGuildTempRegistry();
         audioPlayerManager = new DefaultAudioPlayerManager();
 
-        // TODO: 2020/12/13 ギルドごとの再生ソース選択機能の実装
         audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager(true));
         audioPlayerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
         audioPlayerManager.registerSourceManager(new BandcampAudioSourceManager());

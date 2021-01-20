@@ -64,7 +64,7 @@ public class NeoGuildRegistry {
                         getNeoJukePro().getConfig().getBasicConfig().getPrefix(),
                         false,
                         false,
-                        new NeoGuildPlayerOptions(100, NeoGuildPlayerOptions.RepeatMode.NONE, false));
+                        new NeoGuildPlayerOptions(80, NeoGuildPlayerOptions.RepeatMode.NONE, false, new ArrayList<>()));
                 try {
                     settingsTable.registerGuildSettings(guildSettings);
                 } catch (SQLException e) {

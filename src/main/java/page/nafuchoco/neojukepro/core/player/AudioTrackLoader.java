@@ -185,6 +185,13 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
                             "player.source.disable"),
                     "Local"));
             return false;
+        } else if (audioPlayer.getPlayerOptions().getDisabledSources().contains(track.getSourceManager().getSourceName())) {
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    track.getSourceManager().getSourceName()));
+            return false;
         }
         return true;
     }

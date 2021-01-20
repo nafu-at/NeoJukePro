@@ -16,12 +16,13 @@
 
 package page.nafuchoco.neojukepro.core.guild;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
+@Setter(AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
@@ -29,19 +30,22 @@ public class NeoGuildPlayerOptions {
     private int volumeLevel;
     private RepeatMode repeatMode;
     private boolean shuffle;
+    private List<String> disabledSources;
 
-    protected void setVolumeLevel(int volumeLevel) {
-        this.volumeLevel = volumeLevel;
+    protected void enableSource(String sourceName) {
+        disabledSources.remove(sourceName);
     }
 
-    protected void setRepeatMode(RepeatMode repeatMode) {
-        this.repeatMode = repeatMode;
+    protected void disableSource(String sourceName) {
+        if (!disabledSources.contains(sourceName))
+            disabledSources.add(sourceName);
     }
 
-    protected void setShuffle(boolean shuffle) {
-        this.shuffle = shuffle;
+    public List<String> getDisabledSources() {
+        if (disabledSources == null)
+            disabledSources = new ArrayList<>();
+        return disabledSources;
     }
-
 
     public enum RepeatMode {
         NONE, SINGLE, ALL

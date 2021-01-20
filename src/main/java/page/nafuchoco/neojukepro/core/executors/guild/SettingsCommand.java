@@ -64,6 +64,21 @@ public class SettingsCommand extends CommandExecutor {
                 context.getChannel().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
                         "command.set.lang.set")).queue();
+                break;
+
+            case "enableSource":
+                context.getNeoGuild().getSettings().enableSource(context.getArgs()[1]);
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.set.source.enable")).queue();
+                break;
+
+            case "disableSource":
+                context.getNeoGuild().getSettings().disableSource(context.getArgs()[1]);
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.set.source.disable")).queue();
+                break;
 
             default:
                 context.getChannel().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
@@ -75,10 +90,11 @@ public class SettingsCommand extends CommandExecutor {
     private String getGuildSettings(NeoGuild neoGuild) {
         StringBuilder builder =
                 new StringBuilder(MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.set.current") + "\n```\n");
-        builder.append("Prefix: " + neoGuild.getSettings().getCommandPrefix() + "\n");
-        builder.append("Lang: " + neoGuild.getSettings().getLang() + "\n");
-        builder.append("RobotMode: " + neoGuild.getSettings().isRobotMode() + "\n");
-        builder.append("JukeboxMode: " + neoGuild.getSettings().isJukeboxMode() + "\n");
+        builder.append("Prefix:         " + neoGuild.getSettings().getCommandPrefix() + "\n");
+        builder.append("Lang:           " + neoGuild.getSettings().getLang() + "\n");
+        builder.append("RobotMode:      " + neoGuild.getSettings().isRobotMode() + "\n");
+        builder.append("JukeboxMode:    " + neoGuild.getSettings().isJukeboxMode() + "\n");
+        builder.append("DisabledSource: " + neoGuild.getSettings().getPlayerOptions().getDisabledSources());
         builder.append("```");
         return builder.toString();
     }

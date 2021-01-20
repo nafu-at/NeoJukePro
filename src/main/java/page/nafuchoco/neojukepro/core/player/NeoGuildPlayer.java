@@ -74,6 +74,10 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
         trackProvider = new GuildTrackProvider(this);
     }
 
+    public NeoGuildPlayerOptions getPlayerOptions() {
+        return neoGuild.getSettings().getPlayerOptions();
+    }
+
     public void joinChannel(VoiceChannel targetChannel) throws InsufficientPermissionException {
         if (link != null) {
             link.connect(targetChannel);
