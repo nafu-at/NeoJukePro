@@ -17,19 +17,16 @@
 package page.nafuchoco.neojukepro.core.executors.system;
 
 import net.dv8tion.jda.api.sharding.ShardManager;
+import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 
 import java.lang.management.ManagementFactory;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 public class SystemCommand extends CommandExecutor {
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 
     public SystemCommand(String name, String... aliases) {
         super(name, aliases);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
     }
 
     @Override
@@ -47,7 +44,8 @@ public class SystemCommand extends CommandExecutor {
         builder.append("```\n");
         builder.append("====== System Info ======\n");
         builder.append("Operating System:      " + System.getProperty("os.name") + "\n");
-        builder.append("JVM Version:           " + System.getProperty("java.version") + "\n\n");
+        builder.append("JVM Version:           " + System.getProperty("java.version") + "\n");
+        builder.append("NeoJukePro Version:    " + Main.class.getPackage().getImplementationVersion() + "\n\n");
         builder.append("====== Memory Info ======\n");
         builder.append("Reserved memory:       " + total + "MB\n");
         builder.append("  -> Used:             " + used + "MB\n");
