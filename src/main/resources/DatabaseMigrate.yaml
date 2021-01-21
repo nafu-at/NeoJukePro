@@ -1,7 +1,7 @@
 0:
   table: neo_guild_settings
   action: ADD
-  option: lang VARCHAR(5)
+  option: lang VARCHAR(5) NOT NULL
 1:
   table: neo_guild_settings
   action: SCRIPT
