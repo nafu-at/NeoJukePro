@@ -108,7 +108,7 @@ public class Launcher implements NeoJukeLauncher {
                 settingsTable.createTable();
                 usersPermTable.createTable();
             } catch (SQLException e) {
-                log.error(MessageManager.getMessage("system.db.initialize.error"));
+                log.error(MessageManager.getMessage("system.db.initialize.error"), e);
                 return;
             }
 
