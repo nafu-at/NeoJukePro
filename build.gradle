@@ -90,7 +90,7 @@ dependencies {
 
     // SQL
     implementation 'com.zaxxer:HikariCP:4.0.1'
-    implementation 'mysql:mysql-connector-java:8.0.21'
+    implementation 'mysql:mysql-connector-java:8.0.23'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 
     // Other
