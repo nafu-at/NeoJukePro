@@ -235,7 +235,7 @@ public class ModuleManager {
         } else {
             try {
                 moduleRegistry.deleteModule(module);
-                ModuleClassLoader classLoader = module.getClassLoder();
+                ModuleClassLoader classLoader = module.getClassLoader();
                 classLoader.close();
                 log.info(MessageManager.getMessage("system.module.unload.success"), module.getDescription().getName());
             } catch (IOException e) {

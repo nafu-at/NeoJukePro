@@ -16,13 +16,21 @@
 
 package page.nafuchoco.neojukepro.core;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 public class BootOptions {
+
     @Getter
+    @Setter(AccessLevel.PROTECTED)
     private static boolean noDb;
 
-    protected static void setNoDb(boolean noDb) {
-        BootOptions.noDb = noDb;
-    }
+    @Getter
+    @Setter(AccessLevel.PROTECTED)
+    private static boolean debug;
+
+    @Getter
+    @Setter(AccessLevel.PROTECTED)
+    private static boolean noLogin;
 }

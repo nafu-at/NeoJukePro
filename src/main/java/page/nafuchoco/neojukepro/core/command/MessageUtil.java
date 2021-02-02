@@ -16,30 +16,14 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageChannel;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageUtil {
     private static final Pattern VAR_PATTERN = Pattern.compile("(\\{\\d+\\})");
-    private static final Map<Guild, MessageChannel> channelCache = new HashMap<>();
 
     private MessageUtil() {
         throw new IllegalStateException();
-    }
-
-    public static void sendMessage(Guild guild, String message) {
-        MessageChannel channel = channelCache.get(guild);
-        if (channel != null)
-            channel.sendMessage(message).queue();
-    }
-
-    public static void cacheChannel(Guild guild, MessageChannel channel) {
-        channelCache.put(guild, channel);
     }
 
     public static String format(String message, Object... args) {

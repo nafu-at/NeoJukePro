@@ -17,24 +17,28 @@
 package page.nafuchoco.neojukepro.core.command;
 
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.MDC;
+import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @Slf4j
 public class ExceptionUtil {
+    private static final NeoJukeLauncher launcher = Main.getLauncher();
+
     private ExceptionUtil() {
         throw new IllegalStateException();
     }
 
-    public static void sendStackTrace(Guild guild, Throwable throwable, String... message) {
+    public static void sendStackTrace(NeoGuild guild, Throwable throwable, String... message) {
         sendStackTrace(guild, true, throwable, message);
     }
 
-    public static void sendStackTrace(Guild guild, boolean toLog, Throwable throwable, String... message) {
+    public static void sendStackTrace(NeoGuild guild, boolean toLog, Throwable throwable, String... message) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         throwable.printStackTrace(printWriter);
@@ -42,7 +46,7 @@ public class ExceptionUtil {
         String trace = stringWriter.toString();
 
         StringBuilder builder = new StringBuilder();
-        builder.append(MessageManager.getMessage("command.exception") + "\n");
+        builder.append(MessageManager.getMessage(guild.getSettings().getLang(), "command.exception") + "\n");
         for (String msg : message)
             builder.append(msg + "\n");
 
@@ -53,13 +57,13 @@ public class ExceptionUtil {
         builder.append(trace);
         builder.append("```");
 
-        MessageUtil.sendMessage(guild, builder.toString());
+        guild.sendMessageToLatest(builder.toString());
 
         if (toLog) {
             StringBuilder sb = new StringBuilder();
             for (String msg : message)
                 sb.append(msg + "\n");
-            MDC.put("GuildId", guild.getId());
+            MDC.put("GuildId", guild.getJDAGuild().getId());
             log.error(sb.toString(), throwable);
         }
     }
