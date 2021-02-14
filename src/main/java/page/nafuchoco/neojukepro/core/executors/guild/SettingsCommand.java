@@ -92,6 +92,9 @@ public class SettingsCommand extends CommandExecutor {
                 new StringBuilder(MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.set.current") + "\n```\n");
         builder.append("Prefix:         " + neoGuild.getSettings().getCommandPrefix() + "\n");
         builder.append("Lang:           " + neoGuild.getSettings().getLang() + "\n");
+        builder.append("Volume:         " + neoGuild.getSettings().getPlayerOptions().getVolumeLevel() + "\n");
+        builder.append("Repeat:         " + neoGuild.getSettings().getPlayerOptions().getRepeatMode() + "\n");
+        builder.append("Shuffle:        " + neoGuild.getSettings().getPlayerOptions().isShuffle() + "\n");
         builder.append("RobotMode:      " + neoGuild.getSettings().isRobotMode() + "\n");
         builder.append("JukeboxMode:    " + neoGuild.getSettings().isJukeboxMode() + "\n");
         builder.append("DisabledSource: " + neoGuild.getSettings().getPlayerOptions().getDisabledSources());

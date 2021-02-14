@@ -211,7 +211,7 @@ public class Launcher implements NeoJukeLauncher {
 
         commandRegistry.registerCommand(new PlayCommand("play", "p"), null);
         commandRegistry.registerCommand(new SearchCommand("search", "se"), null);
-        commandRegistry.registerCommand(new RePlayCommand("replay", "re"), null);
+        commandRegistry.registerCommand(new RePlayCommand("replay", "restart", "re"), null);
         commandRegistry.registerCommand(new InterruptCommand("interrupt", "in"), null);
         commandRegistry.registerCommand(new PauseCommand("pause"), null);
         commandRegistry.registerCommand(new StopCommand("stop", "st", "s"), null);

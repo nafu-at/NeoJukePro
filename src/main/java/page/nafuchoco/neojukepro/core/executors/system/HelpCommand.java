@@ -66,7 +66,7 @@ public class HelpCommand extends CommandExecutor {
     }
 
     private String printCommandList(List<CommandExecutor> commands, int page) {
-        int range = 10;
+        int range = 20;
         int listPage = commands.size() / range;
         if (commands.size() % range >= 1)
             listPage++;
