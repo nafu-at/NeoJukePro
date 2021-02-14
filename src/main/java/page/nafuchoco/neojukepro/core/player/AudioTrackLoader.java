@@ -128,12 +128,40 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException exception) {
-        ExceptionUtil.sendStackTrace(
-                audioPlayer.getNeoGuild(),
-                exception,
-                MessageManager.getMessage(
-                        trackContext.getNeoGuild().getSettings().getLang(),
-                        "player.loader.failed"));
+        if (exception.severity == FriendlyException.Severity.COMMON) {
+            try {
+                URLUtils.URLStructure url = URLUtils.parseUrl(trackContext.getTrackUrl());
+                if (!url.getPath().equals("playlist") && url.getQuery().get("list") != null) {
+                    url.getQuery().remove("list");
+                    url.getQuery().remove("index");
+                    trackContext.getNeoGuild().getAudioPlayer().play(
+                            new AudioTrackLoader(
+                                    new TrackContext(
+                                            trackContext.getNeoGuild(),
+                                            trackContext.getInvoker(),
+                                            trackContext.getInterruptNumber(),
+                                            URLUtils.buildURL(url).toString())
+                            )
+                    );
+                } else {
+                    trackContext.getNeoGuild().sendMessageToLatest(
+                            MessageManager.getMessage(
+                                    trackContext.getNeoGuild().getSettings().getLang(),
+                                    "player.loader.notfound")
+                    );
+                }
+            } catch (MalformedURLException e) {
+                // do nothing.
+            }
+        } else {
+            ExceptionUtil.sendStackTrace(
+                    audioPlayer.getNeoGuild(),
+                    exception,
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.loader.failed")
+            );
+        }
     }
 
     private boolean checkAudioSource(AudioTrack track) {
