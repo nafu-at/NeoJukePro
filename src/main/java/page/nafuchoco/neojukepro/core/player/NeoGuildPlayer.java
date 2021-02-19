@@ -126,6 +126,9 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
         }
         if (player.isPaused())
             player.setPaused(false);
+
+        // 音量が100%になる問題への一時的な対処
+        player.setVolume(getNeoGuild().getSettings().getPlayerOptions().getVolumeLevel());
     }
 
     public void play(List<LoadedTrackContext> contextList) {
