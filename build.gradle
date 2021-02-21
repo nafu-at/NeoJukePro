@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'page.nafuchoco'
-version '2.0.0-Beta5.1'
+version '2.0.0'
 
 sourceCompatibility = 11
 targetCompatibility = 11
