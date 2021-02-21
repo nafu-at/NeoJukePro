@@ -13,16 +13,16 @@ basic: # This is the configuration required to use this bot.
   discordToken: "YourTokenHere"        # Set the token that this Bot will use to authenticate to the Discord API.
 
   prefix: ";;"                         # Specifies a prefix for the bot to recognize the message as a command.
-  botAdmins: []                        # Specifies the ID of the user who has administrative privileges for this Bot.
+  botAdmins: [ ]                       # Specifies the ID of the user who has administrative privileges for this Bot.
 
-  musicSource:                         # Specifies the source to be used to play the music.
-    youtube:    true
+  musicSource: # Specifies the source to be used to play the music.
+    youtube: true
     soundcloud: true
-    bandcamp:   true
-    vimeo:      true
-    twitch:     true
-    http:       true
-    local:      false
+    bandcamp: true
+    vimeo: true
+    twitch: true
+    http: true
+    local: false
 
   database: # Set the connection information of the database to store the data.
     databaseType: "MARIADB"            # Specify the type of database. (MARIADB/MYSQL)

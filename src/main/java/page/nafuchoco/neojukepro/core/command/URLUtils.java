@@ -86,7 +86,7 @@ public class URLUtils {
             urlBuilder.append("#");
             urlBuilder.append(structure.getRef());
         }
-        
+
         try {
             return new URL(urlBuilder.toString());
         } catch (MalformedURLException e) {
