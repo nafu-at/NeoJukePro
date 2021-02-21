@@ -1,11 +1,12 @@
 plugins {
     id 'java'
     id 'java-library'
+    id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 group 'page.nafuchoco'
-version '1.8.2'
+version '2.0.0-Beta5.1'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -21,16 +22,16 @@ jar {
 }
 
 shadowJar {
-    archiveName = "NeoJukePro.${extension}"
+    archiveFileName.set("NeoJukePro." + archiveExtension.get())
 }
 
 task sourcesJar(type: Jar, dependsOn: 'classes') {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier.set('sources')
 }
 task javadocJar(type: Jar, dependsOn: 'javadoc') {
     from javadoc.destinationDir
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
 }
 javadoc {
     options.charSet = 'UTF-8'
@@ -38,6 +39,17 @@ javadoc {
 }
 task beforeDeploy {
     dependsOn('sourcesJar', 'javadocJar', 'shadowJar')
+}
+publishing {
+    publications {
+        mavenAar(MavenPublication) {
+            from components.java
+            afterEvaluate {
+                artifact javadocJar
+                artifact sourcesJar
+            }
+        }
+    }
 }
 
 repositories {
@@ -51,24 +63,25 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.30'
     implementation 'ch.qos.logback:logback-core:1.2.3'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
-    implementation 'io.sentry:sentry-logback:3.0.0'
-    compileOnly 'org.projectlombok:lombok:1.18.14'
+    implementation 'io.sentry:sentry-logback:4.1.0'
+    compileOnly 'org.projectlombok:lombok:1.18.18'
     annotationProcessor 'org.projectlombok:lombok:1.18.14'
     testCompileOnly 'org.projectlombok:lombok:1.18.14'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.14'
 
     // ClientLib
-    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
-    api('net.dv8tion:JDA:4.2.0_212') {
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    api('net.dv8tion:JDA:4.2.0_227') {
         exclude module: 'opus-java'
     }
-    api 'com.sedmelluq:lavaplayer:1.3.61'
-    api 'com.github.FredBoat:Lavalink-Client:92a858d'
+    api 'com.sedmelluq:lavaplayer:1.3.71'
+    api 'com.github.FredBoat:Lavalink-Client:fac5a3caf8'
 
     // Parser
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.11.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.3'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.3'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.1'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.1'
 
     // Commons Library
     implementation 'commons-io:commons-io:2.8.0'
@@ -76,9 +89,9 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.11'
 
     // SQL
-    implementation 'com.zaxxer:HikariCP:3.4.5'
-    implementation 'mysql:mysql-connector-java:8.0.21'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.0'
+    implementation 'com.zaxxer:HikariCP:4.0.2'
+    implementation 'mysql:mysql-connector-java:8.0.23'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 
     // Other
     implementation 'de.vandermeer:asciitable:0.3.2'

@@ -25,5 +25,5 @@ public interface CustomAudioSourceManager extends AudioSourceManager {
 
     Color getSourceColor();
 
-    MessageEmbed getNowPlayingEmbed(GuildAudioPlayer audioPlayer);
+    MessageEmbed getNowPlayingEmbed(NeoGuildPlayer audioPlayer);
 }

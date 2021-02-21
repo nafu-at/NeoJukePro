@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class URLUtils {
 
@@ -67,6 +68,30 @@ public class URLUtils {
         ref = url.getRef();
 
         return new URLStructure(protocol, userInfo, username, password, authority, host, port, path, query, fileName, ref);
+    }
+
+    public static URL buildURL(URLStructure structure) {
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(structure.getProtocol());
+        urlBuilder.append("://");
+        urlBuilder.append(structure.getAuthority());
+        urlBuilder.append(structure.getPath());
+        if (!structure.getQuery().isEmpty()) {
+            urlBuilder.append("?");
+            urlBuilder.append(String.join("&",
+                    structure.getQuery().entrySet().stream()
+                            .map(query -> query.getKey() + "=" + query.getValue()).collect(Collectors.toSet())));
+        }
+        if (structure.getRef() != null) {
+            urlBuilder.append("#");
+            urlBuilder.append(structure.getRef());
+        }
+
+        try {
+            return new URL(urlBuilder.toString());
+        } catch (MalformedURLException e) {
+            return null;
+        }
     }
 
     @AllArgsConstructor

@@ -1,0 +1,8 @@
+0:
+  table: neo_guild_settings
+  action: ADD
+  option: lang VARCHAR(5) NOT NULL
+1:
+  table: neo_guild_settings
+  action: SCRIPT
+  option: UPDATE %TABLENAME% SET lang = "en_US"

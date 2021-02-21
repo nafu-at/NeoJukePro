@@ -16,6 +16,9 @@
 
 package page.nafuchoco.neojukepro.core;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -29,7 +32,14 @@ public class MessageManager {
         throw new IllegalStateException();
     }
 
-    public static String getMessage(String locale, String index) {
+    /**
+     * @param locale Language of the message to retrieve. This parameter can be Null and will return the default language.
+     * @param index  Item name of the message to be retrieved
+     * @return Retrieved messages
+     */
+    public static String getMessage(@Nullable String locale, @NotNull String index) {
+        if (locale == null)
+            locale = defaultLocale;
         ResourceBundle bundle = lang.computeIfAbsent(locale, key -> {
             String[] loc = key.split("_");
             return ResourceBundle.getBundle("languages/messages", new Locale(loc[0], loc[1]));
@@ -37,11 +47,11 @@ public class MessageManager {
         return bundle.getString(index);
     }
 
-    public static String getMessage(String index) {
-        return getMessage(defaultLocale, index);
+    public static String getMessage(@NotNull String index) {
+        return getMessage(null, index);
     }
 
-    public static void setDefaultLocale(String locale) {
+    public static void setDefaultLocale(@NotNull String locale) {
         defaultLocale = locale;
     }
 }

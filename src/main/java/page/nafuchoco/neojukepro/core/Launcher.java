@@ -16,7 +16,6 @@
 
 package page.nafuchoco.neojukepro.core;
 
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import io.sentry.Sentry;
 import io.sentry.SentryOptions;
 import lavalink.client.io.jda.JdaLavalink;
@@ -26,29 +25,27 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.apache.commons.lang3.StringUtils;
-import page.nafuchoco.neojukepro.core.command.CommandCache;
-import page.nafuchoco.neojukepro.core.command.CommandExecuteAuth;
+import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.config.DatabaseSection;
 import page.nafuchoco.neojukepro.core.config.LavalinkConfigSection;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
-import page.nafuchoco.neojukepro.core.database.DatabaseConnector;
-import page.nafuchoco.neojukepro.core.database.GuildSettingsTable;
-import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
-import page.nafuchoco.neojukepro.core.database.instead.GuildSettingsTableInstead;
-import page.nafuchoco.neojukepro.core.database.instead.GuildUsersPermTableInstead;
-import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceJoinEventHandler;
-import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceLeaveEventHandler;
+import page.nafuchoco.neojukepro.core.database.*;
+import page.nafuchoco.neojukepro.core.database.dummy.DummyGuildUsersPermTable;
+import page.nafuchoco.neojukepro.core.database.dummy.DummyNeoGuildSettingsTable;
+import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.MessageReceivedEventHandler;
-import page.nafuchoco.neojukepro.core.executor.*;
-import page.nafuchoco.neojukepro.core.executor.system.ShutdownCommand;
-import page.nafuchoco.neojukepro.core.executor.system.SystemCommand;
-import page.nafuchoco.neojukepro.core.executor.system.UpdateCommand;
+import page.nafuchoco.neojukepro.core.executors.guild.SettingsCommand;
+import page.nafuchoco.neojukepro.core.executors.guild.UserInfoCommand;
+import page.nafuchoco.neojukepro.core.executors.guild.UserPermCommand;
+import page.nafuchoco.neojukepro.core.executors.player.*;
+import page.nafuchoco.neojukepro.core.executors.system.*;
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
+import page.nafuchoco.neojukepro.core.guild.NeoGuildRegistry;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAPIClient;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAppInfo;
 import page.nafuchoco.neojukepro.core.module.ModuleManager;
 import page.nafuchoco.neojukepro.core.player.CustomSourceRegistry;
-import page.nafuchoco.neojukepro.core.player.GuildPlayerRegistry;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -62,16 +59,18 @@ public class Launcher implements NeoJukeLauncher {
     private NeoJukeConfig config;
 
     private DatabaseConnector connector;
-    private GuildSettingsTable settingsTable;
+    private NeoJukeTable neoJukeTable;
+    private NeoGuildSettingsTable settingsTable;
     private GuildUsersPermTable usersPermTable;
 
+    private NeoGuildRegistry guildRegistry;
     private ModuleManager moduleManager;
     private CustomSourceRegistry customSourceRegistry;
     private CommandRegistry commandRegistry;
 
+    private DiscordAppInfo appInfo;
     private ShardManager shardManager;
     private JdaLavalink lavalink;
-    private GuildPlayerRegistry playerRegistry;
 
     @Override
     public void launch() {
@@ -98,26 +97,40 @@ public class Launcher implements NeoJukeLauncher {
             log.info(MessageManager.getMessage("system.db.connection"));
             DatabaseSection database = config.getBasicConfig().getDatabase();
             connector = new DatabaseConnector(
-                    database.getDatabaseType().getAddressPrefix() + database.getAddress(), database.getDatabase(),
+                    database.getDatabaseType(), database.getAddress(), database.getDatabase(),
                     database.getUsername(), database.getPassword());
-            settingsTable = new GuildSettingsTable(connector);
-            usersPermTable = new GuildUsersPermTable(connector);
+            neoJukeTable = new NeoJukeTable(database.getTablePrefix(), connector);
+            settingsTable = new NeoGuildSettingsTable(this, database.getTablePrefix(), connector);
+            usersPermTable = new GuildUsersPermTable(database.getTablePrefix(), connector);
 
             try {
+                neoJukeTable.createTable();
                 settingsTable.createTable();
                 usersPermTable.createTable();
             } catch (SQLException e) {
-                log.error(MessageManager.getMessage("system.db.initialize.error"));
+                log.error(MessageManager.getMessage("system.db.initialize.error"), e);
                 return;
+            }
+
+            try {
+                if (!settingsTable.getGuilds().isEmpty()) {
+                    DatabaseMigrateManager migrateManager = new DatabaseMigrateManager(
+                            this,
+                            neoJukeTable, settingsTable, usersPermTable);
+                    migrateManager.migrate(NumberUtils.toInt(neoJukeTable.getOption("migrate"), -1) + 1);
+                }
+            } catch (IOException | SQLException e) {
+                log.warn(MessageManager.getMessage("system.db.migrate.error"), e);
             }
         } else {
             log.warn(MessageManager.getMessage("system.db.nodbmode"));
-            settingsTable = new GuildSettingsTableInstead();
-            usersPermTable = new GuildUsersPermTableInstead();
+            settingsTable = new DummyNeoGuildSettingsTable();
+            usersPermTable = new DummyGuildUsersPermTable();
         }
-        CommandCache.registerCache(null, "settingsTable", settingsTable);
 
-        DiscordAppInfo appInfo;
+        if (BootOptions.isDebug() && BootOptions.isNoLogin())
+            return;
+
         try {
             appInfo = new DiscordAPIClient().getBotApplicationInfo(config.getBasicConfig().getDiscordToken());
         } catch (IOException e) {
@@ -129,10 +142,10 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry = new CommandRegistry();
         DefaultShardManagerBuilder shardManagerBuilder =
                 DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), EnumSet.allOf(GatewayIntent.class));
-        shardManagerBuilder.addEventListeners(new MessageReceivedEventHandler(
-                new CommandExecuteAuth(config.getBasicConfig().getBotAdmins(), appInfo, usersPermTable), commandRegistry));
-        shardManagerBuilder.addEventListeners(new GuildVoiceJoinEventHandler());
-        shardManagerBuilder.addEventListeners(new GuildVoiceLeaveEventHandler());
+        shardManagerBuilder.addEventListeners(new MessageReceivedEventHandler(this, commandRegistry));
+        shardManagerBuilder.addEventListeners(new GuildVoiceEventHandler(this));
+
+        guildRegistry = new NeoGuildRegistry(this, settingsTable, usersPermTable);
 
         moduleManager = new ModuleManager(this, "modules");
         moduleManager.loadAllModules();
@@ -166,7 +179,6 @@ public class Launcher implements NeoJukeLauncher {
         log.info(MessageManager.getMessage("system.api.login.success"));
         log.debug("Ping! {}ms", shardManager.getAverageGatewayPing());
 
-        playerRegistry = new GuildPlayerRegistry(new DefaultAudioPlayerManager(), lavalink, customSourceRegistry);
         initCommand();
 
         moduleManager.enableAllModules();
@@ -175,7 +187,7 @@ public class Launcher implements NeoJukeLauncher {
             log.info("Shutting down the system...");
             moduleManager.disableAllModules();
             if (lavalink != null) {
-                playerRegistry.getPlayers().forEach(player -> playerRegistry.destroyPlayer(player.getGuild()));
+                guildRegistry.getNeoGuilds().forEach(NeoGuild::destroyAudioPlayer);
                 lavalink.shutdown();
             }
             shardManager.shutdown();
@@ -188,8 +200,10 @@ public class Launcher implements NeoJukeLauncher {
     private void initCommand() {
         commandRegistry.registerCommand(new HelpCommand("help", "h"), null);
 
+        commandRegistry.registerCommand(new UserPermCommand("permission", "perm"), null);
         commandRegistry.registerCommand(new SettingsCommand("settings", "set"), null);
         commandRegistry.registerCommand(new StatusCommand("status", "stats"), null);
+        commandRegistry.registerCommand(new UserInfoCommand("userinfo", "uinfo"), null);
         commandRegistry.registerCommand(new JoinCommand("join", "j"), null);
         commandRegistry.registerCommand(new LeaveCommand("leave", "lv"), null);
         commandRegistry.registerCommand(new NowPlayingCommand("nowplaying", "np"), null);
@@ -197,7 +211,7 @@ public class Launcher implements NeoJukeLauncher {
 
         commandRegistry.registerCommand(new PlayCommand("play", "p"), null);
         commandRegistry.registerCommand(new SearchCommand("search", "se"), null);
-        commandRegistry.registerCommand(new RePlayCommand("replay", "re"), null);
+        commandRegistry.registerCommand(new RePlayCommand("replay", "restart", "re"), null);
         commandRegistry.registerCommand(new InterruptCommand("interrupt", "in"), null);
         commandRegistry.registerCommand(new PauseCommand("pause"), null);
         commandRegistry.registerCommand(new StopCommand("stop", "st", "s"), null);
@@ -206,6 +220,7 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new VolumeCommand("volume", "vol"), null);
         commandRegistry.registerCommand(new RepeatCommand("repeat", "rep"), null);
         commandRegistry.registerCommand(new ShuffleCommand("shuffle", "sh"), null);
+        commandRegistry.registerCommand(new DestroyCommand("destroy"), null);
 
         commandRegistry.registerCommand(new DeleteCommand("delete", "clean"), null);
 
@@ -239,6 +254,16 @@ public class Launcher implements NeoJukeLauncher {
     }
 
     @Override
+    public DiscordAppInfo getDiscordAppInfo() {
+        return appInfo;
+    }
+
+    @Override
+    public NeoGuildRegistry getGuildRegistry() {
+        return guildRegistry;
+    }
+
+    @Override
     public ModuleManager getModuleManager() {
         return moduleManager;
     }
@@ -261,10 +286,5 @@ public class Launcher implements NeoJukeLauncher {
     @Override
     public JdaLavalink getLavaLink() {
         return lavalink;
-    }
-
-    @Override
-    public GuildPlayerRegistry getPlayerRegistry() {
-        return playerRegistry;
     }
 }

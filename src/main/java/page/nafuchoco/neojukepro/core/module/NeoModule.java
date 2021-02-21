@@ -126,7 +126,7 @@ public abstract class NeoModule implements Module {
     }
 
     @Override
-    public NeoJukePro getNeoJuke() {
+    public NeoJukePro getNeoJukePro() {
         return launcher;
     }
 
@@ -143,7 +143,7 @@ public abstract class NeoModule implements Module {
     }
 
     @Override
-    public ModuleClassLoader getClassLoder() {
+    public ModuleClassLoader getClassLoader() {
         return (ModuleClassLoader) classLoader;
     }
 

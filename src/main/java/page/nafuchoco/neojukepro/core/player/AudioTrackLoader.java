@@ -28,7 +28,6 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.entities.Member;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
@@ -45,30 +44,28 @@ import java.util.List;
 public class AudioTrackLoader implements AudioLoadResultHandler {
     private static final MusicSourceSection musicSource = Main.getLauncher().getConfig().getBasicConfig().getMusicSource();
 
-    private GuildAudioPlayer audioPlayer;
+    private NeoGuildPlayer audioPlayer;
 
-    private final String loadTrackUrl;
-    private final Member invoker;
-    private final int desiredNumber;
+    private final TrackContext trackContext;
 
-    public AudioTrackLoader(String loadTrackUrl, Member invoker, int desiredNumber) {
-        this.loadTrackUrl = loadTrackUrl;
-        this.invoker = invoker;
-        this.desiredNumber = desiredNumber;
+    public AudioTrackLoader(TrackContext trackContext) {
+        this.trackContext = trackContext;
     }
 
-    protected void setAudioPlayer(GuildAudioPlayer audioPlayer) {
+    protected void setAudioPlayer(NeoGuildPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
     }
 
     protected void loadTrack() {
         if (audioPlayer == null)
-            throw new IllegalStateException(MessageManager.getMessage("player.loader.error"));
-        audioPlayer.getAudioPlayerManager().loadItemOrdered(this, loadTrackUrl, this);
+            throw new IllegalStateException(MessageManager.getMessage(
+                    trackContext.getNeoGuild().getSettings().getLang(),
+                    "player.loader.error"));
+        audioPlayer.getNeoGuild().getAudioPlayerManager().loadItemOrdered(this, trackContext.getTrackUrl(), this);
     }
 
-    public int getDesiredNumber() {
-        return desiredNumber;
+    public TrackContext getTrackContext() {
+        return trackContext;
     }
 
     @Override
@@ -78,42 +75,50 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
         int position = 0;
         try {
-            log.debug(URLUtils.parseUrl(loadTrackUrl).toString());
-            String time = URLUtils.parseUrl(loadTrackUrl).getQuery().get("t");
+            String time = URLUtils.parseUrl(getTrackContext().getTrackUrl()).getQuery().get("t");
             position = time != null ? NumberUtils.toInt(time.replace("s", "")) : 0;
         } catch (MalformedURLException e) {
             // nothing.
         }
-        audioPlayer.play(new GuildTrackContext(invoker.getGuild(), invoker, position * 1000, track), desiredNumber);
+        audioPlayer.play(new LoadedTrackContext(getTrackContext(), position * 1000, track));
         if (audioPlayer.getTrackProvider().getQueues().isEmpty())
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.playing"), track.getInfo().title));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.playing"),
+                    track.getInfo().title));
         else
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.addqueue"), track.getInfo().title));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.addqueue"),
+                    track.getInfo().title));
     }
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
-        List<GuildTrackContext> contextList = new LinkedList<>();
+        List<LoadedTrackContext> contextList = new LinkedList<>();
         AudioTrack firstTrack = playlist.getSelectedTrack();
         playlist.getTracks().forEach(track -> {
             if (!track.equals(firstTrack))
-                contextList.add(new GuildTrackContext(invoker.getGuild(), invoker, 0, track));
+                contextList.add(new LoadedTrackContext(getTrackContext(), 0, track));
         });
         if (firstTrack != null) {
             int position = 0;
             try {
-                String time = URLUtils.parseUrl(loadTrackUrl).getQuery().get("t");
+                String time = URLUtils.parseUrl(getTrackContext().getTrackUrl()).getQuery().get("t");
                 position = time != null ? NumberUtils.toInt(time.replace("s", "")) : 0;
             } catch (MalformedURLException e) {
                 // nothing.
             }
-            contextList.add(0, new GuildTrackContext(invoker.getGuild(), invoker, position * 1000, firstTrack));
+            contextList.add(0, new LoadedTrackContext(getTrackContext(), position * 1000, firstTrack));
         }
-        audioPlayer.play(contextList, desiredNumber);
-        MessageUtil.sendMessage(audioPlayer.getGuild(),
-                MessageUtil.format(MessageManager.getMessage("player.playlist.add"), playlist.getTracks().size(), playlist.getName()));
+        audioPlayer.play(contextList);
+        trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                MessageManager.getMessage(
+                        trackContext.getNeoGuild().getSettings().getLang(),
+                        "player.playlist.add"),
+                playlist.getTracks().size(), playlist.getName()));
     }
 
     @Override
@@ -123,37 +128,97 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException exception) {
-        ExceptionUtil.sendStackTrace(audioPlayer.getGuild(), exception, MessageManager.getMessage("player.loader.failed"));
+        if (exception.severity == FriendlyException.Severity.COMMON) {
+            try {
+                URLUtils.URLStructure url = URLUtils.parseUrl(trackContext.getTrackUrl());
+                if (!url.getPath().equals("playlist") && url.getQuery().get("list") != null) {
+                    url.getQuery().remove("list");
+                    url.getQuery().remove("index");
+                    trackContext.getNeoGuild().getAudioPlayer().play(
+                            new AudioTrackLoader(
+                                    new TrackContext(
+                                            trackContext.getNeoGuild(),
+                                            trackContext.getInvoker(),
+                                            trackContext.getInterruptNumber(),
+                                            URLUtils.buildURL(url).toString())
+                            )
+                    );
+                } else {
+                    trackContext.getNeoGuild().sendMessageToLatest(
+                            MessageManager.getMessage(
+                                    trackContext.getNeoGuild().getSettings().getLang(),
+                                    "player.loader.notfound")
+                    );
+                }
+            } catch (MalformedURLException e) {
+                // do nothing.
+            }
+        } else {
+            ExceptionUtil.sendStackTrace(
+                    audioPlayer.getNeoGuild(),
+                    exception,
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.loader.failed")
+            );
+        }
     }
 
     private boolean checkAudioSource(AudioTrack track) {
         if (track instanceof YoutubeAudioTrack && !musicSource.enableYoutube()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "YouTube"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "YouTube"));
             return false;
         } else if (track instanceof SoundCloudAudioTrack && !musicSource.enableSoundCloud()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "SoundCloud"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "SoundCloud"));
             return false;
         } else if (track instanceof BandcampAudioTrack && !musicSource.enableBandCamp()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "BandCamp"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "BandCamp"));
             return false;
         } else if (track instanceof VimeoAudioTrack && !musicSource.enableVimeo()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Vimeo"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "Vimeo"));
             return false;
         } else if (track instanceof TwitchStreamAudioTrack && !musicSource.enableTwitch()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Twitch"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "Twitch"));
             return false;
         } else if (track instanceof HttpAudioTrack && !musicSource.enableHttp()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "HTTP"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "HTTP"));
             return false;
         } else if (track instanceof LocalAudioTrack && !musicSource.enableLocal()) {
-            MessageUtil.sendMessage(audioPlayer.getGuild(),
-                    MessageUtil.format(MessageManager.getMessage("player.source.disable"), "Local"));
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    "Local"));
+            return false;
+        } else if (audioPlayer.getPlayerOptions().getDisabledSources().contains(track.getSourceManager().getSourceName())) {
+            trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
+                    MessageManager.getMessage(
+                            trackContext.getNeoGuild().getSettings().getLang(),
+                            "player.source.disable"),
+                    track.getSourceManager().getSourceName()));
             return false;
         }
         return true;

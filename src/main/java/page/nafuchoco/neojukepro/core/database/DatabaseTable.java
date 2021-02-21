@@ -16,27 +16,16 @@
 
 package page.nafuchoco.neojukepro.core.database;
 
-import page.nafuchoco.neojukepro.core.Main;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public abstract class DatabaseTable {
-    private static final String PREFIX = Main.getLauncher().getConfig().getBasicConfig().getDatabase().getTablePrefix();
     private final String tablename;
     private final DatabaseConnector connector;
 
     public DatabaseTable(String prefix, String tablename, DatabaseConnector connector) {
         this.tablename = prefix + tablename;
-        this.connector = connector;
-    }
-
-    /**
-     * @since 1.2
-     */
-    public DatabaseTable(String tablename, DatabaseConnector connector) {
-        this.tablename = PREFIX + tablename;
         this.connector = connector;
     }
 
@@ -75,6 +64,23 @@ public abstract class DatabaseTable {
         try (Connection connection = connector.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "ALTER TABLE " + tablename + " ADD " + name + " " + type)) {
+                ps.execute();
+            }
+        }
+    }
+
+    /**
+     * Add a column to the table.
+     *
+     * @param name         The name of the column to add
+     * @param type         Column data type
+     * @param defaultValue Column default value
+     * @throws SQLException Thrown when adding a column fails.
+     */
+    public void createTableColumn(String name, String type, String defaultValue) throws SQLException {
+        try (Connection connection = connector.getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "ALTER TABLE " + tablename + " ADD " + name + " " + type + "NOT NULL DEFAULT" + defaultValue)) {
                 ps.execute();
             }
         }
