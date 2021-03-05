@@ -80,15 +80,14 @@ public class ModuleManager {
                     continue iterator;
                 }
 
-                if (!CollectionUtils.isEmpty(description.getLoadBefore())) {
-                    if (waitingModule.size() != IterableUtils.size(Collections.singleton(iterator))) {
-                        for (String module : description.getLoadBefore()) {
-                            if (moduleRegistry.getModule(module) == null) {
-                                waitingModule.add(file);
-                                continue iterator;
-                            }
-                            waitingModule.remove(file);
+                if (!CollectionUtils.isEmpty(description.getLoadBefore())
+                        && waitingModule.size() != IterableUtils.size(Collections.singleton(iterator))) {
+                    for (String module : description.getLoadBefore()) {
+                        if (moduleRegistry.getModule(module) == null) {
+                            waitingModule.add(file);
+                            continue iterator;
                         }
+                        waitingModule.remove(file);
                     }
                 }
 

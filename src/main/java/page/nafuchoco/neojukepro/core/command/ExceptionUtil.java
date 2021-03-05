@@ -18,9 +18,7 @@ package page.nafuchoco.neojukepro.core.command;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
 import java.io.PrintWriter;
@@ -28,7 +26,6 @@ import java.io.StringWriter;
 
 @Slf4j
 public class ExceptionUtil {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
 
     private ExceptionUtil() {
         throw new IllegalStateException();
