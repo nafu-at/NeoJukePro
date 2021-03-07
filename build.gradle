@@ -14,7 +14,7 @@ compileJava.options.encoding = 'UTF-8'
 
 jar {
     manifest {
-        attributes("Main-Class": "page.nafuchoco.neojukepro.core.Main",
+        attributes("Main-Class": "page.nafuchoco.neojukepro.api.NeoJukeBot",
                 "Implementation-Title": "NeoJukePro",
                 "Implementation-Version": getArchiveVersion().get()
         )
