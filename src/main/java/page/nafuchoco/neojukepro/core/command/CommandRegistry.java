@@ -64,7 +64,10 @@ public class CommandRegistry {
         for (int i = modules.size() - 1; i >= 0; i--) {
             if (executor != null)
                 break;
-            Map<String, CommandExecutor> reg = commands.get(modules.get(i));
+            NeoModule module = modules.get(i);
+            if (module != null && !module.isEnable())
+                continue;
+            Map<String, CommandExecutor> reg = commands.get(module);
             if (reg != null)
                 executor = reg.get(name);
         }

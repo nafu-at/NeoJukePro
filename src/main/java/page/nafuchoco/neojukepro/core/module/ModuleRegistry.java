@@ -18,10 +18,8 @@ package page.nafuchoco.neojukepro.core.module;
 
 import page.nafuchoco.neojukepro.core.module.exception.ModuleDuplicateException;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class ModuleRegistry {
     private final Map<String, NeoModule> modules = new LinkedHashMap<>();
@@ -45,10 +43,11 @@ public class ModuleRegistry {
      * @param module Module to be removed.
      */
     public synchronized void deleteModule(NeoModule module) {
-        modules.entrySet().forEach(entry -> {
+        for (Iterator<Map.Entry<String, NeoModule>> i = modules.entrySet().iterator(); i.hasNext(); ) {
+            Entry<String, NeoModule> entry = i.next();
             if (entry.getValue().equals(module))
-                modules.remove(entry.getKey());
-        });
+                i.remove();
+        }
     }
 
     /**

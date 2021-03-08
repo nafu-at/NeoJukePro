@@ -65,6 +65,7 @@ public class ModuleCommand extends CommandExecutor {
 
                     default:
                         try {
+                            neoJukePro.getModuleManager().disableModule(context.getArgs()[1]);
                             neoJukePro.getModuleManager().unloadModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
                             context.getChannel().sendMessage(MessageManager.getMessage(
