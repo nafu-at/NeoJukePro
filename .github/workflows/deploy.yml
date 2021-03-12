@@ -30,5 +30,6 @@ jobs:
         name: NeoJukePro ${{ github.ref }}
         files: |
           ./build/libs/NeoJukePro.jar
+          ./build/libs/NeoJukePro-${{ github.ref }}.jar
           ./build/libs/NeoJukePro-${{ github.ref }}-sources.jar
           ./build/libs/NeoJukePro-${{ github.ref }}-javadoc.jar
