@@ -80,15 +80,14 @@ public class ModuleManager {
                     continue iterator;
                 }
 
-                if (!CollectionUtils.isEmpty(description.getLoadBefore())) {
-                    if (waitingModule.size() != IterableUtils.size(Collections.singleton(iterator))) {
-                        for (String module : description.getLoadBefore()) {
-                            if (moduleRegistry.getModule(module) == null) {
-                                waitingModule.add(file);
-                                continue iterator;
-                            }
-                            waitingModule.remove(file);
+                if (!CollectionUtils.isEmpty(description.getLoadBefore())
+                        && waitingModule.size() != IterableUtils.size(Collections.singleton(iterator))) {
+                    for (String module : description.getLoadBefore()) {
+                        if (moduleRegistry.getModule(module) == null) {
+                            waitingModule.add(file);
+                            continue iterator;
                         }
+                        waitingModule.remove(file);
                     }
                 }
 
@@ -234,11 +233,22 @@ public class ModuleManager {
             log.warn(MessageManager.getMessage("system.module.unload.failed"), module.getDescription().getName());
         } else {
             try {
-                moduleRegistry.deleteModule(module);
                 ModuleClassLoader classLoader = module.getClassLoader();
+
+                for (Thread thread : Thread.getAllStackTraces().keySet()) {
+                    if (thread.getClass().getClassLoader() == classLoader) {
+                        log.info("Stopping module thread: {}", thread.getName());
+                        thread.interrupt();
+                        thread.join(3000);
+                        if (thread.isAlive())
+                            thread.stop();
+                    }
+                }
+
+                moduleRegistry.deleteModule(module);
                 classLoader.close();
                 log.info(MessageManager.getMessage("system.module.unload.success"), module.getDescription().getName());
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 log.error(MessageManager.getMessage("system.module.unload.error"), e);
             }
         }

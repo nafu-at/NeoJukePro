@@ -47,7 +47,7 @@ public class ModuleCommand extends CommandExecutor {
             context.getChannel().sendMessage(renderModuleList(neoJukePro.getModuleManager().getModules(), 1)).queue();
         } else switch (context.getArgs()[0].toLowerCase()) {
             case "load":
-                if (neoJukePro.getModuleManager().loadModule(new File(context.getArgs()[1])))
+                if (neoJukePro.getModuleManager().loadModule(new File("modules", context.getArgs()[1])))
                     context.getChannel().sendMessage(MessageManager.getMessage(
                             context.getNeoGuild().getSettings().getLang(),
                             "command.module.load.success")).queue();
@@ -65,6 +65,7 @@ public class ModuleCommand extends CommandExecutor {
 
                     default:
                         try {
+                            neoJukePro.getModuleManager().disableModule(context.getArgs()[1]);
                             neoJukePro.getModuleManager().unloadModule(context.getArgs()[1]);
                         } catch (IllegalArgumentException e) {
                             context.getChannel().sendMessage(MessageManager.getMessage(

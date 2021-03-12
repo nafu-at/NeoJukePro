@@ -23,7 +23,7 @@ public abstract class CommandExecutor implements ICommandExecutor {
     private final String name;
     private final List<String> aliases;
 
-    public CommandExecutor(String name, String... aliases) {
+    protected CommandExecutor(String name, String... aliases) {
         this.name = name;
         this.aliases = Arrays.asList(aliases);
     }

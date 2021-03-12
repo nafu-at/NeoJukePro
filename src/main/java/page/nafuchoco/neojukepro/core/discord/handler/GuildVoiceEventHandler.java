@@ -17,6 +17,7 @@
 package page.nafuchoco.neojukepro.core.discord.handler;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -37,22 +38,15 @@ public final class GuildVoiceEventHandler extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {
-        if (event.getEntity().getUser() == event.getJDA().getSelfUser() ||
-                event.getEntity().getGuild().getSelfMember().getVoiceState().getChannel() == null)
-            return;
-        for (Member member : event.getChannelLeft().getMembers())
-            if (!member.getUser().isBot())
-                return;
-
-        NeoGuild neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
-        neoGuild.sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.autoleave"));
-        NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
-        audioPlayer.setPaused(true);
-        audioPlayer.leaveChannel();
+        checkVoiceChannelMember(event);
     }
 
     @Override
     public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event) {
+        checkVoiceChannelMember(event);
+    }
+
+    private void checkVoiceChannelMember(GenericGuildVoiceUpdateEvent event) {
         if (event.getEntity().getUser() == event.getJDA().getSelfUser() ||
                 event.getEntity().getGuild().getSelfMember().getVoiceState().getChannel() == null)
             return;

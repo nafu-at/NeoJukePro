@@ -81,6 +81,12 @@ public class Main {
                     case "stop":
                         Runtime.getRuntime().exit(0);
                         break;
+
+                    case "threadList":
+                        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+                            log.debug("Found active thread: {} ({})", thread, thread.getClass().getClassLoader());
+                        }
+                        break;
                 }
             }
         }).start();

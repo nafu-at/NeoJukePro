@@ -81,7 +81,7 @@ public class DatabaseMigrateManager {
 
                 case SCRIPT: {
                     DatabaseTable table = databaseTables.get(config.getTable());
-                    String syntax = config.getOption().replaceAll("%TABLENAME%", table.getTablename());
+                    String syntax = config.getOption().replace("%TABLENAME%", table.getTablename());
                     try (Connection connection = table.getConnector().getConnection();
                          PreparedStatement ps = connection.prepareStatement(
                                  syntax)) {

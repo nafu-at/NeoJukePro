@@ -18,6 +18,7 @@ package page.nafuchoco.neojukepro.core.module;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
@@ -37,6 +38,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class ModuleLoader {
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     private final NeoJukeLauncher launcher;
@@ -82,8 +84,10 @@ public class ModuleLoader {
             throw new InvalidModuleException(e);
         }
 
+        log.info("Loading {} v{}", description.getName(), description.getVersion());
+
         int currentVersion = parseVersion(Main.class.getPackage().getImplementationVersion());
-        int requiredVersion = parseVersion(description.getRequiredVersion());
+        int requiredVersion = description.getRequiredVersion() != null ? parseVersion(description.getRequiredVersion()) : 0;
         if (requiredVersion > currentVersion)
             throw new InvalidModuleException(MessageManager.getMessage("system.module.load.version.below"));
 
@@ -146,7 +150,7 @@ public class ModuleLoader {
     private int parseVersion(String version) {
         String[] sa = version.split("-");
         try {
-            return Integer.parseInt(sa[0].replaceAll("\\.", ""));
+            return Integer.parseInt(sa[0].replace(".", ""));
         } catch (NumberFormatException e) {
             return 0;
         }
