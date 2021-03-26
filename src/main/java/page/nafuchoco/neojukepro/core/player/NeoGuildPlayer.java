@@ -131,6 +131,14 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
         player.setVolume(getNeoGuild().getSettings().getPlayerOptions().getVolumeLevel());
     }
 
+    public synchronized void replay() {
+        if (playingTrack != null) {
+            trackProvider.queue(playingTrack.makeClone(1));
+            playingTrack = null;
+            skip();
+        }
+    }
+
     public void play(List<LoadedTrackContext> contextList) {
         trackProvider.queue(contextList);
         play();
