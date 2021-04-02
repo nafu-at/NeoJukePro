@@ -249,6 +249,11 @@ public class Launcher implements NeoJukeLauncher {
     }
 
     @Override
+    public String getNeoJukeVersion() {
+        return Main.class.getPackage().getImplementationVersion();
+    }
+
+    @Override
     public DatabaseConnector getConnector() {
         return connector;
     }

@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidDescriptionException;
@@ -86,9 +85,7 @@ public class ModuleLoader {
 
         log.info("Loading {} v{}", description.getName(), description.getVersion());
 
-        int currentVersion = parseVersion(Main.class.getPackage().getImplementationVersion());
-        int requiredVersion = description.getRequiredVersion() != null ? parseVersion(description.getRequiredVersion()) : 0;
-        if (requiredVersion > currentVersion)
+        if (ModuleVersionChecker.isNew(description.getRequiredVersion(), launcher.getNeoJukeVersion()))
             throw new InvalidModuleException(MessageManager.getMessage("system.module.load.version.below"));
 
         if (!CollectionUtils.isEmpty(description.getDependency())) {
@@ -144,15 +141,6 @@ public class ModuleLoader {
                 } catch (IOException e) {
                 }
             }
-        }
-    }
-
-    private int parseVersion(String version) {
-        String[] sa = version.split("-");
-        try {
-            return Integer.parseInt(sa[0].replace(".", ""));
-        } catch (NumberFormatException e) {
-            return 0;
         }
     }
 }
