@@ -28,6 +28,11 @@ import page.nafuchoco.neojukepro.core.player.CustomSourceRegistry;
 
 public interface NeoJukePro {
 
+    /**
+     * @since v2.2
+     */
+    String getNeoJukeVersion();
+
     NeoJukeConfig getConfig();
 
     DatabaseConnector getConnector();

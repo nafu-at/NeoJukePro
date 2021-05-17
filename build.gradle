@@ -56,6 +56,7 @@ repositories {
     mavenCentral()
     jcenter()
     maven { url 'https://jitpack.io' }
+    maven { url 'https://m2.dv8tion.net/releases' }
 }
 
 dependencies {
@@ -64,24 +65,24 @@ dependencies {
     implementation 'ch.qos.logback:logback-core:1.2.3'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     implementation 'io.sentry:sentry-logback:4.2.0'
-    compileOnly 'org.projectlombok:lombok:1.18.18'
-    annotationProcessor 'org.projectlombok:lombok:1.18.14'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
     testCompileOnly 'org.projectlombok:lombok:1.18.14'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.14'
 
     // ClientLib
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
-    api('net.dv8tion:JDA:4.2.0_233') {
+    api('net.dv8tion:JDA:4.2.1_259') {
         exclude module: 'opus-java'
     }
-    api 'com.sedmelluq:lavaplayer:1.3.73'
-    api 'com.github.FredBoat:Lavalink-Client:6844df8'
+    api 'com.sedmelluq:lavaplayer:1.3.76'
+    api 'com.github.freyacodes:Lavalink-Client:f05605e'
 
     // Parser
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.3'
 
     // Commons Library
     implementation 'commons-io:commons-io:2.8.0'
@@ -90,7 +91,7 @@ dependencies {
 
     // SQL
     implementation 'com.zaxxer:HikariCP:4.0.3'
-    implementation 'mysql:mysql-connector-java:8.0.23'
+    implementation 'mysql:mysql-connector-java:8.0.24'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 
     // Other
