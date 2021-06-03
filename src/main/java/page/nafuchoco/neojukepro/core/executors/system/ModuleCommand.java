@@ -152,6 +152,9 @@ public class ModuleCommand extends CommandExecutor {
             return MessageManager.getMessage("command.page.specify");
         }
 
+        if (modules.isEmpty())
+            return MessageManager.getMessage("command.module.empty");
+
         int listPage = modules.size() / range;
         if (modules.size() % range >= 1)
             listPage++;
