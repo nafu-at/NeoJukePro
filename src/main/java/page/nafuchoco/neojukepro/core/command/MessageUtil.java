@@ -16,7 +16,6 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageUtil {
@@ -28,7 +27,7 @@ public class MessageUtil {
 
     public static String format(String message, Object... args) {
         String result = message;
-        Matcher matcher = VAR_PATTERN.matcher(result);
+        var matcher = VAR_PATTERN.matcher(result);
         while (matcher.find()) {
             String index = matcher.group().replace("{", "").replace("}", "");
             if (Integer.parseInt(index) < args.length)
@@ -56,9 +55,9 @@ public class MessageUtil {
     }
 
     public static long parseTimeToMillis(String time) {
-        int sec;
-        int min = 0;
-        int hrs = 0;
+        var sec = 0;
+        var min = 0;
+        var hrs = 0;
 
         String[] split = time.split(":");
         if (split.length == 3) {

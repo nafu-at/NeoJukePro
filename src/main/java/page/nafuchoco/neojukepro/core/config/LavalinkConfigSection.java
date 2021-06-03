@@ -17,7 +17,11 @@
 package page.nafuchoco.neojukepro.core.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.ToString;
 
+@Getter
+@ToString
 public class LavalinkConfigSection {
     @JsonProperty("nodeName")
     private String nodeName;
@@ -25,16 +29,4 @@ public class LavalinkConfigSection {
     private String address;
     @JsonProperty("password")
     private String password;
-
-    public String getNodeName() {
-        return nodeName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

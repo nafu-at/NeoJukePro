@@ -16,7 +16,6 @@
 
 package page.nafuchoco.neojukepro.core.database;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -45,7 +44,7 @@ public abstract class DatabaseTable {
      * @throws SQLException Thrown when creating a table fails.
      */
     public void createTable(String construction) throws SQLException {
-        try (Connection connection = connector.getConnection()) {
+        try (var connection = connector.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS " + tablename + " (" + construction + ")")) {
                 ps.execute();
@@ -61,7 +60,7 @@ public abstract class DatabaseTable {
      * @throws SQLException Thrown when adding a column fails.
      */
     public void createTableColumn(String name, String type) throws SQLException {
-        try (Connection connection = connector.getConnection()) {
+        try (var connection = connector.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "ALTER TABLE " + tablename + " ADD " + name + " " + type)) {
                 ps.execute();
@@ -78,7 +77,7 @@ public abstract class DatabaseTable {
      * @throws SQLException Thrown when adding a column fails.
      */
     public void createTableColumn(String name, String type, String defaultValue) throws SQLException {
-        try (Connection connection = connector.getConnection()) {
+        try (var connection = connector.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "ALTER TABLE " + tablename + " ADD " + name + " " + type + "NOT NULL DEFAULT" + defaultValue)) {
                 ps.execute();
@@ -93,7 +92,7 @@ public abstract class DatabaseTable {
      * @throws SQLException Thrown when deleting a column fails.
      */
     public void dropTableColumn(String name) throws SQLException {
-        try (Connection connection = connector.getConnection()) {
+        try (var connection = connector.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "ALTER TABLE " + tablename + " DROP " + name)) {
                 ps.execute();

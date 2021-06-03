@@ -71,7 +71,7 @@ public class URLUtils {
     }
 
     public static URL buildURL(URLStructure structure) {
-        StringBuilder urlBuilder = new StringBuilder();
+        var urlBuilder = new StringBuilder();
         urlBuilder.append(structure.getProtocol());
         urlBuilder.append("://");
         urlBuilder.append(structure.getAuthority());

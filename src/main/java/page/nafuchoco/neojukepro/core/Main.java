@@ -21,8 +21,6 @@ import ch.qos.logback.classic.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 
-import java.io.Console;
-
 @Slf4j
 public class Main {
     private static boolean debugMode;
@@ -62,9 +60,9 @@ public class Main {
         }
 
         if (debugMode) {
-            Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            Logger jdaLogger = (Logger) LoggerFactory.getLogger("net.dv8tion");
-            Logger cpLogger = (Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
+            var root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+            var jdaLogger = (Logger) LoggerFactory.getLogger("net.dv8tion");
+            var cpLogger = (Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
             root.setLevel(Level.DEBUG);
             jdaLogger.setLevel(Level.DEBUG);
             cpLogger.setLevel(Level.DEBUG);
@@ -74,7 +72,7 @@ public class Main {
         launcher.launch();
 
         new Thread(() -> {
-            Console console = System.console();
+            var console = System.console();
             while (true) {
                 switch (console.readLine()) {
                     case "exit":

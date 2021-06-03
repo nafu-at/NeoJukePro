@@ -17,9 +17,11 @@
 package page.nafuchoco.neojukepro.core.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.ToString;
 
 import java.util.List;
 
+@ToString
 public class AdvancedConfigSection {
     @JsonProperty("googleAPIToken")
     private String googleAPIToken;

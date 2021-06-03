@@ -70,7 +70,7 @@ public class ModuleManager {
             Iterator<File> iterator = files.iterator();
             iterator:
             while (iterator.hasNext()) {
-                File file = iterator.next();
+                var file = iterator.next();
                 ModuleDescription description;
                 try {
                     description = moduleLoader.loadModuleDescription(file);

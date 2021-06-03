@@ -73,14 +73,14 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
         if (!checkAudioSource(track))
             return;
 
-        int position = 0;
+        var position = 0;
         try {
             String time = URLUtils.parseUrl(getTrackContext().getTrackUrl()).getQuery().get("t");
             position = time != null ? NumberUtils.toInt(time.replace("s", "")) : 0;
         } catch (MalformedURLException e) {
             // nothing.
         }
-        audioPlayer.play(new LoadedTrackContext(getTrackContext(), position * 1000, track));
+        audioPlayer.play(new LoadedTrackContext(getTrackContext(), position * 1000L, track));
         if (audioPlayer.getTrackProvider().getQueues().isEmpty())
             trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(
                     MessageManager.getMessage(
@@ -104,14 +104,14 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
                 contextList.add(new LoadedTrackContext(getTrackContext(), 0, track));
         });
         if (firstTrack != null) {
-            int position = 0;
+            var position = 0;
             try {
                 String time = URLUtils.parseUrl(getTrackContext().getTrackUrl()).getQuery().get("t");
                 position = time != null ? NumberUtils.toInt(time.replace("s", "")) : 0;
             } catch (MalformedURLException e) {
                 // nothing.
             }
-            contextList.add(0, new LoadedTrackContext(getTrackContext(), position * 1000, firstTrack));
+            contextList.add(0, new LoadedTrackContext(getTrackContext(), position * 1000L, firstTrack));
         }
         audioPlayer.play(contextList);
         trackContext.getNeoGuild().sendMessageToLatest(MessageUtil.format(

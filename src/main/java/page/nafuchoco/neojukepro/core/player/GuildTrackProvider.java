@@ -72,7 +72,7 @@ public class GuildTrackProvider {
 
     public void queue(List<LoadedTrackContext> contextList) {
         List<LoadedTrackContext> tracks = getQueues();
-        int interruptNumber = contextList.get(0).getInterruptNumber();
+        var interruptNumber = contextList.get(0).getInterruptNumber();
 
         if (interruptNumber < 1 || interruptNumber > tracks.size()) {
             queue.addAll(contextList);

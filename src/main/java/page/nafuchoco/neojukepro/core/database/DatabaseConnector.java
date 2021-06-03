@@ -26,7 +26,7 @@ public class DatabaseConnector {
     private final HikariDataSource dataSource;
 
     public DatabaseConnector(DatabaseType databaseType, String address, String database, String username, String password) {
-        HikariConfig hconfig = new HikariConfig();
+        var hconfig = new HikariConfig();
         hconfig.setDriverClassName(databaseType.getJdbcClass());
         hconfig.setJdbcUrl(databaseType.getAddressPrefix() + address + "/" + database);
         hconfig.addDataSourceProperty("user", username);

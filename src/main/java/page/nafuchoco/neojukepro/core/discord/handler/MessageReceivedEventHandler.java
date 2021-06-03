@@ -50,7 +50,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 !event.getTextChannel().canTalk())
             return;
 
-        NeoGuild neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
+        var neoGuild = neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild());
         String prefix = neoGuild.getSettings().getCommandPrefix();
         boolean robot = neoGuild.getSettings().isRobotMode();
 
@@ -71,7 +71,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         if (input.isEmpty())
             return;
 
-        NeoGuildMember neoGuildMember = neoGuild.getGuildMemberRegistry().getNeoGuildMember(event.getMember().getIdLong());
+        var neoGuildMember = neoGuild.getGuildMemberRegistry().getNeoGuildMember(event.getMember().getIdLong());
         neoGuild.setLastJoinedChannel(event.getTextChannel());
 
         String[] commands = input.split("; ");
@@ -81,7 +81,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 event.getChannel().sendMessage(MessageUtil.format(
                         MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.nocommand"), commandString, prefix)).queue();
             } else {
-                log.debug("Command Received: {}", context.toString());
+                log.debug("Command Received: {}", context);
 
                 // コマンドの実行権限の確認
                 // 0 = Normal User.

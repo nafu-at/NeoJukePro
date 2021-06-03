@@ -85,7 +85,7 @@ public class ModuleLoader {
 
         log.info("Loading {} v{}", description.getName(), description.getVersion());
 
-        if (ModuleVersionChecker.isNew(description.getRequiredVersion(), launcher.getNeoJukeVersion()))
+        if (!ModuleVersionChecker.isNew(description.getRequiredVersion(), launcher.getNeoJukeVersion()))
             throw new InvalidModuleException(MessageManager.getMessage("system.module.load.version.below"));
 
         if (!CollectionUtils.isEmpty(description.getDependency())) {

@@ -16,9 +16,7 @@
 
 package page.nafuchoco.neojukepro.core.database;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GuildUsersPermTable extends DatabaseTable {
@@ -53,7 +51,7 @@ public class GuildUsersPermTable extends DatabaseTable {
         super.createTable("guild_id BIGINT NOT NULL, user_id BIGINT NOT NULL, " +
                 "permission_code TINYINT UNSIGNED NOT NULL");
         // ユニークインデックスを作成します。
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "CREATE UNIQUE INDEX userperm_index ON " + getTablename() + "(guild_id, user_id)")) {
             ps.execute();
@@ -72,12 +70,12 @@ public class GuildUsersPermTable extends DatabaseTable {
      * @throws SQLException Thrown if the user privileges are not obtained.
      */
     public int getUserPermission(long guildId, long userId) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "SELECT permission_code FROM " + getTablename() + " WHERE guild_id = ? AND user_id = ?")) {
             ps.setLong(1, guildId);
             ps.setLong(2, userId);
-            try (ResultSet resultSet = ps.executeQuery()) {
+            try (var resultSet = ps.executeQuery()) {
                 while (resultSet.next())
                     return resultSet.getInt("permission_code");
                 return -1;
@@ -94,7 +92,7 @@ public class GuildUsersPermTable extends DatabaseTable {
      * @throws SQLException Thrown if saving user privileges fails.
      */
     public void setUserPermission(long guildId, long userId, int permissionCode) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "INSERT INTO " + getTablename() + " (guild_id, user_id, permission_code) VALUES (?, ?, ?)" +
                              "ON DUPLICATE KEY UPDATE permission_code = VALUES (permission_code)")) {
@@ -112,7 +110,7 @@ public class GuildUsersPermTable extends DatabaseTable {
      * @throws SQLException Thrown if the deletion of user privileges fails.
      */
     public void deleteGuildUsers(long guildId) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "DELETE FROM " + getTablename() + " WHERE guild_id = ?")) {
             ps.setLong(1, guildId);
@@ -127,7 +125,7 @@ public class GuildUsersPermTable extends DatabaseTable {
      * @throws SQLException Thrown if the deletion of user privileges fails.
      */
     public void deleteUser(long userId) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "DELETE FROM " + getTablename() + " WHERE user_id = ?")) {
             ps.setLong(1, userId);
@@ -143,7 +141,7 @@ public class GuildUsersPermTable extends DatabaseTable {
      * @throws SQLException Thrown if the deletion of user privileges fails.
      */
     public void deleteGuildUser(long guildId, long userId) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "DELETE FROM " + getTablename() + " WHERE guild_id = ? AND user_id = ?")) {
             ps.setLong(1, guildId);
