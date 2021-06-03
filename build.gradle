@@ -75,7 +75,7 @@ dependencies {
     api('net.dv8tion:JDA:4.2.1_259') {
         exclude module: 'opus-java'
     }
-    api 'com.sedmelluq:lavaplayer:1.3.76'
+    api 'com.sedmelluq:lavaplayer:1.3.77'
     api 'com.github.freyacodes:Lavalink-Client:f05605e'
 
     // Parser
