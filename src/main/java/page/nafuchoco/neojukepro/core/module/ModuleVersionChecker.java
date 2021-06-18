@@ -48,6 +48,9 @@ public class ModuleVersionChecker {
         Matcher arg1Matcher = VERSION_PATTERN.matcher(arg1);
         Matcher arg2Matcher = VERSION_PATTERN.matcher(arg2);
 
+        if (arg1 == null || arg2 == null)
+            return true;
+
         if (!(arg1Matcher.matches() && arg2Matcher.matches()))
             throw new IllegalArgumentException("The version format must conform to Semantic Versioning 2.0.0.");
 
