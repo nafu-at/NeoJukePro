@@ -45,11 +45,11 @@ public class ModuleVersionChecker {
      * @return Returns true if arg2 is new.
      */
     public static boolean isNew(String arg1, String arg2) {
-        Matcher arg1Matcher = VERSION_PATTERN.matcher(arg1);
-        Matcher arg2Matcher = VERSION_PATTERN.matcher(arg2);
-
         if (arg1 == null || arg2 == null)
             return true;
+
+        Matcher arg1Matcher = VERSION_PATTERN.matcher(arg1);
+        Matcher arg2Matcher = VERSION_PATTERN.matcher(arg2);
 
         if (!(arg1Matcher.matches() && arg2Matcher.matches()))
             throw new IllegalArgumentException("The version format must conform to Semantic Versioning 2.0.0.");
