@@ -16,6 +16,7 @@
 
 package page.nafuchoco.neojukepro.core.executors.system;
 
+import lombok.val;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
@@ -32,16 +33,16 @@ public class StatusCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         NeoGuildPlayerOptions playerOptions = context.getNeoGuild().getSettings().getPlayerOptions();
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        StringBuilder builder = new StringBuilder(MessageManager.getMessage(
+        val builder = new StringBuilder(MessageManager.getMessage(
                 context.getNeoGuild().getSettings().getLang(),
                 "command.status") + "\n```");
         if (audioPlayer.getPlayingTrack() != null)
-            builder.append("Playing Track: " + audioPlayer.getPlayingTrack().getTrack().getInfo().title + "\n");
-        builder.append("Registered Queues: " + audioPlayer.getTrackProvider().getQueues().size() + "\n");
-        builder.append("Pause: " + audioPlayer.isPaused() + "\n");
-        builder.append("Volume: " + audioPlayer.getVolume() + "\n");
-        builder.append("Shuffle: " + playerOptions.isShuffle() + "\n");
-        builder.append("Repeat Mode: " + playerOptions.getRepeatMode() + "\n");
+            builder.append("Playing Track: ").append(audioPlayer.getPlayingTrack().getTrack().getInfo().title).append("\n");
+        builder.append("Registered Queues: ").append(audioPlayer.getTrackProvider().getQueues().size()).append("\n");
+        builder.append("Pause: ").append(audioPlayer.isPaused()).append("\n");
+        builder.append("Volume: ").append(audioPlayer.getVolume()).append("\n");
+        builder.append("Shuffle: ").append(playerOptions.isShuffle()).append("\n");
+        builder.append("Repeat Mode: ").append(playerOptions.getRepeatMode()).append("\n");
         builder.append("```");
         context.getChannel().sendMessage(builder.toString()).queue();
     }

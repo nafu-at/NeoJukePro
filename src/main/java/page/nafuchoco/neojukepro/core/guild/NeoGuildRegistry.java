@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class NeoGuildRegistry {
@@ -82,5 +83,9 @@ public class NeoGuildRegistry {
 
     public List<NeoGuild> getNeoGuilds() {
         return new ArrayList<>(guilds.values());
+    }
+
+    public List<NeoGuild> getPlayerActiveGuilds() {
+        return getNeoGuilds().stream().filter(guild -> guild.audioPlayer != null).collect(Collectors.toList());
     }
 }

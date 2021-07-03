@@ -57,7 +57,7 @@ public class NeoGuild {
     // TODO: 2020/12/08 ギルド固有のモジュールやカスタムコマンドなんかの実装の検討
 
     private TextChannel lastJoinedChannel;
-    private NeoGuildPlayer audioPlayer;
+    protected NeoGuildPlayer audioPlayer;
 
     public NeoGuild(NeoJukePro neoJukePro, long discordGuildId, NeoGuildSettings settings, GuildUsersPermTable permTable) {
         this.neoJukePro = neoJukePro;
