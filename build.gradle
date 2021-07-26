@@ -63,7 +63,7 @@ dependencies {
     // Logger
     implementation 'org.slf4j:slf4j-api:1.7.31'
     implementation 'ch.qos.logback:logback-core:1.2.3'
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    implementation 'ch.qos.logback:logback-classic:1.2.4-groovyless'
     implementation 'io.sentry:sentry-logback:5.0.1'
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
