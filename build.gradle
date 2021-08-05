@@ -85,7 +85,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4'
 
     // Commons Library
-    implementation 'commons-io:commons-io:2.10.0'
+    implementation 'commons-io:commons-io:2.11.0'
     implementation 'commons-codec:commons-codec:1.15'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
 
