@@ -16,9 +16,7 @@
 
 package page.nafuchoco.neojukepro.core.database;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +29,7 @@ public class NeoJukeTable extends DatabaseTable {
 
     public void createTable() throws SQLException {
         super.createTable("options_key TINYTEXT NOT NULL, option_value LONGTEXT NOT NULL");
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "CREATE UNIQUE INDEX options_index ON " + getTablename() + "(options_key)")) {
             ps.execute();
@@ -49,10 +47,10 @@ public class NeoJukeTable extends DatabaseTable {
      */
     public Map<String, String> getOptions() throws SQLException {
         Map<String, String> options = new HashMap<>();
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "SELECT * FROM " + getTablename())) {
-            try (ResultSet resultSet = ps.executeQuery()) {
+            try (var resultSet = ps.executeQuery()) {
                 while (resultSet.next())
                     options.put(resultSet.getString("options_key"), resultSet.getString("option_value"));
                 return options;
@@ -67,11 +65,11 @@ public class NeoJukeTable extends DatabaseTable {
      * @throws SQLException Thrown if the data fails to be retrieved.
      */
     public String getOption(String key) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "SELECT option_value FROM " + getTablename() + " WHERE options_key = ?")) {
             ps.setString(1, key);
-            try (ResultSet resultSet = ps.executeQuery()) {
+            try (var resultSet = ps.executeQuery()) {
                 while (resultSet.next())
                     return resultSet.getString("option_value");
                 return null;
@@ -87,7 +85,7 @@ public class NeoJukeTable extends DatabaseTable {
      * @throws SQLException Thrown if a option failed to be saved.
      */
     public void setOption(String key, String value) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "INSERT INTO " + getTablename() + " (options_key, option_value) VALUES (?, ?) " +
                              "ON DUPLICATE KEY UPDATE option_value = VALUES (option_value)")) {
@@ -104,7 +102,7 @@ public class NeoJukeTable extends DatabaseTable {
      * @throws SQLException Thrown if the option fails to be deleted.
      */
     public void deleteSetting(String key) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "DELETE FROM " + getTablename() + " WHERE options_key = ?")) {
             ps.setString(1, key);

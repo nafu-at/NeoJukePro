@@ -36,13 +36,13 @@ public class ExceptionUtil {
     }
 
     public static void sendStackTrace(NeoGuild guild, boolean toLog, Throwable throwable, String... message) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
+        var stringWriter = new StringWriter();
+        var printWriter = new PrintWriter(stringWriter);
         throwable.printStackTrace(printWriter);
         printWriter.flush();
-        String trace = stringWriter.toString();
+        var trace = stringWriter.toString();
 
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         builder.append(MessageManager.getMessage(guild.getSettings().getLang(), "command.exception") + "\n");
         for (String msg : message)
             builder.append(msg + "\n");
@@ -57,7 +57,7 @@ public class ExceptionUtil {
         guild.sendMessageToLatest(builder.toString());
 
         if (toLog) {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             for (String msg : message)
                 sb.append(msg + "\n");
             MDC.put("GuildId", guild.getJDAGuild().getId());

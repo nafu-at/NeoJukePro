@@ -24,7 +24,6 @@ import page.nafuchoco.neojukepro.core.Launcher;
 import page.nafuchoco.neojukepro.core.MessageManager;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -42,7 +41,7 @@ public class DatabaseMigrateManager {
                     table.getTablename().replace(launcher.getConfig().getBasicConfig().getDatabase().getTablePrefix(), ""),
                     table);
         }
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        var mapper = new ObjectMapper(new YAMLFactory());
         migrateConfig = mapper.readValue(ClassLoader.getSystemResourceAsStream("DatabaseMigrate.yaml"),
                 new TypeReference<>() {
                 });
@@ -55,12 +54,12 @@ public class DatabaseMigrateManager {
         log.debug("Migrate start from {}.", begin);
         for (int i = begin; i < migrateConfig.size(); i++) {
             log.debug("Running migrate: {}", i);
-            MigrateConfig config = migrateConfig.get(i);
+            var config = migrateConfig.get(i);
             MigrateConfig.MigrateAction action = config.getAction();
             String[] options = config.getOption().split("\\p{javaSpaceChar}+");
             switch (action) {
                 case ADD: {
-                    DatabaseTable table = databaseTables.get(config.getTable());
+                    var table = databaseTables.get(config.getTable());
                     try {
                         table.createTableColumn(options[0], options[1]);
                     } catch (SQLException e) {
@@ -70,7 +69,7 @@ public class DatabaseMigrateManager {
                 }
 
                 case REMOVE: {
-                    DatabaseTable table = databaseTables.get(config.getTable());
+                    var table = databaseTables.get(config.getTable());
                     try {
                         table.dropTableColumn(options[0]);
                     } catch (SQLException e) {
@@ -80,9 +79,9 @@ public class DatabaseMigrateManager {
                 }
 
                 case SCRIPT: {
-                    DatabaseTable table = databaseTables.get(config.getTable());
+                    var table = databaseTables.get(config.getTable());
                     String syntax = config.getOption().replace("%TABLENAME%", table.getTablename());
-                    try (Connection connection = table.getConnector().getConnection();
+                    try (var connection = table.getConnector().getConnection();
                          PreparedStatement ps = connection.prepareStatement(
                                  syntax)) {
                         ps.execute();
@@ -93,7 +92,7 @@ public class DatabaseMigrateManager {
                 }
             }
         }
-        NeoJukeTable neoJukeTable = (NeoJukeTable) databaseTables.get("neojuke");
+        var neoJukeTable = (NeoJukeTable) databaseTables.get("neojuke");
         try {
             neoJukeTable.setOption("migrate", migrateConfig.keySet().toArray()[migrateConfig.size() - 1].toString());
         } catch (SQLException e) {

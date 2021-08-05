@@ -17,9 +17,13 @@
 package page.nafuchoco.neojukepro.core.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
+@Getter
+@ToString
 public class BasicConfigSection {
     @JsonProperty("language")
     private String language;
@@ -33,28 +37,4 @@ public class BasicConfigSection {
     private MusicSourceSection musicSource;
     @JsonProperty("database")
     private DatabaseSection database;
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public String getDiscordToken() {
-        return discordToken;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public List<Long> getBotAdmins() {
-        return botAdmins;
-    }
-
-    public MusicSourceSection getMusicSource() {
-        return musicSource;
-    }
-
-    public DatabaseSection getDatabase() {
-        return database;
-    }
 }

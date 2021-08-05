@@ -17,7 +17,9 @@
 package page.nafuchoco.neojukepro.core.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.ToString;
 
+@ToString
 public class MusicSourceSection {
     @JsonProperty("youtube")
     private boolean youtube;

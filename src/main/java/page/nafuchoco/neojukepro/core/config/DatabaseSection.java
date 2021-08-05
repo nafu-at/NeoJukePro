@@ -17,8 +17,12 @@
 package page.nafuchoco.neojukepro.core.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.ToString;
 import page.nafuchoco.neojukepro.core.database.DatabaseType;
 
+@Getter
+@ToString
 public class DatabaseSection {
     @JsonProperty("databaseType")
     private DatabaseType databaseType;
@@ -32,28 +36,4 @@ public class DatabaseSection {
     private String username;
     @JsonProperty("password")
     private String password;
-
-    public DatabaseType getDatabaseType() {
-        return databaseType;
-    }
-
-    public String getTablePrefix() {
-        return tablePrefix;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getDatabase() {
-        return database;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

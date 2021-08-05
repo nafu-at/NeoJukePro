@@ -86,7 +86,7 @@ public class Launcher implements NeoJukeLauncher {
         }
 
         if (!StringUtils.isEmpty(config.getAdvancedConfig().getSentryDsn())) {
-            SentryOptions options = new SentryOptions();
+            var options = new SentryOptions();
             options.setDsn(config.getAdvancedConfig().getSentryDsn());
             Sentry.init(options);
         }
@@ -114,9 +114,7 @@ public class Launcher implements NeoJukeLauncher {
 
             try {
                 if (!settingsTable.getGuilds().isEmpty()) {
-                    DatabaseMigrateManager migrateManager = new DatabaseMigrateManager(
-                            this,
-                            neoJukeTable, settingsTable, usersPermTable);
+                    var migrateManager = new DatabaseMigrateManager(this, neoJukeTable, settingsTable, usersPermTable);
                     migrateManager.migrate(NumberUtils.toInt(neoJukeTable.getOption("migrate"), -1) + 1);
                 }
             } catch (IOException | SQLException e) {
@@ -140,7 +138,7 @@ public class Launcher implements NeoJukeLauncher {
 
         customSourceRegistry = new CustomSourceRegistry();
         commandRegistry = new CommandRegistry();
-        DefaultShardManagerBuilder shardManagerBuilder =
+        var shardManagerBuilder =
                 DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), EnumSet.allOf(GatewayIntent.class));
         shardManagerBuilder.addEventListeners(new MessageReceivedEventHandler(this, commandRegistry));
         shardManagerBuilder.addEventListeners(new GuildVoiceEventHandler(this));

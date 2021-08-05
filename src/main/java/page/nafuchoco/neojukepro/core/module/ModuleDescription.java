@@ -17,90 +17,56 @@
 package page.nafuchoco.neojukepro.core.module;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class ModuleDescription {
-    @JsonProperty("name")
-    private String name;
-    @JsonProperty("version")
-    private String version;
-    @JsonProperty(("description"))
-    private String description;
-    @JsonProperty("authors")
-    private List<String> authors;
-    @JsonProperty("website")
-    private String website;
-
-    @JsonProperty("main")
-    private String main;
-    @JsonProperty("dependency")
-    private List<String> dependency;
-    @JsonProperty("loadBefore")
-    private List<String> loadBefore;
-    @JsonProperty("requiredVersion")
-    private String requiredVersion;
-
     /**
      * @return Module name
      */
-    public String getName() {
-        return name;
-    }
-
+    @JsonProperty("name")
+    private String name;
     /**
      * @return Module version
      */
-    public String getVersion() {
-        return version;
-    }
-
+    @JsonProperty("version")
+    private String version;
     /**
      * @return Module Description
      */
-    public String getDescription() {
-        return description;
-    }
-
+    @JsonProperty(("description"))
+    private String description;
     /**
      * @return Module author
      */
-    public List<String> getAuthors() {
-        return authors;
-    }
-
+    @JsonProperty("authors")
+    private List<String> authors;
     /**
      * @return Module author's website
      */
-    public String getWebsite() {
-        return website;
-    }
+    @JsonProperty("website")
+    private String website;
 
     /**
      * @return Module main class path
      */
-    public String getMain() {
-        return main;
-    }
-
+    @JsonProperty("main")
+    private String main;
     /**
      * @return Other modules required by this module
      */
-    public List<String> getDependency() {
-        return dependency;
-    }
-
+    @JsonProperty("dependency")
+    private List<String> dependency;
     /**
      * @return Modules that should be loaded before this module is loaded
      */
-    public List<String> getLoadBefore() {
-        return loadBefore;
-    }
-
+    @JsonProperty("loadBefore")
+    private List<String> loadBefore;
     /**
      * @return The minimum version of NeoJukePro that this module requires
      */
-    public String getRequiredVersion() {
-        return requiredVersion;
-    }
+    @JsonProperty("requiredVersion")
+    private String requiredVersion;
 }

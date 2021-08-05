@@ -46,7 +46,7 @@ public class ConfigManager {
     }
 
     public void reloadConfig() {
-        try (FileInputStream configInput = new FileInputStream(configFile)) {
+        try (var configInput = new FileInputStream(configFile)) {
             config = MAPPER.readValue(configInput, NeoJukeConfig.class);
             log.info(MessageManager.getMessage("system.config.load.success"));
         } catch (FileNotFoundException e) {

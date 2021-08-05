@@ -23,7 +23,6 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import page.nafuchoco.neojukepro.core.Main;
@@ -63,7 +62,7 @@ public class TrackEmbedUtil {
     public static MessageEmbed getTrackEmbed(NeoGuildPlayer audioPlayer) throws IOException {
         LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
         if (trackContext != null) {
-            AudioTrack audioTrack = trackContext.getTrack();
+            var audioTrack = trackContext.getTrack();
             if (audioTrack instanceof YoutubeAudioTrack) {
                 return getYouTubeEmbed(audioPlayer);
             } else if (audioTrack instanceof SoundCloudAudioTrack) {
@@ -96,7 +95,7 @@ public class TrackEmbedUtil {
         YouTubeObjectItem youtubeChannel = client.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_CHANNEL,
                 youtubeVideo.getSnippet().getChannelID()).getItems()[0];
 
-        EmbedBuilder builder = new EmbedBuilder();
+        var builder = new EmbedBuilder();
         builder.setTitle(youtubeVideo.getSnippet().getLocalized().getTitle(),
                 "https://www.youtube.com/watch?v=" + youtubeVideo.getID());
         builder.setColor(YOUTUBE);
@@ -104,14 +103,14 @@ public class TrackEmbedUtil {
                 "https://www.youtube.com/channel/" + youtubeVideo.getSnippet().getChannelID(),
                 youtubeChannel.getSnippet().getThumbnails().getHigh().getURL());
         builder.setThumbnail(youtubeVideo.getSnippet().getThumbnails().getHigh().getURL());
-        MessageEmbed.Field time = new MessageEmbed.Field("Time",
+        var time = new MessageEmbed.Field("Time",
                 "[" + MessageUtil.formatTime(audioPlayer.getTrackPosition()) + "/" + MessageUtil.formatTime(audioPlayer.getPlayingTrack().getTrack().getDuration()) + "]", true);
         builder.addField(time);
 
         String descMessage = youtubeVideo.getSnippet().getLocalized().getDescription();
         if (descMessage.length() > 800)
             descMessage = descMessage.substring(0, 800) + " [...]";
-        MessageEmbed.Field description = new MessageEmbed.Field("Description", descMessage, false);
+        var description = new MessageEmbed.Field("Description", descMessage, false);
         builder.addField(description);
         builder.setFooter(MessageUtil.format(
                 MessageManager.getMessage(
@@ -123,15 +122,15 @@ public class TrackEmbedUtil {
     }
 
     public static MessageEmbed getDefaultEmbed(NeoGuildPlayer audioPlayer, Color color) {
-        EmbedBuilder builder = new EmbedBuilder();
+        var builder = new EmbedBuilder();
         builder.setTitle(audioPlayer.getPlayingTrack().getTrack().getInfo().title);
         builder.setColor(color);
         builder.setAuthor(audioPlayer.getPlayingTrack().getTrack().getInfo().author);
-        MessageEmbed.Field time = new MessageEmbed.Field("Time",
+        var time = new MessageEmbed.Field("Time",
                 "[" + MessageUtil.formatTime(audioPlayer.getTrackPosition()) + "/" + MessageUtil.formatTime(audioPlayer.getPlayingTrack().getTrack().getDuration()) + "]",
                 true);
         builder.addField(time);
-        MessageEmbed.Field source = new MessageEmbed.Field("",
+        var source = new MessageEmbed.Field("",
                 "Loaded from " + audioPlayer.getPlayingTrack().getTrack().getSourceManager().getSourceName() + ".", false);
         builder.addField(source);
         builder.setFooter(MessageUtil.format(

@@ -45,17 +45,17 @@ public class ModuleVersionChecker {
      * @return Returns true if arg2 is new.
      */
     public static boolean isNew(String arg1, String arg2) {
+        if (arg1 == null || arg2 == null)
+            return true;
+
         Matcher arg1Matcher = VERSION_PATTERN.matcher(arg1);
         Matcher arg2Matcher = VERSION_PATTERN.matcher(arg2);
 
         if (!(arg1Matcher.matches() && arg2Matcher.matches()))
             throw new IllegalArgumentException("The version format must conform to Semantic Versioning 2.0.0.");
 
-        if (Integer.parseInt(arg1Matcher.group(1)) < Integer.parseInt(arg2Matcher.group(1))
+        return Integer.parseInt(arg1Matcher.group(3)) < Integer.parseInt(arg2Matcher.group(3))
                 || Integer.parseInt(arg1Matcher.group(2)) < Integer.parseInt(arg2Matcher.group(2))
-                || Integer.parseInt(arg1Matcher.group(3)) < Integer.parseInt(arg2Matcher.group(3)))
-            return true;
-
-        return false;
+                || Integer.parseInt(arg1Matcher.group(1)) < Integer.parseInt(arg2Matcher.group(1));
     }
 }

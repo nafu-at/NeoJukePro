@@ -21,9 +21,7 @@ import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildSettings;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +44,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     public void createTable() throws SQLException {
         super.createTable("guild_id BIGINT NOT NULL, lang VARCHAR(5) NOT NULL, " +
                 "command_prefix VARCHAR(16) NULL, robot_mode BOOL, jukebox_mode BOOL, player_options LONGTEXT NOT NULL, custom_field LONGTEXT NULL");
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "CREATE UNIQUE INDEX settings_index ON " + getTablename() + "(guild_id)")) {
             ps.execute();
@@ -65,10 +63,10 @@ public class NeoGuildSettingsTable extends DatabaseTable {
      */
     public List<Long> getGuilds() throws SQLException {
         List<Long> guilds = new ArrayList<>();
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "SELECT guild_id FROM " + getTablename())) {
-            try (ResultSet resultSet = ps.executeQuery()) {
+            try (var resultSet = ps.executeQuery()) {
                 while (resultSet.next()) {
                     guilds.add(resultSet.getLong("guild_id"));
                 }
@@ -85,19 +83,19 @@ public class NeoGuildSettingsTable extends DatabaseTable {
      * @throws SQLException Thrown if the guild setting fails to be obtained.
      */
     public NeoGuildSettings getGuildSettings(long guildId) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "SELECT * FROM " + getTablename() + " WHERE guild_id = ?")) {
             ps.setLong(1, guildId);
-            try (ResultSet resultSet = ps.executeQuery()) {
+            try (var resultSet = ps.executeQuery()) {
                 while (resultSet.next()) {
-                    String lang = resultSet.getString("lang");
-                    String commandPrefix = resultSet.getString("command_prefix");
-                    boolean robotMode = resultSet.getBoolean("robot_mode");
-                    boolean jukeboxMode = resultSet.getBoolean("jukebox_mode");
+                    var lang = resultSet.getString("lang");
+                    var commandPrefix = resultSet.getString("command_prefix");
+                    var robotMode = resultSet.getBoolean("robot_mode");
+                    var jukeboxMode = resultSet.getBoolean("jukebox_mode");
                     NeoGuildPlayerOptions playerOptions =
                             gson.fromJson(resultSet.getString("player_options"), NeoGuildPlayerOptions.class);
-                    NeoGuildSettings guildSettings = new NeoGuildSettings(
+                    var guildSettings = new NeoGuildSettings(
                             neoJukePro,
                             this,
                             guildId,
@@ -122,7 +120,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
      * @throws SQLException Thrown if a guild setting failed to be saved.
      */
     public void registerGuildSettings(NeoGuildSettings settings) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "INSERT INTO " + getTablename() + " (guild_id, lang, command_prefix, robot_mode, jukebox_mode, player_options, custom_field) " +
                              "VALUES (?, ?, ?, ?, ?, ?, ?)")) {
@@ -138,7 +136,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     }
 
     public void updateCommandPrefixSetting(long guildId, String commandPrefix) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "UPDATE " + getTablename() + " SET command_prefix = ? WHERE guild_id = ?"
              )) {
@@ -149,7 +147,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     }
 
     public void updateLanguageSetting(long guildId, String lang) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "UPDATE " + getTablename() + " SET lang = ? WHERE guild_id = ?"
              )) {
@@ -160,7 +158,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     }
 
     public void updateRobotModeSetting(long guildId, boolean robotMode) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "UPDATE " + getTablename() + " SET robot_mode = ? WHERE guild_id = ?"
              )) {
@@ -171,7 +169,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     }
 
     public void updateJukeboxModeSetting(long guildId, boolean jukeboxMode) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "UPDATE " + getTablename() + " SET jukebox_mode = ? WHERE guild_id = ?"
              )) {
@@ -182,7 +180,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     }
 
     public void updatePlayerOptions(long guildId, NeoGuildPlayerOptions playerOptions) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "UPDATE " + getTablename() + " SET player_options = ? WHERE guild_id = ?"
              )) {
@@ -193,7 +191,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     }
 
     public void updateCustomField(long guildId, String customField) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "UPDATE " + getTablename() + " SET custom_field = ? WHERE guild_id = ?"
              )) {
@@ -210,7 +208,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
      * @throws SQLException Thrown if the guild setting fails to be deleted.
      */
     public void deleteSettings(long guildId) throws SQLException {
-        try (Connection connection = getConnector().getConnection();
+        try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "DELETE FROM " + getTablename() + " WHERE guild_id = ?")) {
             ps.setLong(1, guildId);
