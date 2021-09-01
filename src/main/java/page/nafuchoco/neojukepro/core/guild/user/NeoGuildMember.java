@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.guild.user;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
@@ -60,6 +61,8 @@ public class NeoGuildMember {
                 permission = 254;
             else if (neoGuild.getJDAGuild().getMember(neoGuild.getJDAGuild().getJDA().getUserById(discordUserId)).isOwner())
                 permission = 253;
+            else if (neoGuild.getJDAGuild().getMember(neoGuild.getJDAGuild().getJDA().getUserById(discordUserId)).hasPermission(Permission.ADMINISTRATOR))
+                permission = 252;
             else
                 permission = 0;
         }

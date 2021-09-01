@@ -227,6 +227,8 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new ModuleCommand("module", "mod"), null);
         if (Main.isDebugMode()) commandRegistry.registerCommand(new UpdateCommand("update"), null);
         commandRegistry.registerCommand(new ShutdownCommand("shutdown", "exit"), null);
+
+        commandRegistry.registerCommand(new ChannelCheckCommand("channelcheck", "check"), null);
     }
 
     private JDA getJdaFromId(int shardId) {
