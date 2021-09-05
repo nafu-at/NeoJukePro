@@ -16,9 +16,12 @@
 
 package page.nafuchoco.neojukepro.core.executors.system;
 
-import net.dv8tion.jda.api.entities.TextChannel;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+
+import java.util.List;
 
 public class DeleteCommand extends CommandExecutor {
 
@@ -28,22 +31,38 @@ public class DeleteCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        TextChannel channel = context.getChannel();
-        channel.getHistory().retrievePast(50).queue(messages -> messages.forEach(message -> {
-            if (message.getAuthor().equals(context.getMessage().getJDA().getSelfUser())
-                    || message.getContentRaw().startsWith(context.getNeoGuild().getSettings().getCommandPrefix()))
-                message.delete().submit();
-        }));
+        boolean checkPrefix = false;
+        int maxDeleteMessage = 50;
+
+        if (context.getArgs().length != 0) {
+            checkPrefix = BooleanUtils.toBoolean(context.getArgs()[0]);
+            if (context.getArgs().length > 1) {
+                maxDeleteMessage = NumberUtils.toInt(context.getArgs()[1], 50);
+            }
+        }
+
+        if (context.getMentioned().isEmpty()) {
+            context.getNeoGuild().deleteMessage(context.getChannel(),
+                    List.of(context.getNeoGuild().getJDAGuild().getSelfMember()),
+                    maxDeleteMessage,
+                    !checkPrefix);
+        } else {
+            context.getNeoGuild().deleteMessage(context.getChannel(),
+                    context.getMentioned(),
+                    maxDeleteMessage,
+                    !checkPrefix);
+        }
     }
 
     @Override
     public String getDescription() {
-        return "Delete the last 50 messages posted by a bot command or bot.";
+        return "Deletes the last 50 messages posted by the specified member.";
     }
 
     @Override
     public String getHelp() {
-        return null;
+        return getName() + "[forceDelete] [amount] [member]\n----\n" +
+                "[true] [<1-50>] [<selectMember>]: Deletes all messages, including those not related to the command.";
     }
 
     @Override
