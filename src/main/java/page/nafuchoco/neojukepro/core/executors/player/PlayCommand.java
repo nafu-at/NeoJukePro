@@ -32,6 +32,7 @@ import page.nafuchoco.neojukepro.core.http.youtube.YouTubeSearchResults;
 import page.nafuchoco.neojukepro.core.player.AudioTrackLoader;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 import page.nafuchoco.neojukepro.core.player.TrackContext;
+import page.nafuchoco.neojukepro.core.utils.ChannelPermissionUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +69,13 @@ public class PlayCommand extends CommandExecutor {
                 context.getChannel().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
                         "command.join.before")).queue();
+                return;
+            }
+            if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, context.getNeoGuild().getJDAGuild().getSelfMember())) {
+                context.getChannel().sendMessage(
+                        MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.channel.permission")).queue();
                 return;
             }
             try {
