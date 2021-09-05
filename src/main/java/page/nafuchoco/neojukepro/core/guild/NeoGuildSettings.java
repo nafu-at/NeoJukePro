@@ -215,12 +215,7 @@ public class NeoGuildSettings {
         }
 
         @Override
-        public void registerCommand(CommandExecutor executor) {
-            throw new UnsupportedOperationException("This module class is a dummy for data retention.");
-        }
-
-        @Override
-        public void registerCommands(List<CommandExecutor> executors) {
+        public void registerCommand(String groupName, CommandExecutor executor) {
             throw new UnsupportedOperationException("This module class is a dummy for data retention.");
         }
 

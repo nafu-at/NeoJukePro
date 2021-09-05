@@ -33,7 +33,7 @@ public class UserInfoCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         if (!context.getMessage().getMentionedMembers().isEmpty()) {
-            context.getMentioned().forEach(member -> context.getChannel().sendMessage(
+            context.getMentioned().forEach(member -> context.getChannel().sendMessageEmbeds(
                     buildMemberEmbed(context.getNeoGuild().getGuildMemberRegistry().getNeoGuildMember(member))).queue());
         }
     }
