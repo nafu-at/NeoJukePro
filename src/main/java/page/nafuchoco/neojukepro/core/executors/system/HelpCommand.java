@@ -56,8 +56,7 @@ public class HelpCommand extends CommandExecutor {
             } else {
                 CommandExecutor executor = neoJukePro.getCommandRegistry().getExecutor(context.getArgs()[0]);
                 if (executor != null) {
-                    StringBuilder builder = new StringBuilder("```");
-                    builder.append(executor.getName() + ": " + executor.getDescription() + "\n");
+                    StringBuilder builder = new StringBuilder("`" + executor.getName() + "`: " + executor.getDescription() + "\n```");
                     builder.append(executor.getHelp());
                     builder.append("```");
                     context.getChannel().sendMessage(builder.toString()).queue();
@@ -100,6 +99,7 @@ public class HelpCommand extends CommandExecutor {
                 builder.append(executor.getName() + ": " + executor.getDescription() + "\n");
             }
         }
+        builder.append("```");
         return builder.toString();
     }
 
