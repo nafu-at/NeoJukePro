@@ -23,7 +23,6 @@ import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 
 public abstract class NeoModule implements Module {
     private final ClassLoader classLoader;
@@ -82,17 +81,12 @@ public abstract class NeoModule implements Module {
     }
 
     @Override
-    public void registerCommand(CommandExecutor executor) {
+    public void registerCommand(String groupName, CommandExecutor executor) {
         try {
-            launcher.getCommandRegistry().registerCommand(executor, this);
+            launcher.getCommandRegistry().registerCommand(executor, groupName, this);
         } catch (NullPointerException e) {
             throw new IllegalStateException("This method is not available in \"onLoad\".");
         }
-    }
-
-    @Override
-    public void registerCommands(List<CommandExecutor> executors) {
-        executors.forEach(this::registerCommand);
     }
 
     @Override

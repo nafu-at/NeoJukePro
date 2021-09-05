@@ -16,17 +16,24 @@
 
 package page.nafuchoco.neojukepro.core.executors.system;
 
+import lombok.val;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
+import page.nafuchoco.neojukepro.core.command.CommandGroup;
+import page.nafuchoco.neojukepro.core.command.CommandRegistry;
+import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class HelpCommand extends CommandExecutor {
-    private static final Pattern NOMBER_REGEX = Pattern.compile("^\\d+$");
+    private static final Pattern NUMBER_REGEX = Pattern.compile("^\\d+$");
 
 
     public HelpCommand(String name, String... aliases) {
@@ -37,17 +44,15 @@ public class HelpCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         NeoJukePro neoJukePro = context.getNeoJukePro();
         if (context.getArgs().length == 0) {
-            context.getChannel().sendMessage(printCommandList(neoJukePro.getCommandRegistry().getCommands(), 1)).queue();
+            context.getChannel().sendMessageEmbeds(buildCommandGroupEmbed(neoJukePro.getCommandRegistry())).queue();
         } else {
-            if (NOMBER_REGEX.matcher(context.getArgs()[0]).find()) {
-                try {
-                    context.getChannel().sendMessage(
-                            printCommandList(neoJukePro.getCommandRegistry().getCommands(), Integer.parseInt(context.getArgs()[0]))).queue();
-                } catch (NumberFormatException e) {
-                    context.getChannel().sendMessage(MessageManager.getMessage(
-                            context.getNeoGuild().getSettings().getLang(),
-                            "command.page.specify")).queue();
-                }
+            if (neoJukePro.getCommandRegistry().getCommandGroupsNames().contains(context.getArgs()[0])) {
+                val group = neoJukePro.getCommandRegistry().getCommandGroup(context.getArgs()[0]);
+                var page = 1;
+                if (context.getArgs().length > 1 && NUMBER_REGEX.matcher(context.getArgs()[1]).find())
+                    page = Integer.parseInt(context.getArgs()[1]);
+
+                context.getChannel().sendMessage(printCommandList(group.getCommands(), page)).queue();
             } else {
                 CommandExecutor executor = neoJukePro.getCommandRegistry().getExecutor(context.getArgs()[0]);
                 if (executor != null) {
@@ -65,13 +70,25 @@ public class HelpCommand extends CommandExecutor {
         }
     }
 
+    private MessageEmbed buildCommandGroupEmbed(CommandRegistry commandRegistry) {
+        val embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("NeoJukePro Commands Help");
+        for (CommandGroup group : commandRegistry.getCommandGroups()) {
+            embedBuilder.addField(new MessageEmbed.Field(StringUtils.defaultIfEmpty(group.getGroupName(), "Others"),
+                    group.getCommands().stream().map(ex -> "`" + ex.getName() + "`").collect(Collectors.joining("\n")),
+                    true));
+        }
+        return embedBuilder.build();
+    }
+
     private String printCommandList(List<CommandExecutor> commands, int page) {
         int range = 20;
         int listPage = commands.size() / range;
+        if (page == 0)
+            page = 1;
         if (commands.size() % range >= 1)
             listPage++;
 
-        // TODO: 2021/01/10 言語設定の適用
         if (page > listPage)
             return MessageManager.getMessage("command.page.large");
 
@@ -83,7 +100,6 @@ public class HelpCommand extends CommandExecutor {
                 builder.append(executor.getName() + ": " + executor.getDescription() + "\n");
             }
         }
-        builder.append("```");
         return builder.toString();
     }
 
