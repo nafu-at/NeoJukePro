@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
@@ -138,8 +139,11 @@ public class Launcher implements NeoJukeLauncher {
 
         customSourceRegistry = new CustomSourceRegistry();
         commandRegistry = new CommandRegistry();
+        var intents = EnumSet.allOf(GatewayIntent.class);
+        intents.remove(GatewayIntent.GUILD_PRESENCES);
         var shardManagerBuilder =
-                DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), EnumSet.allOf(GatewayIntent.class));
+                DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), intents);
+        shardManagerBuilder.disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS);
         shardManagerBuilder.addEventListeners(new MessageReceivedEventHandler(this, commandRegistry));
         shardManagerBuilder.addEventListeners(new GuildVoiceEventHandler(this));
 
