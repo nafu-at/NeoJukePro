@@ -8,17 +8,13 @@
 NeoJukePro is a new Discord Music Bot developed as a successor to SimpleJuke.  
 We rebuilt it from scratch to make it simpler, clearer, more functional, and more stable.
 
-**Notice**  
-This product is no longer under active development and some features may not work properly.  
-We will continue to accept pull requests and issues, but there may be a delay in responding to problems.
-
 ## Operation requirements
 
 - [x] Windows, MacOS, Linux, and other common PC operating systems.
 - [x] Java11 or later execution environment.
 - [x] MariaDB 5.5 or later or MySQL 5.5 or later.
 - [x] Discord account.
-    + [x] Presence Intent and Server Members Intent must be enabled.
+    + [x] Server Members Intent must be enabled except in bypass mode.
 
 ## If you find a problem with the program
 
