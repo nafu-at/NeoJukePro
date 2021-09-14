@@ -141,6 +141,8 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry = new CommandRegistry();
         var intents = EnumSet.allOf(GatewayIntent.class);
         intents.remove(GatewayIntent.GUILD_PRESENCES);
+        if (BootOptions.isBypass())
+            intents.remove(GatewayIntent.GUILD_MEMBERS);
         var shardManagerBuilder =
                 DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), intents);
         shardManagerBuilder.disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS);
@@ -205,14 +207,16 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new SystemCommand("system", "sinfo"), "Core", null);
         commandRegistry.registerCommand(new NodesCommand("nodes", "node"), "Core", null);
         commandRegistry.registerCommand(new ModuleCommand("module", "mod"), "Core", null);
-        if (Main.isDebugMode()) commandRegistry.registerCommand(new UpdateCommand("update"), "Core", null);
+        if (BootOptions.isDebug())
+            commandRegistry.registerCommand(new UpdateCommand("update"), "Core", null);
         commandRegistry.registerCommand(new ShutdownCommand("shutdown", "exit"), "Core", null);
 
         commandRegistry.registerCommand(new SettingsCommand("settings", "set"), "Admin", null);
         commandRegistry.registerCommand(new StatusCommand("status", "stats"), "Admin", null);
 
         commandRegistry.registerCommand(new UserPermCommand("permission", "perm"), "Moderate", null);
-        commandRegistry.registerCommand(new UserInfoCommand("userinfo", "uinfo"), "Moderate", null);
+        if (!BootOptions.isBypass())
+            commandRegistry.registerCommand(new UserInfoCommand("userinfo", "uinfo"), "Moderate", null);
         commandRegistry.registerCommand(new ChannelCheckCommand("channelcheck", "check"), "Moderate", null);
         commandRegistry.registerCommand(new DeleteCommand("delete", "clean"), "Moderate", null);
 

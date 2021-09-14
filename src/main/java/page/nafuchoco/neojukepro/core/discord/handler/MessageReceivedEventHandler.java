@@ -33,6 +33,7 @@ import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -120,8 +121,20 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         // メンションされたユーザーの一覧
         List<Member> mentioned = Arrays.stream(args)
                 .filter(arg -> MENTION_REGEX.matcher(arg).find())
-                .map(member -> neoGuild.getJDAGuild().getMember(
-                        neoJukePro.getShardManager().getUserById(member.substring(3, member.length() - 1))))
+                .map(member -> {
+                    Member memberObj = neoGuild.getJDAGuild().getMemberById(member.substring(3, member.length() - 1));
+                    if (memberObj == null) {
+                        try {
+                            memberObj = neoGuild.getJDAGuild().retrieveMemberById(member.substring(3, member.length() - 1)).submit().get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            ExceptionUtil.sendStackTrace(
+                                    neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild()),
+                                    e,
+                                    MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.execute.failed"));
+                        }
+                    }
+                    return memberObj;
+                })
                 .collect(Collectors.toList());
 
         // メンションを削除
