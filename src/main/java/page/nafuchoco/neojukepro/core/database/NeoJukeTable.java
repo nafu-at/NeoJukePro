@@ -28,7 +28,7 @@ public class NeoJukeTable extends DatabaseTable {
     }
 
     public void createTable() throws SQLException {
-        super.createTable("options_key TINYTEXT NOT NULL, option_value LONGTEXT NOT NULL");
+        super.createTable("options_key VARCHAR(128) NOT NULL, option_value VARCHAR(1024) NOT NULL");
         try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "CREATE UNIQUE INDEX options_index ON " + getTablename() + "(options_key)")) {
