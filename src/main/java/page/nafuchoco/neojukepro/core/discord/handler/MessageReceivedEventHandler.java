@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.apache.commons.lang3.StringUtils;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
@@ -61,6 +60,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         boolean robot = neoGuild.getSettings().isRobotMode();
 
         String raw = event.getMessage().getContentRaw();
+        log.debug("Raw input message: {}", raw);
         String input;
         if (raw.startsWith(prefix)) {
             input = raw.substring(prefix.length()).trim();
@@ -114,7 +114,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
 
     private CommandContext parseCommand(NeoGuild neoGuild, NeoGuildMember neoGuildMember, String commandString, MessageReceivedEvent event) {
         // コマンドオプションを分割
-        String[] args = commandString.split("[\\p{javaSpaceChar}+\\\\n]");
+        String[] args = commandString.split("\\p{javaSpaceChar}+");
         if (args.length == 0)
             return null;
         String commandTrigger = args[0];
@@ -138,8 +138,8 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
                 })
                 .collect(Collectors.toList());
 
-        // 空白 + メンションを削除
-        args = Arrays.stream(args).filter(StringUtils::isNotBlank).filter(arg -> !MENTION_REGEX.matcher(arg).find()).toArray(String[]::new);
+        // メンションを削除
+        args = Arrays.stream(args).filter(arg -> !MENTION_REGEX.matcher(arg).find()).toArray(String[]::new);
 
         // コマンドクラスの取得
         CommandExecutor command = registry.getExecutor(commandTrigger.toLowerCase());
