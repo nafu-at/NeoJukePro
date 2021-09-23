@@ -44,4 +44,3 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           version: ${{ github.ref }}
-          version_prefix: 'v'
