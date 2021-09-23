@@ -35,3 +35,13 @@ jobs:
           draft: true
           files: |
             ./build/libs/*.jar
+      - name: Sentry Release
+        uses: getsentry/action-release@v1.1.6
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          version: ${{ github.ref }}
+          version_prefix: 'v'
