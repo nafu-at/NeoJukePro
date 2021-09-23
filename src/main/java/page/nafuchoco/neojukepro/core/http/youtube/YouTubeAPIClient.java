@@ -23,6 +23,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -35,7 +36,9 @@ public class YouTubeAPIClient {
     private final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
     private final String apiToken;
 
-    public YouTubeAPIClient(@NonNull String apiToken) {
+    public YouTubeAPIClient(String apiToken) {
+        if (StringUtils.isEmpty(apiToken))
+            throw new IllegalArgumentException();
         this.apiToken = apiToken;
     }
 
