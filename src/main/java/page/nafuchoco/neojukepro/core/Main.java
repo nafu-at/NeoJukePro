@@ -21,6 +21,8 @@ import ch.qos.logback.classic.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 
+import java.util.Scanner;
+
 @Slf4j
 public class Main {
     private static NeoJukeLauncher launcher;
@@ -74,9 +76,9 @@ public class Main {
         launcher.launch();
 
         new Thread(() -> {
-            var console = System.console();
+            var console = new Scanner(System.in);
             while (true) {
-                switch (console.readLine()) {
+                switch (console.nextLine()) {
                     case "exit":
                     case "stop":
                         Runtime.getRuntime().exit(0);
