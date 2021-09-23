@@ -37,10 +37,8 @@ import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMemberRegistry;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
-import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @since v2.0
@@ -96,14 +94,7 @@ public class NeoGuild {
 
         channel.getHistory().retrievePast(maxDelete).queue(messages -> {
             for (Message message : messages) {
-                Member member = message.getMember();
-                if (member == null) {
-                    try {
-                        member = message.getGuild().retrieveMemberById(message.getAuthor().getIdLong()).submit().get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        ExceptionUtil.sendStackTrace(this, e);
-                    }
-                }
+                Member member = getGuildMemberRegistry().getNeoGuildMember(message.getAuthor().getIdLong()).getJDAMember();
 
                 if (member == null)
                     continue;

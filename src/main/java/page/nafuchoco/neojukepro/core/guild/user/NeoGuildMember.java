@@ -27,6 +27,7 @@ import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @EqualsAndHashCode(exclude = {"usersPermTable"})
@@ -54,18 +55,31 @@ public class NeoGuildMember {
         } catch (SQLException e) {
             log.error(MessageManager.getMessage("system.db.retrieving.error"), e);
         }
+
         if (permission == -1) {
+            var member = neoGuild.getJDAGuild().getMemberById(discordUserId);
+            if (member == null) {
+                try {
+                    member = neoGuild.getJDAGuild().retrieveMemberById(discordUserId).submit().get();
+                } catch (InterruptedException | ExecutionException e) {
+                    log.error(MessageManager.getMessage("system.api.about.error"), e);
+                }
+            }
+
             if (neoJukePro.getDiscordAppInfo().getOwner().getID().equals(String.valueOf(discordUserId)))
                 permission = 255;
             else if (neoJukePro.getConfig().getBasicConfig().getBotAdmins().contains(discordUserId))
                 permission = 254;
-            else if (neoGuild.getJDAGuild().getMember(neoGuild.getJDAGuild().getJDA().getUserById(discordUserId)).isOwner())
+            else if (member.isOwner())
                 permission = 253;
-            else if (neoGuild.getJDAGuild().getMember(neoGuild.getJDAGuild().getJDA().getUserById(discordUserId)).hasPermission(Permission.ADMINISTRATOR))
+            else if (member.hasPermission(Permission.ADMINISTRATOR))
                 permission = 252;
             else
                 permission = 0;
+
+            setUserPermission(permission);
         }
+
         userPermission = permission;
     }
 
@@ -82,7 +96,15 @@ public class NeoGuildMember {
     }
 
     public Member getJDAMember() {
-        return getNeoGuild().getJDAGuild().getMember(getNeoJukePro().getShardManager().getUserById(discordUserId));
+        var member = getNeoGuild().getJDAGuild().getMember(getNeoJukePro().getShardManager().getUserById(discordUserId));
+        if (member == null) {
+            try {
+                getNeoGuild().getJDAGuild().retrieveMemberById(discordUserId).submit().get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error(MessageManager.getMessage("system.api.about.error"), e);
+            }
+        }
+        return member;
     }
 
     public int getUserPermission() {
