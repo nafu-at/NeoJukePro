@@ -22,11 +22,11 @@ import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
 import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 import page.nafuchoco.neojukepro.core.utils.TrackEmbedUtil;
 

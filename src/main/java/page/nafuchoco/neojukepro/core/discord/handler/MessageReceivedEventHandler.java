@@ -26,9 +26,9 @@ import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
-import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
+import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 import java.util.Arrays;

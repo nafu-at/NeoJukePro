@@ -31,8 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.config.MusicSourceSection;
+import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 import page.nafuchoco.neojukepro.core.utils.URLUtils;
 
