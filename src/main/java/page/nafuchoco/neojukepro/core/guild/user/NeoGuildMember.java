@@ -96,7 +96,7 @@ public class NeoGuildMember {
     }
 
     public Member getJDAMember() {
-        var member = getNeoGuild().getJDAGuild().getMember(getNeoJukePro().getShardManager().getUserById(discordUserId));
+        var member = getNeoGuild().getJDAGuild().getMemberById(discordUserId);
         if (member == null) {
             try {
                 getNeoGuild().getJDAGuild().retrieveMemberById(discordUserId).submit().get();
