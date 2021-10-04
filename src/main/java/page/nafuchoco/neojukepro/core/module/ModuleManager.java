@@ -19,18 +19,21 @@ package page.nafuchoco.neojukepro.core.module;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
+import org.jetbrains.annotations.NotNull;
+import page.nafuchoco.neojukepro.api.event.Event;
+import page.nafuchoco.neojukepro.api.event.EventHandler;
+import page.nafuchoco.neojukepro.api.event.EventListener;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
+import page.nafuchoco.neojukepro.core.module.exception.EventException;
 import page.nafuchoco.neojukepro.core.module.exception.InvalidModuleException;
 import page.nafuchoco.neojukepro.core.module.exception.ModuleDuplicateException;
 import page.nafuchoco.neojukepro.core.module.exception.UnknownDependencyException;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 @Slf4j
 public class ModuleManager {
@@ -203,7 +206,10 @@ public class ModuleManager {
 
     /**
      * Unload all loaded modules.
+     *
+     * @deprecated(since=v2.2.0, forRemoval=true)
      */
+    @Deprecated
     public void unloadAllModules() {
         for (NeoModule module : moduleRegistry.getModules()) {
             unloadModule(module);
@@ -215,7 +221,9 @@ public class ModuleManager {
      *
      * @param name Module name to unload.
      * @throws IllegalArgumentException It will be thrown if the specified module does not exist.
+     * @deprecated(since=v2.2.0, forRemoval=true)
      */
+    @Deprecated
     public void unloadModule(String name) {
         NeoModule module = moduleRegistry.getModule(name);
         if (module == null)
@@ -227,8 +235,13 @@ public class ModuleManager {
      * Unloads the module.
      *
      * @param module Modules to unload
+     * @deprecated(since=v2.2.0, forRemoval=true)
      */
+    @Deprecated
     public void unloadModule(NeoModule module) {
+        log.warn("Module unloading has been disabled.");
+
+        /* Disabled as it may cause problems.
         if (module.isEnable()) {
             log.warn(MessageManager.getMessage("system.module.unload.failed"), module.getDescription().getName());
         } else {
@@ -252,5 +265,83 @@ public class ModuleManager {
                 log.error(MessageManager.getMessage("system.module.unload.error"), e);
             }
         }
+        */
+    }
+
+
+    public void fireEvent(@NotNull Event event) {
+        for (RegisteredListener listener : event.getHandlerList()) {
+            if (!listener.getModule().isEnable())
+                continue;
+
+            try {
+                listener.callEvent(event);
+            } catch (EventException e) {
+                log.warn("An error occurred during the execution of event {} caused by {}.",
+                        event.getClass().getSimpleName(),
+                        listener.getModule().getDescription().getName());
+            }
+        }
+    }
+
+    public void registerListener(@NotNull EventListener listener, @NotNull NeoModule module) {
+        if (!module.isEnable()) {
+            log.warn("The module {} to which you are trying to add an event listener is not enabled.", module.getDescription().getName());
+            return;
+        }
+
+        for (Map.Entry<Class<? extends Event>, Set<RegisteredListener>> entry : createRegisteredListener(listener, module).entrySet()) {
+            var eventClass = entry.getKey();
+            getRegisteredListenersList(eventClass).addAll(entry.getValue());
+        }
+    }
+
+    private Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListener(EventListener listener, NeoModule module) {
+        Map<Class<? extends Event>, Set<RegisteredListener>> regMap = new HashMap<>();
+
+        List<Method> methods = Arrays.asList(listener.getClass().getMethods());
+        for (Method method : methods) {
+            EventHandler annotation = method.getAnnotation(EventHandler.class);
+            if (annotation == null)
+                continue;
+
+            if (method.isBridge() || method.isSynthetic())
+                continue;
+
+            Class<?> parameterClass = null;
+            if (method.getParameterTypes().length != 1 && !Event.class.isAssignableFrom(parameterClass = method.getParameterTypes()[0]))
+                continue;
+
+            Class<? extends Event> eventClass = parameterClass.asSubclass(Event.class);
+            var listenerSet = regMap.computeIfAbsent(eventClass, k -> new HashSet<>());
+            var executor = new EventExecutor() {
+                @Override
+                public void execute(@NotNull EventListener listener, @NotNull Event event) throws EventException {
+                    try {
+                        method.invoke(listener, event);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new EventException(e);
+                    } catch (Throwable e) {
+                        throw new EventException(e);
+                    }
+                }
+            };
+
+            var registeredListener = new RegisteredListener(listener, module, executor);
+            listenerSet.add(registeredListener);
+        }
+
+        return regMap;
+    }
+
+    private List<RegisteredListener> getRegisteredListenersList(Class<? extends Event> event) {
+        try {
+            Method method = event.getDeclaredMethod("getHandlerList");
+            method.setAccessible(true);
+            return (List<RegisteredListener>) method.invoke(null);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 }
