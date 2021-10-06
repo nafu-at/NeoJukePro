@@ -21,6 +21,8 @@ import io.sentry.SentryOptions;
 import lavalink.client.io.jda.JdaLavalink;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -53,6 +55,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.EnumSet;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Launcher implements NeoJukeLauncher {
@@ -183,9 +186,28 @@ public class Launcher implements NeoJukeLauncher {
         log.info(MessageManager.getMessage("system.api.login.success"));
         log.debug("Ping! {}ms", shardManager.getAverageGatewayPing());
 
+
+        // Database Cleanup Sequence
+        shardManager.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.of(Activity.ActivityType.DEFAULT, "Booting up..."));
+        log.info("Running database cleanup sequence.");
+        try {
+            var guilds = settingsTable.getGuilds();
+            var activeGuilds = shardManager.getGuilds();
+            guilds.removeAll(activeGuilds.stream().map(g -> g.getIdLong()).collect(Collectors.toList()));
+            for (Long id : guilds) {
+                settingsTable.deleteSettings(id);
+                usersPermTable.deleteGuildUsers(id);
+                log.debug("Deleted the data of guild: {}", id);
+            }
+        } catch (SQLException e) {
+            log.error("An error occurred while deleting data.", e);
+        }
+        log.info("Cleanup is complete.");
+
         initCommand();
 
         moduleManager.enableAllModules();
+        shardManager.setPresence(OnlineStatus.ONLINE, null);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Shutting down the system...");

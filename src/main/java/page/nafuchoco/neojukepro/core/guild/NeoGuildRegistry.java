@@ -88,4 +88,23 @@ public class NeoGuildRegistry {
     public List<NeoGuild> getPlayerActiveGuilds() {
         return getNeoGuilds().stream().filter(guild -> guild.audioPlayer != null).collect(Collectors.toList());
     }
+
+    /**
+     * Delete the saved guild data.
+     * This process will delete all the data of the specified guild stored in the database.
+     *
+     * @param guildId Guild to delete data
+     */
+    public void deleteGuildData(long guildId) {
+        try {
+            settingsTable.deleteSettings(guildId);
+            permTable.deleteGuildUsers(guildId);
+        } catch (SQLException e) {
+            log.error("An error occurred while deleting data.", e);
+        }
+        var neoGuild = guilds.get(guildId);
+        if (neoGuild != null)
+            neoGuild.destroyAudioPlayer();
+        guilds.remove(guildId);
+    }
 }
