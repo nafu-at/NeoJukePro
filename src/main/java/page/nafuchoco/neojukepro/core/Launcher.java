@@ -36,6 +36,7 @@ import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.*;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyGuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyNeoGuildSettingsTable;
+import page.nafuchoco.neojukepro.core.discord.handler.GuildLeaveEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.MessageReceivedEventHandler;
 import page.nafuchoco.neojukepro.core.executors.guild.SettingsCommand;
@@ -151,6 +152,7 @@ public class Launcher implements NeoJukeLauncher {
         shardManagerBuilder.disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS);
         shardManagerBuilder.addEventListeners(new MessageReceivedEventHandler(this, commandRegistry));
         shardManagerBuilder.addEventListeners(new GuildVoiceEventHandler(this));
+        shardManagerBuilder.addEventListeners(new GuildLeaveEventHandler(this));
 
         guildRegistry = new NeoGuildRegistry(this, settingsTable, usersPermTable);
 
