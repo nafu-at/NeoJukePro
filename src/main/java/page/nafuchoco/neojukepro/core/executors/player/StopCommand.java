@@ -34,7 +34,7 @@ public class StopCommand extends CommandExecutor {
         context.getChannel().sendMessage(MessageManager.getMessage(
                 context.getNeoGuild().getSettings().getLang(),
                 "command.stop")).queue();
-        audioPlayer.leaveChannel();
+        context.getNeoGuild().destroyAudioPlayer();
     }
 
     @Override
