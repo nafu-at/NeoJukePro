@@ -66,9 +66,9 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.2.6'
     implementation 'io.sentry:sentry-logback:5.2.3'
     compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
     testCompileOnly 'org.projectlombok:lombok:1.18.22'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.14'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     // ClientLib
     implementation 'com.squareup.okhttp3:okhttp:4.9.2'
