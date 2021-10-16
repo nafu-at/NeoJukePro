@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.discord.handler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 public final class MessageReceivedEventHandler extends ListenerAdapter {
-    private static final Pattern MENTION_REGEX = Pattern.compile("<@!?[0-9]{18}>");
+    private static final Pattern MENTION_REGEX = Pattern.compile("<@(?:!|)[0-9]{18}>");
     private final NeoJukePro neoJukePro;
     private final CommandRegistry registry;
 
@@ -65,7 +66,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         if (raw.startsWith(prefix)) {
             input = raw.substring(prefix.length()).trim();
         } else if (!event.getMessage().getMentions().isEmpty()) { // 自分宛てのメンションの場合はコマンドとして認識
-            if (!event.getMessage().isMentioned(event.getJDA().getSelfUser()))
+            if (!event.getMessage().isMentioned(event.getJDA().getSelfUser(), Message.MentionType.USER, Message.MentionType.ROLE))
                 return;
             input = raw.substring(event.getJDA().getSelfUser().getAsMention().length() + 1).trim();
         } else { // コマンドではないメッセージを無視
