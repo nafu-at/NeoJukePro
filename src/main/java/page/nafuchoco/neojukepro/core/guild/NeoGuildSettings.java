@@ -178,7 +178,7 @@ public class NeoGuildSettings {
             Module module = getNeoJukePro().getModuleManager().getModule(moduleName);
             if (module == null)
                 module = new DummyNeoModule(moduleName);
-            Map<String, Object> field = gson.fromJson(customFieldJson.get(moduleName).getAsString(), new TypeToken<Map<String, Object>>() {
+            Map<String, Object> field = gson.fromJson(customFieldJson.get(moduleName).toString(), new TypeToken<Map<String, Object>>() {
             }.getType());
             customField.put(module, field);
         }
