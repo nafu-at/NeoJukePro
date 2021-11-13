@@ -123,7 +123,11 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        throw new UnsupportedOperationException();
+        trackContext.getNeoGuild().sendMessageToLatest(
+                MessageManager.getMessage(
+                        trackContext.getNeoGuild().getSettings().getLang(),
+                        "player.loader.notfound")
+        );
     }
 
     @Override
