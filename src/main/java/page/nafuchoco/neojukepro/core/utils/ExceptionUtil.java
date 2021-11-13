@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core.utils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
 import java.io.PrintWriter;
@@ -32,10 +33,14 @@ public class ExceptionUtil {
     }
 
     public static void sendStackTrace(NeoGuild guild, Throwable throwable, String... message) {
-        sendStackTrace(guild, true, throwable, message);
+        sendStackTrace(guild, null, true, throwable, message);
     }
 
     public static void sendStackTrace(NeoGuild guild, boolean toLog, Throwable throwable, String... message) {
+        sendStackTrace(guild, null, toLog, throwable, message);
+    }
+
+    public static void sendStackTrace(NeoGuild guild, CommandContext context, boolean toLog, Throwable throwable, String... message) {
         var stringWriter = new StringWriter();
         var printWriter = new PrintWriter(stringWriter);
         throwable.printStackTrace(printWriter);
@@ -62,6 +67,10 @@ public class ExceptionUtil {
             for (String msg : message)
                 sb.append(msg + "\n");
             MDC.put("GuildId", guild.getJDAGuild().getId());
+            if (context != null) {
+                MDC.put("CommandExecutor", context.getCommand().getName());
+                MDC.put("CommandArgs", context.getArgs().toString());
+            }
             log.error(sb.toString(), throwable);
         }
     }
