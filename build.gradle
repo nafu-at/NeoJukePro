@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'page.nafuchoco'
-version '2.2.0-dev.5'
+version '2.2.0'
 
 jar {
     manifest {
