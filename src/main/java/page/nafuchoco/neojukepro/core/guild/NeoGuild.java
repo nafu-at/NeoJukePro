@@ -143,6 +143,6 @@ public class NeoGuild {
     }
 
     public void sendMessageToLatest(MessageEmbed embed) {
-        lastJoinedChannel.sendMessage(embed).queue();
+        lastJoinedChannel.sendMessageEmbeds(embed).queue();
     }
 }

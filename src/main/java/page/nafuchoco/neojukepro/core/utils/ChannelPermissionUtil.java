@@ -180,6 +180,6 @@ public class ChannelPermissionUtil {
                 break;
         }
 
-        return channelView ? (channelConnect ? channelSpeak : false) : false;
+        return channelView && (channelConnect && channelSpeak);
     }
 }
