@@ -16,6 +16,7 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.module.NeoModule;
 
 import java.util.ArrayList;
@@ -80,14 +81,14 @@ public class CommandRegistry {
         return groups.get(groupName);
     }
 
-    public CommandExecutor getExecutor(String name) {
+    public CommandExecutor getExecutor(NeoGuild guild, String name) {
         CommandExecutor executor = null;
         List<CommandGroup> groupList = new ArrayList<>(groups.values());
         for (int i = 0; i < groupList.size(); i++) {
             if (executor != null)
                 break;
             CommandGroup group = groupList.get(i);
-            if (group != null && !group.isEnabled())
+            if (group != null && (!group.isEnabled() || guild.getSettings().getDisableCommandGroupList().contains(group)))
                 continue;
             executor = group.getExecutor(name);
         }

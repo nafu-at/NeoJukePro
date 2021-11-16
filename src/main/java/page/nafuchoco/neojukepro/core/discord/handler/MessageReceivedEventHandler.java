@@ -143,7 +143,7 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         args = Arrays.stream(args).filter(arg -> !MENTION_REGEX.matcher(arg).find()).toArray(String[]::new);
 
         // コマンドクラスの取得
-        CommandExecutor command = registry.getExecutor(commandTrigger.toLowerCase());
+        CommandExecutor command = registry.getExecutor(neoGuild, commandTrigger.toLowerCase());
         if (command == null)
             return null;
         else

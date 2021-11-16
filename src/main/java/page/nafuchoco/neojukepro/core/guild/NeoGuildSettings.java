@@ -19,14 +19,12 @@ package page.nafuchoco.neojukepro.core.guild;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.CommandGroup;
 import page.nafuchoco.neojukepro.core.database.NeoGuildSettingsTable;
 import page.nafuchoco.neojukepro.core.module.Module;
 import page.nafuchoco.neojukepro.core.module.ModuleDescription;
@@ -40,6 +38,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
@@ -57,6 +56,8 @@ public class NeoGuildSettings {
     private boolean robotMode;
     private boolean jukeboxMode;
 
+    @NonNull
+    private final List<String> disableCommandGroup;
     private final NeoGuildPlayerOptions playerOptions;
     private final Map<Module, Map<String, Object>> customField = new HashMap<>();
 
@@ -91,6 +92,32 @@ public class NeoGuildSettings {
         this.jukeboxMode = jukeboxMode;
         try {
             settingsTable.updateJukeboxModeSetting(guildId, jukeboxMode);
+        } catch (SQLException e) {
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
+        }
+    }
+
+    public List<CommandGroup> getDisableCommandGroupList() {
+        return disableCommandGroup.stream()
+                .map(groupName -> neoJukePro.getCommandRegistry().getCommandGroup(groupName))
+                .filter(v -> v != null)
+                .collect(Collectors.toList());
+    }
+
+    public void disableCommandGroup(CommandGroup commandGroup) {
+        if (commandGroup != null && !getDisableCommandGroup().contains(commandGroup.getGroupName()))
+            getDisableCommandGroup().add(commandGroup.getGroupName());
+        try {
+            settingsTable.updateDisableCommandGroup(guildId, getDisableCommandGroup());
+        } catch (SQLException e) {
+            log.error(MessageManager.getMessage("system.db.communicate.error"), e);
+        }
+    }
+
+    public void enableCommandGroup(CommandGroup commandGroup) {
+        getDisableCommandGroup().remove(commandGroup.getGroupName());
+        try {
+            settingsTable.updateDisableCommandGroup(guildId, getDisableCommandGroup());
         } catch (SQLException e) {
             log.error(MessageManager.getMessage("system.db.communicate.error"), e);
         }

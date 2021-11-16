@@ -54,7 +54,7 @@ public class HelpCommand extends CommandExecutor {
 
                 context.getChannel().sendMessage(printCommandList(group.getCommands(), page)).queue();
             } else {
-                CommandExecutor executor = neoJukePro.getCommandRegistry().getExecutor(context.getArgs()[0]);
+                CommandExecutor executor = neoJukePro.getCommandRegistry().getExecutor(context.getNeoGuild(), context.getArgs()[0]);
                 if (executor != null) {
                     StringBuilder builder = new StringBuilder("`" + executor.getName() + "`: " + executor.getDescription() + "\n```");
                     builder.append(executor.getHelp());
