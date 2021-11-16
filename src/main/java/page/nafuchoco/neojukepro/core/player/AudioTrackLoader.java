@@ -31,10 +31,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
-import page.nafuchoco.neojukepro.core.command.URLUtils;
 import page.nafuchoco.neojukepro.core.config.MusicSourceSection;
+import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
+import page.nafuchoco.neojukepro.core.utils.MessageUtil;
+import page.nafuchoco.neojukepro.core.utils.URLUtils;
 
 import java.net.MalformedURLException;
 import java.util.LinkedList;
@@ -123,7 +123,11 @@ public class AudioTrackLoader implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        throw new UnsupportedOperationException();
+        trackContext.getNeoGuild().sendMessageToLatest(
+                MessageManager.getMessage(
+                        trackContext.getNeoGuild().getSettings().getLang(),
+                        "player.loader.notfound")
+        );
     }
 
     @Override

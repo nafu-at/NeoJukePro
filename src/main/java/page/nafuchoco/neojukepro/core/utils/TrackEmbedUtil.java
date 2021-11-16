@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NAFU_at.
+ * Copyright 2021 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.player;
+package page.nafuchoco.neojukepro.core.utils;
 
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioTrack;
@@ -28,9 +28,11 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
+import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
+import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
+import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 
 import java.awt.*;
 import java.io.IOException;
@@ -113,10 +115,10 @@ public class TrackEmbedUtil {
         var description = new MessageEmbed.Field("Description", descMessage, false);
         builder.addField(description);
         builder.setFooter(MessageUtil.format(
-                MessageManager.getMessage(
-                        audioPlayer.getNeoGuild().getSettings().getLang(),
-                        "command.nowplay.request"),
-                audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getEffectiveName()),
+                        MessageManager.getMessage(
+                                audioPlayer.getNeoGuild().getSettings().getLang(),
+                                "command.nowplay.request"),
+                        audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getEffectiveName()),
                 audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getUser().getAvatarUrl());
         return builder.build();
     }
@@ -134,10 +136,10 @@ public class TrackEmbedUtil {
                 "Loaded from " + audioPlayer.getPlayingTrack().getTrack().getSourceManager().getSourceName() + ".", false);
         builder.addField(source);
         builder.setFooter(MessageUtil.format(
-                MessageManager.getMessage(
-                        audioPlayer.getNeoGuild().getSettings().getLang(),
-                        "command.nowplay.request"),
-                audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getEffectiveName()),
+                        MessageManager.getMessage(
+                                audioPlayer.getNeoGuild().getSettings().getLang(),
+                                "command.nowplay.request"),
+                        audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getEffectiveName()),
                 audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getUser().getAvatarUrl());
         return builder.build();
     }

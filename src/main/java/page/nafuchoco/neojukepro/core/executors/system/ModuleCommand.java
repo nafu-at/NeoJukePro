@@ -170,9 +170,9 @@ public class ModuleCommand extends CommandExecutor {
                 NeoModule module = modules.get(count);
                 table.addRule();
                 table.addRow(
-                        module.getDescription().getName(),
-                        StringUtils.defaultString(module.getDescription().getDescription(), "null"),
-                        module.getDescription().getVersion())
+                                module.getDescription().getName(),
+                                StringUtils.defaultString(module.getDescription().getDescription(), "null"),
+                                module.getDescription().getVersion())
                         .setTextAlignment(TextAlignment.CENTER);
             }
         }

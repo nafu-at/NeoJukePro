@@ -80,6 +80,24 @@ public class SettingsCommand extends CommandExecutor {
                         "command.set.source.disable")).queue();
                 break;
 
+            case "enableCommandGroup":
+                context.getNeoGuild().getSettings().enableCommandGroup(
+                        context.getNeoJukePro().getCommandRegistry().getCommandGroup(context.getArgs()[1])
+                );
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.set.commandgroup.enable")).queue();
+                break;
+
+            case "disableCommandGroup":
+                context.getNeoGuild().getSettings().disableCommandGroup(
+                        context.getNeoJukePro().getCommandRegistry().getCommandGroup(context.getArgs()[1])
+                );
+                context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.set.commandgroup.disable")).queue();
+                break;
+
             default:
                 context.getChannel().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
                 break;
@@ -90,14 +108,15 @@ public class SettingsCommand extends CommandExecutor {
     private String getGuildSettings(NeoGuild neoGuild) {
         StringBuilder builder =
                 new StringBuilder(MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.set.current") + "\n```\n");
-        builder.append("Prefix:         " + neoGuild.getSettings().getCommandPrefix() + "\n");
-        builder.append("Lang:           " + neoGuild.getSettings().getLang() + "\n");
-        builder.append("Volume:         " + neoGuild.getSettings().getPlayerOptions().getVolumeLevel() + "\n");
-        builder.append("Repeat:         " + neoGuild.getSettings().getPlayerOptions().getRepeatMode() + "\n");
-        builder.append("Shuffle:        " + neoGuild.getSettings().getPlayerOptions().isShuffle() + "\n");
-        builder.append("RobotMode:      " + neoGuild.getSettings().isRobotMode() + "\n");
-        builder.append("JukeboxMode:    " + neoGuild.getSettings().isJukeboxMode() + "\n");
-        builder.append("DisabledSource: " + neoGuild.getSettings().getPlayerOptions().getDisabledSources());
+        builder.append("Prefix:              ").append(neoGuild.getSettings().getCommandPrefix()).append("\n");
+        builder.append("Lang:                ").append(neoGuild.getSettings().getLang()).append("\n");
+        builder.append("Volume:              ").append(neoGuild.getSettings().getPlayerOptions().getVolumeLevel()).append("\n");
+        builder.append("Repeat:              ").append(neoGuild.getSettings().getPlayerOptions().getRepeatMode()).append("\n");
+        builder.append("Shuffle:             ").append(neoGuild.getSettings().getPlayerOptions().isShuffle()).append("\n");
+        builder.append("RobotMode:           ").append(neoGuild.getSettings().isRobotMode()).append("\n");
+        builder.append("JukeboxMode:         ").append(neoGuild.getSettings().isJukeboxMode()).append("\n");
+        builder.append("DisabledSource:      ").append(neoGuild.getSettings().getPlayerOptions().getDisabledSources()).append("\n");
+        builder.append("DisableCommandGroup: ").append(neoGuild.getSettings().getDisableCommandGroup());
         builder.append("```");
         return builder.toString();
     }

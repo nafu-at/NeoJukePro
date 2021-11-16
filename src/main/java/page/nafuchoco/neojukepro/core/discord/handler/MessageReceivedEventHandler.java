@@ -19,23 +19,29 @@ package page.nafuchoco.neojukepro.core.discord.handler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.*;
+import page.nafuchoco.neojukepro.core.command.CommandContext;
+import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
+import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
+import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
 public final class MessageReceivedEventHandler extends ListenerAdapter {
-    private static final Pattern MENTION_REGEX = Pattern.compile("<@!?[0-9]{18}>");
+    private static final Pattern MENTION_REGEX = Pattern.compile("<@(?:!|)[0-9]{18}>");
     private final NeoJukePro neoJukePro;
     private final CommandRegistry registry;
 
@@ -55,11 +61,12 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         boolean robot = neoGuild.getSettings().isRobotMode();
 
         String raw = event.getMessage().getContentRaw();
+        log.debug("Raw input message: {}", raw);
         String input;
         if (raw.startsWith(prefix)) {
             input = raw.substring(prefix.length()).trim();
         } else if (!event.getMessage().getMentions().isEmpty()) { // 自分宛てのメンションの場合はコマンドとして認識
-            if (!event.getMessage().isMentioned(event.getJDA().getSelfUser()))
+            if (!event.getMessage().isMentioned(event.getJDA().getSelfUser(), Message.MentionType.USER, Message.MentionType.ROLE))
                 return;
             input = raw.substring(event.getJDA().getSelfUser().getAsMention().length() + 1).trim();
         } else { // コマンドではないメッセージを無視
@@ -116,15 +123,27 @@ public final class MessageReceivedEventHandler extends ListenerAdapter {
         // メンションされたユーザーの一覧
         List<Member> mentioned = Arrays.stream(args)
                 .filter(arg -> MENTION_REGEX.matcher(arg).find())
-                .map(member -> neoGuild.getJDAGuild().getMember(
-                        neoJukePro.getShardManager().getUserById(member.substring(3, member.length() - 1))))
+                .map(member -> {
+                    Member memberObj = neoGuild.getJDAGuild().getMemberById(member.substring(3, member.length() - 1));
+                    if (memberObj == null) {
+                        try {
+                            memberObj = neoGuild.getJDAGuild().retrieveMemberById(member.substring(3, member.length() - 1)).submit().get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            ExceptionUtil.sendStackTrace(
+                                    neoJukePro.getGuildRegistry().getNeoGuild(event.getGuild()),
+                                    e,
+                                    MessageManager.getMessage(neoGuild.getSettings().getLang(), "command.execute.failed"));
+                        }
+                    }
+                    return memberObj;
+                })
                 .collect(Collectors.toList());
 
         // メンションを削除
         args = Arrays.stream(args).filter(arg -> !MENTION_REGEX.matcher(arg).find()).toArray(String[]::new);
 
         // コマンドクラスの取得
-        CommandExecutor command = registry.getExecutor(commandTrigger.toLowerCase());
+        CommandExecutor command = registry.getExecutor(neoGuild, commandTrigger.toLowerCase());
         if (command == null)
             return null;
         else

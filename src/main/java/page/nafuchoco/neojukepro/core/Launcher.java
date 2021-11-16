@@ -21,9 +21,12 @@ import io.sentry.SentryOptions;
 import lavalink.client.io.jda.JdaLavalink;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
@@ -33,6 +36,7 @@ import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.*;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyGuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyNeoGuildSettingsTable;
+import page.nafuchoco.neojukepro.core.discord.handler.GuildLeaveEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.MessageReceivedEventHandler;
 import page.nafuchoco.neojukepro.core.executors.guild.SettingsCommand;
@@ -52,6 +56,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.EnumSet;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Launcher implements NeoJukeLauncher {
@@ -138,10 +143,16 @@ public class Launcher implements NeoJukeLauncher {
 
         customSourceRegistry = new CustomSourceRegistry();
         commandRegistry = new CommandRegistry();
+        var intents = EnumSet.allOf(GatewayIntent.class);
+        intents.remove(GatewayIntent.GUILD_PRESENCES);
+        if (BootOptions.isBypass())
+            intents.remove(GatewayIntent.GUILD_MEMBERS);
         var shardManagerBuilder =
-                DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), EnumSet.allOf(GatewayIntent.class));
+                DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), intents);
+        shardManagerBuilder.disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS);
         shardManagerBuilder.addEventListeners(new MessageReceivedEventHandler(this, commandRegistry));
         shardManagerBuilder.addEventListeners(new GuildVoiceEventHandler(this));
+        shardManagerBuilder.addEventListeners(new GuildLeaveEventHandler(this));
 
         guildRegistry = new NeoGuildRegistry(this, settingsTable, usersPermTable);
 
@@ -177,9 +188,28 @@ public class Launcher implements NeoJukeLauncher {
         log.info(MessageManager.getMessage("system.api.login.success"));
         log.debug("Ping! {}ms", shardManager.getAverageGatewayPing());
 
+
+        // Database Cleanup Sequence
+        shardManager.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.of(Activity.ActivityType.DEFAULT, "Booting up..."));
+        log.info("Running database cleanup sequence.");
+        try {
+            var guilds = settingsTable.getGuilds();
+            var activeGuilds = shardManager.getGuilds();
+            guilds.removeAll(activeGuilds.stream().map(g -> g.getIdLong()).collect(Collectors.toList()));
+            for (Long id : guilds) {
+                settingsTable.deleteSettings(id);
+                usersPermTable.deleteGuildUsers(id);
+                log.debug("Deleted the data of guild: {}", id);
+            }
+        } catch (SQLException e) {
+            log.error("An error occurred while deleting data.", e);
+        }
+        log.info("Cleanup is complete.");
+
         initCommand();
 
         moduleManager.enableAllModules();
+        shardManager.setPresence(OnlineStatus.ONLINE, null);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Shutting down the system...");
@@ -196,37 +226,40 @@ public class Launcher implements NeoJukeLauncher {
     }
 
     private void initCommand() {
-        commandRegistry.registerCommand(new HelpCommand("help", "h"), null);
+        commandRegistry.registerCommand(new HelpCommand("help", "h"), "Core", null);
 
-        commandRegistry.registerCommand(new UserPermCommand("permission", "perm"), null);
-        commandRegistry.registerCommand(new SettingsCommand("settings", "set"), null);
-        commandRegistry.registerCommand(new StatusCommand("status", "stats"), null);
-        commandRegistry.registerCommand(new UserInfoCommand("userinfo", "uinfo"), null);
-        commandRegistry.registerCommand(new JoinCommand("join", "j"), null);
-        commandRegistry.registerCommand(new LeaveCommand("leave", "lv"), null);
-        commandRegistry.registerCommand(new NowPlayingCommand("nowplaying", "np"), null);
-        commandRegistry.registerCommand(new ListCommand("list", "l"), null);
+        commandRegistry.registerCommand(new SystemCommand("system", "sinfo"), "Core", null);
+        commandRegistry.registerCommand(new NodesCommand("nodes", "node"), "Core", null);
+        commandRegistry.registerCommand(new ModuleCommand("module", "mod"), "Core", null);
+        if (BootOptions.isDebug())
+            commandRegistry.registerCommand(new UpdateCommand("update"), "Core", null);
+        commandRegistry.registerCommand(new ShutdownCommand("shutdown", "exit"), "Core", null);
 
-        commandRegistry.registerCommand(new PlayCommand("play", "p"), null);
-        commandRegistry.registerCommand(new SearchCommand("search", "se"), null);
-        commandRegistry.registerCommand(new RePlayCommand("replay", "restart", "re"), null);
-        commandRegistry.registerCommand(new InterruptCommand("interrupt", "in"), null);
-        commandRegistry.registerCommand(new PauseCommand("pause"), null);
-        commandRegistry.registerCommand(new StopCommand("stop", "st", "s"), null);
-        commandRegistry.registerCommand(new SkipCommand("skip", "sk"), null);
-        commandRegistry.registerCommand(new SeekCommand("seek"), null);
-        commandRegistry.registerCommand(new VolumeCommand("volume", "vol"), null);
-        commandRegistry.registerCommand(new RepeatCommand("repeat", "rep"), null);
-        commandRegistry.registerCommand(new ShuffleCommand("shuffle", "sh"), null);
-        commandRegistry.registerCommand(new DestroyCommand("destroy"), null);
+        commandRegistry.registerCommand(new SettingsCommand("settings", "set"), "Admin", null);
+        commandRegistry.registerCommand(new StatusCommand("status", "stats"), "Admin", null);
 
-        commandRegistry.registerCommand(new DeleteCommand("delete", "clean"), null);
+        commandRegistry.registerCommand(new UserPermCommand("permission", "perm"), "Moderate", null);
+        if (!BootOptions.isBypass())
+            commandRegistry.registerCommand(new UserInfoCommand("userinfo", "uinfo"), "Moderate", null);
+        commandRegistry.registerCommand(new ChannelCheckCommand("channelcheck", "check"), "Moderate", null);
+        commandRegistry.registerCommand(new DeleteCommand("delete", "clean"), "Moderate", null);
 
-        commandRegistry.registerCommand(new SystemCommand("system", "sinfo"), null);
-        commandRegistry.registerCommand(new NodesCommand("nodes", "node"), null);
-        commandRegistry.registerCommand(new ModuleCommand("module", "mod"), null);
-        if (Main.isDebugMode()) commandRegistry.registerCommand(new UpdateCommand("update"), null);
-        commandRegistry.registerCommand(new ShutdownCommand("shutdown", "exit"), null);
+        commandRegistry.registerCommand(new JoinCommand("join", "j"), "Music", null);
+        commandRegistry.registerCommand(new LeaveCommand("leave", "lv"), "Music", null);
+        commandRegistry.registerCommand(new NowPlayingCommand("nowplaying", "np"), "Music", null);
+        commandRegistry.registerCommand(new ListCommand("list", "l"), "Music", null);
+        commandRegistry.registerCommand(new PlayCommand("play", "p"), "Music", null);
+        commandRegistry.registerCommand(new SearchCommand("search", "se"), "Music", null);
+        commandRegistry.registerCommand(new RePlayCommand("replay", "restart", "re"), "Music", null);
+        commandRegistry.registerCommand(new InterruptCommand("interrupt", "in"), "Music", null);
+        commandRegistry.registerCommand(new PauseCommand("pause"), "Music", null);
+        commandRegistry.registerCommand(new StopCommand("stop", "st", "s"), "Music", null);
+        commandRegistry.registerCommand(new SkipCommand("skip", "sk"), "Music", null);
+        commandRegistry.registerCommand(new SeekCommand("seek"), "Music", null);
+        commandRegistry.registerCommand(new VolumeCommand("volume", "vol"), "Music", null);
+        commandRegistry.registerCommand(new RepeatCommand("repeat", "rep"), "Music", null);
+        commandRegistry.registerCommand(new ShuffleCommand("shuffle", "sh"), "Music", null);
+        commandRegistry.registerCommand(new DestroyCommand("destroy"), "Music", null);
     }
 
     private JDA getJdaFromId(int shardId) {

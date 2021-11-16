@@ -21,9 +21,10 @@ import ch.qos.logback.classic.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 
+import java.util.Scanner;
+
 @Slf4j
 public class Main {
-    private static boolean debugMode;
     private static NeoJukeLauncher launcher;
 
     public static void main(String[] args) {
@@ -38,7 +39,6 @@ public class Main {
         for (String prop : args) {
             switch (prop.toLowerCase()) {
                 case "debug":
-                    debugMode = true;
                     BootOptions.setDebug(true);
                     break;
 
@@ -50,6 +50,10 @@ public class Main {
                     BootOptions.setNoLogin(true);
                     break;
 
+                case "bypass":
+                    BootOptions.setBypass(true);
+                    break;
+
                 default:
                     if (prop.startsWith("lang=")) {
                         String[] s = prop.split("=");
@@ -59,7 +63,7 @@ public class Main {
             }
         }
 
-        if (debugMode) {
+        if (BootOptions.isDebug()) {
             var root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
             var jdaLogger = (Logger) LoggerFactory.getLogger("net.dv8tion");
             var cpLogger = (Logger) LoggerFactory.getLogger("com.zaxxer.hikari");
@@ -72,9 +76,9 @@ public class Main {
         launcher.launch();
 
         new Thread(() -> {
-            var console = System.console();
+            var console = new Scanner(System.in);
             while (true) {
-                switch (console.readLine()) {
+                switch (console.nextLine()) {
                     case "exit":
                     case "stop":
                         Runtime.getRuntime().exit(0);
@@ -88,10 +92,6 @@ public class Main {
                 }
             }
         }).start();
-    }
-
-    public static boolean isDebugMode() {
-        return debugMode;
     }
 
     public static NeoJukeLauncher getLauncher() {

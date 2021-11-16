@@ -17,10 +17,11 @@
 package page.nafuchoco.neojukepro.core.executors.player;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
+import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 @Slf4j
 public class VolumeCommand extends CommandExecutor {
@@ -32,14 +33,33 @@ public class VolumeCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         if (context.getArgs().length != 0) {
-            try {
-                int volume = Integer.parseInt(context.getArgs()[0]);
-                context.getNeoGuild().getSettings().setVolumeLevel(volume);
-            } catch (NumberFormatException e) {
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.volume.correct")).queue();
+            int volume = -1;
+            if (context.getArgs()[0].equals("confirm")
+                    && context.getNeoGuild().getGuildTempRegistry().getTemp("volumevalue") != null) {
+                volume = (int) context.getNeoGuild().getGuildTempRegistry().getTemp("volumevalue");
+                context.getNeoGuild().getGuildTempRegistry().deleteTemp("volumevalue");
+            } else {
+                try {
+                    volume = NumberUtils.toInt(context.getArgs()[0], -1);
+                    if (volume > 200) {
+                        context.getChannel().sendMessage(
+                                MessageManager.getMessage(
+                                        context.getNeoGuild().getSettings().getLang(),
+                                        "command.volume.warn"
+                                )
+                        ).queue();
+                        context.getNeoGuild().getGuildTempRegistry().registerTemp("volumevalue", volume);
+                        volume = -1;
+                    }
+                } catch (NumberFormatException e) {
+                    context.getChannel().sendMessage(MessageManager.getMessage(
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.volume.correct")).queue();
+                }
             }
+
+            if (volume >= 0)
+                context.getNeoGuild().getSettings().setVolumeLevel(volume);
         }
         context.getChannel().sendMessage(MessageUtil.format(
                 MessageManager.getMessage(context.getNeoGuild().getSettings().getLang(), "command.volume.corrent"),
@@ -53,8 +73,8 @@ public class VolumeCommand extends CommandExecutor {
 
     @Override
     public String getHelp() {
-        return getName() + "<args>\n----\n" +
-                "<0-100>: Change to that volume.";
+        return getName() + " <args>\n----\n" +
+                "<0-200>: Change to that volume.";
     }
 
     @Override

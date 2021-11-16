@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class NeoGuildRegistry {
@@ -64,6 +65,7 @@ public class NeoGuildRegistry {
                         getNeoJukePro().getConfig().getBasicConfig().getPrefix(),
                         false,
                         false,
+                        new ArrayList<>(),
                         new NeoGuildPlayerOptions(80, NeoGuildPlayerOptions.RepeatMode.NONE, false, new ArrayList<>()));
                 try {
                     settingsTable.registerGuildSettings(guildSettings);
@@ -82,5 +84,28 @@ public class NeoGuildRegistry {
 
     public List<NeoGuild> getNeoGuilds() {
         return new ArrayList<>(guilds.values());
+    }
+
+    public List<NeoGuild> getPlayerActiveGuilds() {
+        return getNeoGuilds().stream().filter(guild -> guild.audioPlayer != null).collect(Collectors.toList());
+    }
+
+    /**
+     * Delete the saved guild data.
+     * This process will delete all the data of the specified guild stored in the database.
+     *
+     * @param guildId Guild to delete data
+     */
+    public void deleteGuildData(long guildId) {
+        try {
+            settingsTable.deleteSettings(guildId);
+            permTable.deleteGuildUsers(guildId);
+        } catch (SQLException e) {
+            log.error("An error occurred while deleting data.", e);
+        }
+        var neoGuild = guilds.get(guildId);
+        if (neoGuild != null)
+            neoGuild.destroyAudioPlayer();
+        guilds.remove(guildId);
     }
 }

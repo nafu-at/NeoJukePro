@@ -2,15 +2,11 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 group 'page.nafuchoco'
-version '2.1.2'
-
-sourceCompatibility = 11
-targetCompatibility = 11
-compileJava.options.encoding = 'UTF-8'
+version '2.2.0'
 
 jar {
     manifest {
@@ -62,27 +58,27 @@ repositories {
 dependencies {
     // Logger
     implementation 'org.slf4j:slf4j-api:1.7.32'
-    implementation 'ch.qos.logback:logback-core:1.2.5'
-    implementation 'ch.qos.logback:logback-classic:1.2.5'
-    implementation 'io.sentry:sentry-logback:5.0.1'
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testCompileOnly 'org.projectlombok:lombok:1.18.14'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.14'
+    implementation 'ch.qos.logback:logback-core:1.2.7'
+    implementation 'ch.qos.logback:logback-classic:1.2.7'
+    implementation 'io.sentry:sentry-logback:5.4.0'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     // ClientLib
-    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
-    api('net.dv8tion:JDA:4.3.0_285') {
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+    api('net.dv8tion:JDA:4.3.0_346') {
         exclude module: 'opus-java'
     }
     api 'com.sedmelluq:lavaplayer:1.3.78'
-    api 'com.github.freyacodes:Lavalink-Client:f05605e'
+    api 'com.github.freyacodes:Lavalink-Client:3ea4125'
 
     // Parser
-    implementation 'com.google.code.gson:gson:2.8.7'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.4'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.0'
 
     // Commons Library
     implementation 'commons-io:commons-io:2.11.0'
@@ -91,8 +87,8 @@ dependencies {
 
     // SQL
     implementation 'com.zaxxer:HikariCP:5.0.0'
-    implementation 'mysql:mysql-connector-java:8.0.26'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
+    implementation 'mysql:mysql-connector-java:8.0.27'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
 
     // Other
     implementation 'de.vandermeer:asciitable:0.3.2'

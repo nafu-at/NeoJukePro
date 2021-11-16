@@ -259,7 +259,6 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
                     && getNeoJukePro().getConfig().getAdvancedConfig().isEnableRelatedVideoSearch()
                     && getNeoGuild().getSettings().isJukeboxMode()) {
                 try {
-
                     YouTubeSearchResults results =
                             client.searchVideos(YouTubeAPIClient.SearchType.RELATED, playingTrack.getTrack().getIdentifier(), null);
                     play(new AudioTrackLoader(new TrackContext(getNeoGuild(), getPlayingTrack().getInvoker(), 0, "https://www.youtube.com/watch?v=" + results.getItems()[RandomUtils.nextInt(0, 4)].getID().getVideoID())));
@@ -268,6 +267,9 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
                 }
             }
 
+            playingTrack = null;
+            play();
+        } else if (endReason == AudioTrackEndReason.LOAD_FAILED) {
             playingTrack = null;
             play();
         } else {

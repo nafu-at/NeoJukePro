@@ -19,9 +19,9 @@ package page.nafuchoco.neojukepro.core.executors.player;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 import java.util.List;
 
@@ -75,8 +75,8 @@ public class ListCommand extends CommandExecutor {
                                 "command.list.playing"),
                         audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n");
             sb.append(MessageUtil.format(MessageManager.getMessage(
-                    context.getNeoGuild().getSettings().getLang(),
-                    "command.list.list"),
+                            context.getNeoGuild().getSettings().getLang(),
+                            "command.list.list"),
                     tracks.size(), page, listPage, MessageUtil.formatTime(totalTime)));
             for (int count = range * page - range + 1; count <= range * page; count++) {
                 if (tracks.size() >= count && sb.length() < 1800) {
@@ -89,8 +89,8 @@ public class ListCommand extends CommandExecutor {
         } else if (audioPlayer.getPlayingTrack() != null) {
             context.getChannel().sendMessage(
                     MessageUtil.format(MessageManager.getMessage(
-                            context.getNeoGuild().getSettings().getLang(),
-                            "command.list.playing"),
+                                    context.getNeoGuild().getSettings().getLang(),
+                                    "command.list.playing"),
                             audioPlayer.getPlayingTrack().getTrack().getInfo().title)).queue();
         } else {
             context.getChannel().sendMessage(MessageManager.getMessage(

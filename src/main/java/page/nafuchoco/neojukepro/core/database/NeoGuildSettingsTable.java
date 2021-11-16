@@ -17,6 +17,7 @@
 package page.nafuchoco.neojukepro.core.database;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildSettings;
@@ -43,7 +44,8 @@ public class NeoGuildSettingsTable extends DatabaseTable {
 
     public void createTable() throws SQLException {
         super.createTable("guild_id BIGINT NOT NULL, lang VARCHAR(5) NOT NULL, " +
-                "command_prefix VARCHAR(16) NULL, robot_mode BOOL, jukebox_mode BOOL, player_options LONGTEXT NOT NULL, custom_field LONGTEXT NULL");
+                "command_prefix VARCHAR(16) NULL, robot_mode BOOL, jukebox_mode BOOL, disable_commandgroup LONGTEXT NULL," +
+                "player_options LONGTEXT NOT NULL, custom_field LONGTEXT NULL");
         try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
                      "CREATE UNIQUE INDEX settings_index ON " + getTablename() + "(guild_id)")) {
@@ -93,8 +95,13 @@ public class NeoGuildSettingsTable extends DatabaseTable {
                     var commandPrefix = resultSet.getString("command_prefix");
                     var robotMode = resultSet.getBoolean("robot_mode");
                     var jukeboxMode = resultSet.getBoolean("jukebox_mode");
+                    List<String> disableCommandGroup = gson.fromJson(resultSet.getString("disable_commandgroup"), new TypeToken<List<String>>() {
+                    }.getType());
+                    if (disableCommandGroup == null)
+                        disableCommandGroup = new ArrayList();
                     NeoGuildPlayerOptions playerOptions =
                             gson.fromJson(resultSet.getString("player_options"), NeoGuildPlayerOptions.class);
+
                     var guildSettings = new NeoGuildSettings(
                             neoJukePro,
                             this,
@@ -103,6 +110,7 @@ public class NeoGuildSettingsTable extends DatabaseTable {
                             commandPrefix,
                             robotMode,
                             jukeboxMode,
+                            disableCommandGroup,
                             playerOptions);
                     guildSettings.deserializeCustomFieldFromJson(resultSet.getString("custom_field"));
 
@@ -122,15 +130,16 @@ public class NeoGuildSettingsTable extends DatabaseTable {
     public void registerGuildSettings(NeoGuildSettings settings) throws SQLException {
         try (var connection = getConnector().getConnection();
              PreparedStatement ps = connection.prepareStatement(
-                     "INSERT INTO " + getTablename() + " (guild_id, lang, command_prefix, robot_mode, jukebox_mode, player_options, custom_field) " +
-                             "VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+                     "INSERT INTO " + getTablename() + " (guild_id, lang, command_prefix, robot_mode, jukebox_mode, disable_commandgroup, player_options, custom_field) " +
+                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
             ps.setLong(1, settings.getGuildId());
             ps.setString(2, settings.getLang());
             ps.setString(3, settings.getCommandPrefix());
             ps.setBoolean(4, settings.isRobotMode());
             ps.setBoolean(5, settings.isJukeboxMode());
-            ps.setString(6, gson.toJson(settings.getPlayerOptions()));
-            ps.setString(7, settings.serializeCustomFieldToJson());
+            ps.setString(6, gson.toJson(settings.getDisableCommandGroup()));
+            ps.setString(7, gson.toJson(settings.getPlayerOptions()));
+            ps.setString(8, settings.serializeCustomFieldToJson());
             ps.execute();
         }
     }
@@ -174,6 +183,17 @@ public class NeoGuildSettingsTable extends DatabaseTable {
                      "UPDATE " + getTablename() + " SET jukebox_mode = ? WHERE guild_id = ?"
              )) {
             ps.setBoolean(1, jukeboxMode);
+            ps.setLong(2, guildId);
+            ps.execute();
+        }
+    }
+
+    public void updateDisableCommandGroup(long guildId, List<String> disableCommandGroup) throws SQLException {
+        try (var connection = getConnector().getConnection();
+             PreparedStatement ps = connection.prepareStatement(
+                     "UPDATE " + getTablename() + " SET disable_commandgroup = ? WHERE guild_id = ?"
+             )) {
+            ps.setString(1, gson.toJson(disableCommandGroup));
             ps.setLong(2, guildId);
             ps.execute();
         }

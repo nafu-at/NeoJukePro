@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NAFU_at.
+ * Copyright 2021 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.command;
+package page.nafuchoco.neojukepro.core.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import page.nafuchoco.neojukepro.core.MessageManager;
+import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
 import java.io.PrintWriter;
@@ -32,10 +33,14 @@ public class ExceptionUtil {
     }
 
     public static void sendStackTrace(NeoGuild guild, Throwable throwable, String... message) {
-        sendStackTrace(guild, true, throwable, message);
+        sendStackTrace(guild, null, true, throwable, message);
     }
 
     public static void sendStackTrace(NeoGuild guild, boolean toLog, Throwable throwable, String... message) {
+        sendStackTrace(guild, null, toLog, throwable, message);
+    }
+
+    public static void sendStackTrace(NeoGuild guild, CommandContext context, boolean toLog, Throwable throwable, String... message) {
         var stringWriter = new StringWriter();
         var printWriter = new PrintWriter(stringWriter);
         throwable.printStackTrace(printWriter);
@@ -47,9 +52,10 @@ public class ExceptionUtil {
         for (String msg : message)
             builder.append(msg + "\n");
 
-        if (trace.length() > 1700)
-            trace = trace.substring(0, 1700) + " [...]";
+        if (trace.length() > 1650)
+            trace = trace.substring(0, 1650) + " [...]";
 
+        builder.append("`").append(throwable.getClass().getName()).append("`\n");
         builder.append("```");
         builder.append(trace);
         builder.append("```");
@@ -61,6 +67,10 @@ public class ExceptionUtil {
             for (String msg : message)
                 sb.append(msg + "\n");
             MDC.put("GuildId", guild.getJDAGuild().getId());
+            if (context != null) {
+                MDC.put("CommandExecutor", context.getCommand().getName());
+                MDC.put("CommandArgs", context.getArgs().toString());
+            }
             log.error(sb.toString(), throwable);
         }
     }

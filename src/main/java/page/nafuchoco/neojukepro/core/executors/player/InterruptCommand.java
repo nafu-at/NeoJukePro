@@ -25,6 +25,7 @@ import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.player.AudioTrackLoader;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 import page.nafuchoco.neojukepro.core.player.TrackContext;
+import page.nafuchoco.neojukepro.core.utils.ChannelPermissionUtil;
 
 public class InterruptCommand extends CommandExecutor {
 
@@ -42,6 +43,13 @@ public class InterruptCommand extends CommandExecutor {
                     context.getChannel().sendMessage(MessageManager.getMessage(
                             context.getNeoGuild().getSettings().getLang(),
                             "command.join.before")).queue();
+                    return;
+                }
+                if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, context.getNeoGuild().getJDAGuild().getSelfMember())) {
+                    context.getChannel().sendMessage(
+                            MessageManager.getMessage(
+                                    context.getNeoGuild().getSettings().getLang(),
+                                    "command.channel.permission")).queue();
                     return;
                 }
                 audioPlayer.joinChannel(targetChannel);

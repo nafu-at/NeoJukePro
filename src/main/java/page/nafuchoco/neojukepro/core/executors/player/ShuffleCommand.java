@@ -19,7 +19,7 @@ package page.nafuchoco.neojukepro.core.executors.player;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
+import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 public class ShuffleCommand extends CommandExecutor {
 

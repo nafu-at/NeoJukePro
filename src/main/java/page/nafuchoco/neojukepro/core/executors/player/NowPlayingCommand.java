@@ -22,13 +22,13 @@ import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.ExceptionUtil;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
 import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
-import page.nafuchoco.neojukepro.core.player.TrackEmbedUtil;
+import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
+import page.nafuchoco.neojukepro.core.utils.MessageUtil;
+import page.nafuchoco.neojukepro.core.utils.TrackEmbedUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +60,7 @@ public class NowPlayingCommand extends CommandExecutor {
                 AudioTrack audioTrack = trackContext.getTrack();
                 if (context.getArgs().length == 0) {
                     try {
-                        context.getChannel().sendMessage(TrackEmbedUtil.getTrackEmbed(audioPlayer)).queue();
+                        context.getChannel().sendMessageEmbeds(TrackEmbedUtil.getTrackEmbed(audioPlayer)).queue();
                     } catch (IOException e) {
                         ExceptionUtil.sendStackTrace(
                                 context.getNeoGuild(),
@@ -100,12 +100,12 @@ public class NowPlayingCommand extends CommandExecutor {
                     case "t":
                         context.getChannel().sendMessage(
                                 MessageUtil.format(MessageManager.getMessage(
-                                        context.getNeoGuild().getSettings().getLang(),
-                                        "command.list.playing"),
+                                                context.getNeoGuild().getSettings().getLang(),
+                                                "command.list.playing"),
                                         audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n" +
                                         MessageUtil.format(MessageManager.getMessage(
-                                                context.getNeoGuild().getSettings().getLang(),
-                                                "command.nowplay.currenttime"),
+                                                        context.getNeoGuild().getSettings().getLang(),
+                                                        "command.nowplay.currenttime"),
                                                 MessageUtil.formatTime(audioPlayer.getTrackPosition()),
                                                 MessageUtil.formatTime(audioTrack.getDuration() - audioPlayer.getTrackPosition()))).queue();
                         break;

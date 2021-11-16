@@ -18,7 +18,7 @@ package page.nafuchoco.neojukepro.core.database;
 
 public enum DatabaseType {
     MARIADB("org.mariadb.jdbc.Driver", "jdbc:mariadb://"),
-    MYSQL("com.mysql.jdbc.Driver", "jdbc:mysql://");
+    MYSQL("com.mysql.cj.jdbc.Driver", "jdbc:mysql://");
 
     private final String jdbcClass;
     private final String addressPrefix;

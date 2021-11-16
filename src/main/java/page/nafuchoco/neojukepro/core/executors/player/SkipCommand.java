@@ -19,8 +19,8 @@ package page.nafuchoco.neojukepro.core.executors.player;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.MessageUtil;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 public class SkipCommand extends CommandExecutor {
 
@@ -57,8 +57,8 @@ public class SkipCommand extends CommandExecutor {
                 } else {
                     try {
                         context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage(
-                                context.getNeoGuild().getSettings().getLang(),
-                                "command.skip"),
+                                        context.getNeoGuild().getSettings().getLang(),
+                                        "command.skip"),
                                 audioPlayer.skip(Integer.parseInt(indexS), Integer.parseInt(indexS)).get(0).getTrack().getInfo().title)).queue();
                     } catch (IllegalArgumentException e) {
                         // nothing
@@ -66,8 +66,8 @@ public class SkipCommand extends CommandExecutor {
                 }
             } else {
                 context.getChannel().sendMessage(MessageUtil.format(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.skip"),
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.skip"),
                         context.getNeoGuild().getAudioPlayer().getPlayingTrack().getTrack().getInfo().title)).queue();
                 audioPlayer.skip();
             }

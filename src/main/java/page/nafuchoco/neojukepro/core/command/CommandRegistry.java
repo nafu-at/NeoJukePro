@@ -16,6 +16,7 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
+import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.module.NeoModule;
 
 import java.util.ArrayList;
@@ -25,51 +26,71 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CommandRegistry {
-    private final Map<NeoModule, Map<String, CommandExecutor>> commands = new LinkedHashMap<>();
+    private final Map<String, CommandGroup> groups = new LinkedHashMap<>();
 
     public void registerCommand(CommandExecutor executor, NeoModule module) {
-        Map<String, CommandExecutor> reg = commands.computeIfAbsent(module, key -> new LinkedHashMap<>());
-        String name = executor.getName();
-        reg.put(name, executor);
-        for (String alias : executor.getAliases())
-            reg.put(alias, executor);
+        registerCommand(executor, null, module);
+    }
+
+    public void registerCommand(CommandExecutor executor, String groupName, NeoModule module) {
+        for (CommandGroup g : groups.values()) {
+            if (g.getCommands().contains(executor))
+                throw new IllegalArgumentException("Cannot register a command executor that has already been registered in another command group.");
+        }
+
+        CommandGroup group = groups.computeIfAbsent(groupName, key -> new CommandGroup(groupName));
+        group.registerCommand(executor, module);
     }
 
     public void removeCommand(String name, NeoModule module) {
-        if (commands.containsKey(module)) {
-            CommandExecutor executor = commands.get(module).get(name);
-            commands.get(module).remove(executor.getName());
-            executor.getAliases().forEach(commands.get(module)::remove);
-        }
+        for (CommandGroup g : groups.values())
+            g.removeCommand(name, module);
     }
 
     public void removeCommand(CommandExecutor executor, NeoModule module) {
-        if (commands.containsKey(module)) {
-            commands.get(module).remove(executor.getName());
-            executor.getAliases().forEach(commands.get(module)::remove);
-        }
+        for (CommandGroup g : groups.values())
+            g.removeCommand(executor, module);
     }
 
     public void removeCommands(NeoModule module) {
-        commands.remove(module);
+        for (CommandGroup g : groups.values())
+            g.removeCommands(module);
+    }
+
+    public void deleteCommandGroup(String groupName) {
+        groups.remove(groupName);
+    }
+
+    public void deleteCommandGroup(CommandGroup commandGroup) {
+        groups.remove(commandGroup);
+    }
+
+    public List<CommandGroup> getCommandGroups() {
+        return new ArrayList<>(groups.values());
+    }
+
+    public List<String> getCommandGroupsNames() {
+        return new ArrayList<>(groups.keySet());
     }
 
     public List<CommandExecutor> getCommands() {
-        return commands.values().stream().flatMap(v -> v.values().stream()).distinct().collect(Collectors.toList());
+        return groups.values().stream().flatMap(v -> v.getCommands().stream()).distinct().collect(Collectors.toList());
     }
 
-    public CommandExecutor getExecutor(String name) {
+    public CommandGroup getCommandGroup(String groupName) {
+        return groups.get(groupName);
+    }
+
+    public CommandExecutor getExecutor(NeoGuild guild, String name) {
         CommandExecutor executor = null;
-        List<NeoModule> modules = new ArrayList<>(commands.keySet());
-        for (int i = modules.size() - 1; i >= 0; i--) {
+        List<CommandGroup> groupList = new ArrayList<>(groups.values());
+        for (int i = 0; i < groupList.size(); i++) {
             if (executor != null)
                 break;
-            NeoModule module = modules.get(i);
-            if (module != null && !module.isEnable())
+            CommandGroup group = groupList.get(i);
+            if (group != null && (!group.isEnabled() || guild.getSettings().getDisableCommandGroupList().contains(group)))
                 continue;
-            Map<String, CommandExecutor> reg = commands.get(module);
-            if (reg != null)
-                executor = reg.get(name);
+            executor = group.getExecutor(name);
         }
         return executor;
     }

@@ -33,4 +33,8 @@ public class BootOptions {
     @Getter
     @Setter(AccessLevel.PROTECTED)
     private static boolean noLogin;
+
+    @Getter
+    @Setter(AccessLevel.PROTECTED)
+    private static boolean bypass;
 }

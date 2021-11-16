@@ -31,15 +31,14 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import lavalink.client.io.Link;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMemberRegistry;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+
+import java.util.List;
 
 /**
  * @since v2.0
@@ -57,7 +56,7 @@ public class NeoGuild {
     // TODO: 2020/12/08 ギルド固有のモジュールやカスタムコマンドなんかの実装の検討
 
     private TextChannel lastJoinedChannel;
-    private NeoGuildPlayer audioPlayer;
+    protected NeoGuildPlayer audioPlayer;
 
     public NeoGuild(NeoJukePro neoJukePro, long discordGuildId, NeoGuildSettings settings, GuildUsersPermTable permTable) {
         this.neoJukePro = neoJukePro;
@@ -87,6 +86,28 @@ public class NeoGuild {
 
     public void setLastJoinedChannel(TextChannel lastJoinedChannel) {
         this.lastJoinedChannel = lastJoinedChannel;
+    }
+
+    public void deleteMessage(TextChannel channel, List<Member> members, int maxDelete, boolean checkPrefix) {
+        if (maxDelete > 50 || maxDelete < 1)
+            maxDelete = 50;
+
+        channel.getHistory().retrievePast(maxDelete).queue(messages -> {
+            for (Message message : messages) {
+                Member member = getGuildMemberRegistry().getNeoGuildMember(message.getAuthor().getIdLong()).getJDAMember();
+
+                if (member == null)
+                    continue;
+
+                if (checkPrefix) {
+                    if (members.contains(member) || message.getContentRaw().startsWith(settings.getCommandPrefix()))
+                        message.delete().submit();
+                } else {
+                    if (members.contains(member))
+                        message.delete().submit();
+                }
+            }
+        });
     }
 
     public NeoGuildPlayer getAudioPlayer() {
@@ -122,6 +143,6 @@ public class NeoGuild {
     }
 
     public void sendMessageToLatest(MessageEmbed embed) {
-        lastJoinedChannel.sendMessage(embed).queue();
+        lastJoinedChannel.sendMessageEmbeds(embed).queue();
     }
 }

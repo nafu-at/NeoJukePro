@@ -62,14 +62,38 @@ public interface Module {
      *
      * @param executor CommandExecutor class to be registered
      */
-    void registerCommand(CommandExecutor executor);
+    default void registerCommand(CommandExecutor executor) {
+        registerCommand(null, executor);
+    }
+
+    /**
+     * Register the CommandExecutor.
+     *
+     * @param groupName       Name of the command group to which the command executor belongs.
+     * @param commandExecutor CommandExecutor class to be registered
+     * @since v2.2
+     */
+    void registerCommand(String groupName, CommandExecutor commandExecutor);
 
     /**
      * Register all CommandExecutors.
      *
      * @param executors List containing the CommandExecutor
      */
-    void registerCommands(List<CommandExecutor> executors);
+    default void registerCommands(List<CommandExecutor> executors) {
+        registerCommand(null, executors);
+    }
+
+    /**
+     * Register all CommandExecutors.
+     *
+     * @param groupName Name of the command group to which the command executor belongs.
+     * @param executors List containing the CommandExecutor
+     * @since v2.2
+     */
+    default void registerCommand(String groupName, List<CommandExecutor> executors) {
+        executors.forEach(e -> registerCommand(groupName, e));
+    }
 
     /**
      * Unregisters all commands related to the specified CommandExecutor class.

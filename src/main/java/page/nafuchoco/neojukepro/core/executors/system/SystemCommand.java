@@ -16,7 +16,7 @@
 
 package page.nafuchoco.neojukepro.core.executors.system;
 
-import net.dv8tion.jda.api.sharding.ShardManager;
+import lombok.val;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
@@ -37,26 +37,27 @@ public class SystemCommand extends CommandExecutor {
         long used = total - free;
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
 
-        ShardManager shardManager = context.getNeoJukePro().getShardManager();
+        val shardManager = context.getNeoJukePro().getShardManager();
 
-        StringBuilder builder = new StringBuilder();
+        val builder = new StringBuilder();
         builder.append("This Bot has been running for " + formatTime(uptime) + " since it was started.\n");
         builder.append("```\n");
         builder.append("====== System Info ======\n");
-        builder.append("Operating System:      " + System.getProperty("os.name") + "\n");
-        builder.append("JVM Version:           " + System.getProperty("java.version") + "\n");
-        builder.append("NeoJukePro Version:    " + Main.class.getPackage().getImplementationVersion() + "\n\n");
+        builder.append("Operating System:      ").append(System.getProperty("os.name")).append("\n");
+        builder.append("JVM Version:           ").append(System.getProperty("java.version")).append("\n");
+        builder.append("NeoJukePro Version:    ").append(Main.class.getPackage().getImplementationVersion()).append("\n\n");
         builder.append("====== Memory Info ======\n");
-        builder.append("Reserved memory:       " + total + "MB\n");
-        builder.append("  -> Used:             " + used + "MB\n");
-        builder.append("  -> Free:             " + free + "MB\n");
-        builder.append("Max. reserved memory:  " + max + "MB\n\n");
+        builder.append("Reserved memory:       ").append(total).append("MB\n");
+        builder.append("  -> Used:             ").append(used).append("MB\n");
+        builder.append("  -> Free:             ").append(free).append("MB\n");
+        builder.append("Max. reserved memory:  ").append(max).append("MB\n\n");
         builder.append("====== Statistic Info ======\n");
-        builder.append("Guild Count:           " + shardManager.getGuildCache().size() + "\n");
-        builder.append("Active Guilds:         " + context.getNeoJukePro().getGuildRegistry().getNeoGuilds().size() + "\n");
-        builder.append("User Count:            " + shardManager.getUserCache().size() + "\n");
-        builder.append("Text Channels:         " + shardManager.getTextChannelCache().size() + "\n");
-        builder.append("Voice Channels:        " + shardManager.getVoiceChannelCache().size() + "\n");
+        builder.append("Guild Count:           ").append(shardManager.getGuildCache().size()).append("\n");
+        builder.append("Active Guilds:         ").append(context.getNeoJukePro().getGuildRegistry().getNeoGuilds().size()).append("\n");
+        builder.append("Active Player:         ").append(context.getNeoJukePro().getGuildRegistry().getPlayerActiveGuilds().size()).append("\n");
+        builder.append("User Count:            ").append(shardManager.getUserCache().size()).append("\n");
+        builder.append("Text Channels:         ").append(shardManager.getTextChannelCache().size()).append("\n");
+        builder.append("Voice Channels:        ").append(shardManager.getVoiceChannelCache().size()).append("\n");
         builder.append("```");
         context.getChannel().sendMessage(builder.toString()).queue();
     }
