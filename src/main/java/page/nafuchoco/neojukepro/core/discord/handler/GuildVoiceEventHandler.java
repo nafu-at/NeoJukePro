@@ -47,9 +47,11 @@ public final class GuildVoiceEventHandler extends ListenerAdapter {
     }
 
     private void checkVoiceChannelMember(GenericGuildVoiceUpdateEvent event) {
-        if (event.getEntity().getUser() == event.getJDA().getSelfUser() ||
-                event.getEntity().getGuild().getSelfMember().getVoiceState().getChannel() == null)
+        if (event.getEntity().getGuild().getSelfMember().getVoiceState().getChannel() == null
+                || event.getEntity().getGuild().getSelfMember().getVoiceState().getChannel() != event.getChannelLeft()
+                || event.getEntity().getUser() == event.getJDA().getSelfUser())
             return;
+
         for (Member member : event.getChannelLeft().getMembers())
             if (!member.getUser().isBot())
                 return;
