@@ -107,7 +107,8 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
         } else if (player.isPaused() && player.getPlayingTrack() == null) {
             playingTrack = playingTrack.makeClone(0);
             player.playTrack(playingTrack.getTrack());
-            player.seekTo(playingTrack.getStartPosition());
+            if (playingTrack.getStartPosition() != 0)
+                player.seekTo(playingTrack.getStartPosition());
         }
         if (player.isPaused())
             player.setPaused(false);
@@ -119,7 +120,8 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
     public synchronized void play(LoadedTrackContext context) {
         if (playingTrack == null) {
             player.playTrack(context.getTrack());
-            player.seekTo(context.getStartPosition());
+            if (context.getStartPosition() != 0)
+                player.seekTo(context.getStartPosition());
             playingTrack = context;
         } else {
             trackProvider.queue(context);
