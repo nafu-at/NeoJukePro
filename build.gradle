@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'page.nafuchoco'
-version '2.2.1'
+version '2.2.2'
 
 jar {
     manifest {
@@ -71,8 +71,10 @@ dependencies {
     api('net.dv8tion:JDA:4.3.0_346') {
         exclude module: 'opus-java'
     }
-    api 'com.sedmelluq:lavaplayer:1.3.78'
-    api 'com.github.freyacodes:Lavalink-Client:3ea4125'
+    api 'com.github.sedmelluq:lavaplayer:PR650-SNAPSHOT'
+    api('com.github.freyacodes:Lavalink-Client:8d9b660') {
+        exclude module: 'lavaplayer'
+    }
 
     // Parser
     implementation 'com.google.code.gson:gson:2.8.9'
