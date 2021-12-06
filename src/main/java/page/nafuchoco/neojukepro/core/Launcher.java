@@ -190,7 +190,7 @@ public class Launcher implements NeoJukeLauncher {
 
 
         // Database Cleanup Sequence
-        shardManager.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.of(Activity.ActivityType.DEFAULT, "Booting up..."));
+        shardManager.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.of(Activity.ActivityType.PLAYING, "Booting up..."));
         log.info("Running database cleanup sequence.");
         try {
             var guilds = settingsTable.getGuilds();

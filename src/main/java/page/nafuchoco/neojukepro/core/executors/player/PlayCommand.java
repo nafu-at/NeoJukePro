@@ -17,6 +17,7 @@
 package page.nafuchoco.neojukepro.core.executors.player;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -63,8 +64,11 @@ public class PlayCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
-            VoiceChannel targetChannel = context.getInvoker().getJDAMember().getVoiceState().getChannel();
+        if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inAudioChannel()) {
+            VoiceChannel targetChannel = null;
+            if (context.getInvoker().getJDAMember().getVoiceState().getChannel().getType() == ChannelType.VOICE)
+                targetChannel = (VoiceChannel) context.getInvoker().getJDAMember().getVoiceState().getChannel();
+            
             if (targetChannel == null) {
                 context.getChannel().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
