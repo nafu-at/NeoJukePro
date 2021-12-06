@@ -37,4 +37,18 @@ public abstract class CommandExecutor implements ICommandExecutor {
     public List<String> getAliases() {
         return aliases;
     }
+
+    public enum CommandExecutorPermission {
+        NORMAL(0), GUILD_ADMIN(252), GUILD_OWNER(253), BOT_ADMIN(254), BOT_OWNER(255);
+
+        private final int permission;
+
+        CommandExecutorPermission(int permission) {
+            this.permission = permission;
+        }
+
+        public int getPermission() {
+            return permission;
+        }
+    }
 }
