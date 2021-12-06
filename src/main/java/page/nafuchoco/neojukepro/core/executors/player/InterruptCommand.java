@@ -17,6 +17,7 @@
 package page.nafuchoco.neojukepro.core.executors.player;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.MessageManager;
@@ -37,8 +38,9 @@ public class InterruptCommand extends CommandExecutor {
     public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         if (context.getArgs().length >= 2) {
-            if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
-                VoiceChannel targetChannel = context.getInvoker().getJDAMember().getVoiceState().getChannel();
+            if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inAudioChannel()
+                    && context.getInvoker().getJDAMember().getVoiceState().getChannel().getType() != ChannelType.VOICE) {
+                VoiceChannel targetChannel = (VoiceChannel) context.getInvoker().getJDAMember().getVoiceState().getChannel();
                 if (targetChannel == null) {
                     context.getChannel().sendMessage(MessageManager.getMessage(
                             context.getNeoGuild().getSettings().getLang(),

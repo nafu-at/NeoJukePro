@@ -40,6 +40,7 @@ import page.nafuchoco.neojukepro.core.discord.handler.GuildLeaveEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.MessageReceivedEventHandler;
 import page.nafuchoco.neojukepro.core.executors.guild.SettingsCommand;
+import page.nafuchoco.neojukepro.core.executors.guild.ThreadViewCommand;
 import page.nafuchoco.neojukepro.core.executors.guild.UserInfoCommand;
 import page.nafuchoco.neojukepro.core.executors.guild.UserPermCommand;
 import page.nafuchoco.neojukepro.core.executors.player.*;
@@ -190,7 +191,7 @@ public class Launcher implements NeoJukeLauncher {
 
 
         // Database Cleanup Sequence
-        shardManager.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.of(Activity.ActivityType.DEFAULT, "Booting up..."));
+        shardManager.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.of(Activity.ActivityType.PLAYING, "Booting up..."));
         log.info("Running database cleanup sequence.");
         try {
             var guilds = settingsTable.getGuilds();
@@ -260,6 +261,8 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new RepeatCommand("repeat", "rep"), "Music", null);
         commandRegistry.registerCommand(new ShuffleCommand("shuffle", "sh"), "Music", null);
         commandRegistry.registerCommand(new DestroyCommand("destroy"), "Music", null);
+
+        commandRegistry.registerCommand(new ThreadViewCommand("threads"), "Utils", null);
     }
 
     private JDA getJdaFromId(int shardId) {
