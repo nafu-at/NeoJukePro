@@ -59,7 +59,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.32'
     implementation 'ch.qos.logback:logback-core:1.2.7'
     implementation 'ch.qos.logback:logback-classic:1.2.7'
-    implementation 'io.sentry:sentry-logback:5.4.0'
+    implementation 'io.sentry:sentry-logback:5.5.1'
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     testCompileOnly 'org.projectlombok:lombok:1.18.22'
