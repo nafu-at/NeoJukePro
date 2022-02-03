@@ -71,7 +71,7 @@ dependencies {
         exclude module: 'opus-java'
     }
     api 'com.github.walkyst:lavaplayer-fork:1.3.97'
-    api('com.github.freyacodes:Lavalink-Client:8d9b660') {
+    api('com.github.freyacodes:Lavalink-Client:2b1b439') {
         exclude module: 'lavaplayer'
     }
 
