@@ -16,31 +16,30 @@
 
 package page.nafuchoco.neojukepro.core.player;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import lavalink.client.player.IPlayer;
-import lavalink.client.player.LavaplayerPlayerWrapper;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 
 import java.nio.ByteBuffer;
 
 public final class AudioPlayerSendHandler implements AudioSendHandler {
-    private final IPlayer audioPlayer;
+    private final AudioPlayer audioPlayer;
     private AudioFrame lastFrame;
 
-    public AudioPlayerSendHandler(IPlayer audioPlayer) {
+    public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
     }
 
     @Override
     public boolean canProvide() {
-        lastFrame = ((LavaplayerPlayerWrapper) audioPlayer).provide();
+        lastFrame = audioPlayer.provide();
         return lastFrame != null;
     }
 
     @Override
     public ByteBuffer provide20MsAudio() {
         if (lastFrame == null)
-            lastFrame = ((LavaplayerPlayerWrapper) audioPlayer).provide();
+            lastFrame = audioPlayer.provide();
         byte[] data = lastFrame != null ? lastFrame.getData() : null;
         lastFrame = null;
         return ByteBuffer.wrap(data);

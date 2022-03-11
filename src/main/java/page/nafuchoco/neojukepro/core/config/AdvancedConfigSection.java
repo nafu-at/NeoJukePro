@@ -16,12 +16,12 @@
 
 package page.nafuchoco.neojukepro.core.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.ToString;
 
-import java.util.List;
-
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AdvancedConfigSection {
     @JsonProperty("googleAPIToken")
     private String googleAPIToken;
@@ -29,10 +29,6 @@ public class AdvancedConfigSection {
     private boolean relatedVideoSearch;
     @JsonProperty("updateInfoUrl")
     private String updateInfoUrl;
-    @JsonProperty("useNodeServer")
-    private boolean useNodeServer;
-    @JsonProperty("nodesInfo")
-    private List<LavalinkConfigSection> nodesInfo;
     @JsonProperty("sentryDsn")
     private String sentryDsn;
 
@@ -46,14 +42,6 @@ public class AdvancedConfigSection {
 
     public String getUpdateInfoUrl() {
         return updateInfoUrl;
-    }
-
-    public boolean isUseNodeServer() {
-        return useNodeServer;
-    }
-
-    public List<LavalinkConfigSection> getNodesInfo() {
-        return nodesInfo;
     }
 
     public String getSentryDsn() {

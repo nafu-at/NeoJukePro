@@ -16,12 +16,10 @@
 
 package page.nafuchoco.neojukepro.core.player;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import lavalink.client.io.jda.JdaLink;
-import lavalink.client.player.IPlayer;
-import lavalink.client.player.LavaplayerPlayerWrapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
@@ -42,13 +40,12 @@ import java.util.List;
 
 @Slf4j
 @Getter
-public class NeoGuildPlayer extends PlayerEventListenerAdapter {
+public class NeoGuildPlayer implements PlayerEventListenerAdapter {
     private static final YouTubeAPIClient client;
 
     private final NeoJukePro neoJukePro;
     private final NeoGuild neoGuild;
-    private final JdaLink link;
-    private final IPlayer player;
+    private final AudioPlayer player;
     private final GuildTrackProvider trackProvider;
 
     private LoadedTrackContext playingTrack;
@@ -64,12 +61,10 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
     }
 
 
-    public NeoGuildPlayer(NeoJukePro neoJukePro, NeoGuild neoGuild, JdaLink link) {
+    public NeoGuildPlayer(NeoJukePro neoJukePro, NeoGuild neoGuild) {
         this.neoJukePro = neoJukePro;
         this.neoGuild = neoGuild;
-        this.link = link;
-        player = this.link != null ? this.link.getPlayer() :
-                new LavaplayerPlayerWrapper(getNeoGuild().getAudioPlayerManager().createPlayer());
+        player = getNeoGuild().getAudioPlayerManager().createPlayer();
         player.addListener(this);
         trackProvider = new GuildTrackProvider(this);
     }
@@ -79,21 +74,13 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
     }
 
     public void joinChannel(VoiceChannel targetChannel) throws InsufficientPermissionException {
-        if (link != null) {
-            link.connect(targetChannel);
-        } else {
-            AudioManager audioManager = getNeoGuild().getJDAGuild().getAudioManager();
-            audioManager.openAudioConnection(targetChannel);
-        }
+        AudioManager audioManager = getNeoGuild().getJDAGuild().getAudioManager();
+        audioManager.openAudioConnection(targetChannel);
     }
 
     public void leaveChannel() {
-        if (link != null) {
-            link.disconnect();
-        } else {
-            AudioManager audioManager = getNeoGuild().getJDAGuild().getAudioManager();
-            audioManager.closeAudioConnection();
-        }
+        AudioManager audioManager = getNeoGuild().getJDAGuild().getAudioManager();
+        audioManager.closeAudioConnection();
     }
 
 
@@ -102,13 +89,13 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
             playingTrack = trackProvider.provideTrack();
             if (playingTrack != null) {
                 player.playTrack(playingTrack.getTrack());
-                player.seekTo(playingTrack.getStartPosition());
+                playingTrack.getTrack().setPosition(playingTrack.getStartPosition());
             }
         } else if (player.isPaused() && player.getPlayingTrack() == null) {
             playingTrack = playingTrack.makeClone(0);
             player.playTrack(playingTrack.getTrack());
-            if (playingTrack.getStartPosition() != 0)
-                player.seekTo(playingTrack.getStartPosition());
+            if (playingTrack.getStartPosition() != 0 && playingTrack.getTrack().isSeekable())
+                playingTrack.getTrack().setPosition(playingTrack.getStartPosition());
         }
         if (player.isPaused())
             player.setPaused(false);
@@ -120,8 +107,8 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
     public synchronized void play(LoadedTrackContext context) {
         if (playingTrack == null) {
             player.playTrack(context.getTrack());
-            if (context.getStartPosition() != 0)
-                player.seekTo(context.getStartPosition());
+            if (context.getStartPosition() != 0 && context.getTrack().isSeekable())
+                context.getTrack().setPosition(context.getStartPosition());
             playingTrack = context;
         } else {
             trackProvider.queue(context);
@@ -188,7 +175,7 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
     }
 
     public void seekTo(long position) {
-        player.seekTo(position);
+        player.getPlayingTrack().setPosition(position);
     }
 
 
@@ -213,33 +200,36 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
     }
 
     public long getTrackPosition() {
-        return player.getTrackPosition();
+        return player.getPlayingTrack().getPosition();
     }
 
     public AudioPlayerSendHandler getSendHandler() {
-        return link == null ? new AudioPlayerSendHandler(player) : null;
+        return new AudioPlayerSendHandler(player);
     }
 
+    @Deprecated
     public void destroy() {
-        if (link != null) {
-            stop();
-            player.removeListener(this);
-            link.destroy();
-        }
+        stop();
+        player.removeListener(this);
     }
 
     @Override
-    public void onPlayerPause(IPlayer player) {
+    public void onPlayerPause(AudioPlayer player) {
         getNeoGuild().sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.pause"));
     }
 
     @Override
-    public void onPlayerResume(IPlayer player) {
+    public void onPlayerResume(AudioPlayer player) {
         getNeoGuild().sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.resume"));
     }
 
     @Override
-    public synchronized void onTrackEnd(IPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+    public void onTrackStart(AudioPlayer player, AudioTrack track) {
+
+    }
+
+    @Override
+    public synchronized void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason == AudioTrackEndReason.FINISHED || endReason == AudioTrackEndReason.STOPPED) {
             if (endReason == AudioTrackEndReason.FINISHED
                     && playingTrack != null
@@ -277,5 +267,15 @@ public class NeoGuildPlayer extends PlayerEventListenerAdapter {
         } else {
             playingTrack = null;
         }
+    }
+
+    @Override
+    public void onTrackException(AudioPlayer player, AudioTrack track, Exception exception) {
+
+    }
+
+    @Override
+    public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
+
     }
 }

@@ -46,17 +46,6 @@ advanced:
   # It is recommended to disable this feature if you intend to run your application as a public bot for the masses.
   relatedVideoSearch: false            # Specifies whether to enable the related video search function.
 
-  useNodeServer: false                 # This setting enables load balancing to be used for audio transmission.
-
-  #nodesInfo:                          # Set the connection information of the node server used for load balancing.
-  #  - nodeName: "local"               # Specify a distinguished name to manage the node.
-  #    address: "ws://localhost:2333"  # Specify the address to connect to the node.
-  #    password: "node1Password"       # Set the password for the connection set in the node.
-  #
-  #  - nodeName: "network"
-  #    address: "ws://example.com:2333"
-  #    password: "node2Password"
-
 
   # --- --- --- --- #
   sentryDsn: ""

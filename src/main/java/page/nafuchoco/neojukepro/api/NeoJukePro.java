@@ -16,7 +16,6 @@
 
 package page.nafuchoco.neojukepro.api;
 
-import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
@@ -54,6 +53,4 @@ public interface NeoJukePro {
     ModuleManager getModuleManager();
 
     ShardManager getShardManager();
-
-    JdaLavalink getLavaLink();
 }

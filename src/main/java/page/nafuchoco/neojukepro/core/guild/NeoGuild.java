@@ -28,12 +28,10 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import lavalink.client.io.Link;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.*;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
-import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMemberRegistry;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
@@ -112,8 +110,7 @@ public class NeoGuild {
 
     public NeoGuildPlayer getAudioPlayer() {
         if (audioPlayer == null) {
-            audioPlayer = new NeoGuildPlayer(neoJukePro, this,
-                    getNeoJukePro().getLavaLink() != null ? getNeoJukePro().getLavaLink().getLink(getJDAGuild()) : null);
+            audioPlayer = new NeoGuildPlayer(neoJukePro, this);
             getJDAGuild().getAudioManager().setSendingHandler(audioPlayer.getSendHandler());
             audioPlayer.setVolume(getSettings().getPlayerOptions().getVolumeLevel());
         }
@@ -122,14 +119,8 @@ public class NeoGuild {
 
     public void destroyAudioPlayer() {
         if (audioPlayer != null) {
-            if (audioPlayer.getLink() == null) {
-                audioPlayer.stop();
-                audioPlayer.leaveChannel();
-            } else if (audioPlayer.getLink().getState() == Link.State.DESTROYED) {
-                sendMessageToLatest(MessageManager.getMessage(settings.getLang(), "player.destroyed"));
-            } else {
-                audioPlayer.destroy();
-            }
+            audioPlayer.stop();
+            audioPlayer.leaveChannel();
             audioPlayer = null;
         }
     }

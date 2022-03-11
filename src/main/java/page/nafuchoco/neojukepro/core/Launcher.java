@@ -18,7 +18,6 @@ package page.nafuchoco.neojukepro.core;
 
 import io.sentry.Sentry;
 import io.sentry.SentryOptions;
-import lavalink.client.io.jda.JdaLavalink;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -31,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
 import page.nafuchoco.neojukepro.core.config.DatabaseSection;
-import page.nafuchoco.neojukepro.core.config.LavalinkConfigSection;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.*;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyGuildUsersPermTable;
@@ -45,7 +43,6 @@ import page.nafuchoco.neojukepro.core.executors.guild.UserInfoCommand;
 import page.nafuchoco.neojukepro.core.executors.guild.UserPermCommand;
 import page.nafuchoco.neojukepro.core.executors.player.*;
 import page.nafuchoco.neojukepro.core.executors.system.*;
-import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildRegistry;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAPIClient;
 import page.nafuchoco.neojukepro.core.http.discord.DiscordAppInfo;
@@ -54,7 +51,6 @@ import page.nafuchoco.neojukepro.core.player.CustomSourceRegistry;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
@@ -76,7 +72,6 @@ public class Launcher implements NeoJukeLauncher {
 
     private DiscordAppInfo appInfo;
     private ShardManager shardManager;
-    private JdaLavalink lavalink;
 
     @Override
     public void launch() {
@@ -161,20 +156,6 @@ public class Launcher implements NeoJukeLauncher {
         moduleManager.loadAllModules();
 
         try {
-            if (config.getAdvancedConfig().isUseNodeServer() && !config.getAdvancedConfig().getNodesInfo().isEmpty()) {
-                lavalink =
-                        new JdaLavalink(new DiscordAPIClient().getBotApplicationInfo(config.getBasicConfig().getDiscordToken()).getID(),
-                                getShardsTotal(), this::getJdaFromId);
-                for (LavalinkConfigSection node : config.getAdvancedConfig().getNodesInfo())
-                    lavalink.addNode(node.getNodeName(), URI.create(node.getAddress()), node.getPassword());
-                shardManagerBuilder.addEventListeners(lavalink);
-                shardManagerBuilder.setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor());
-            }
-        } catch (IOException e) {
-            log.error(MessageManager.getMessage("system.node.connection.failed"), e);
-        }
-
-        try {
             log.info(MessageManager.getMessage("system.api.login"));
             shardManager = shardManagerBuilder.build();
             while (!shardManager.getStatus(0).equals(JDA.Status.CONNECTED))
@@ -215,10 +196,6 @@ public class Launcher implements NeoJukeLauncher {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Shutting down the system...");
             moduleManager.disableAllModules();
-            if (lavalink != null) {
-                guildRegistry.getNeoGuilds().forEach(NeoGuild::destroyAudioPlayer);
-                lavalink.shutdown();
-            }
             shardManager.shutdown();
             if (connector != null)
                 connector.close();
@@ -230,7 +207,6 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new HelpCommand("help", "h"), "Core", null);
 
         commandRegistry.registerCommand(new SystemCommand("system", "sinfo"), "Core", null);
-        commandRegistry.registerCommand(new NodesCommand("nodes", "node"), "Core", null);
         commandRegistry.registerCommand(new ModuleCommand("module", "mod"), "Core", null);
         if (BootOptions.isDebug())
             commandRegistry.registerCommand(new UpdateCommand("update"), "Core", null);
@@ -320,10 +296,5 @@ public class Launcher implements NeoJukeLauncher {
     @Override
     public ShardManager getShardManager() {
         return shardManager;
-    }
-
-    @Override
-    public JdaLavalink getLavaLink() {
-        return lavalink;
     }
 }
