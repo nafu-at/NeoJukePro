@@ -16,6 +16,9 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
+import lombok.extern.slf4j.Slf4j;
+import page.nafuchoco.neojukepro.core.CommandRegistrar;
+import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.module.NeoModule;
 
@@ -25,14 +28,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CommandRegistry {
+@Slf4j
+public class CommandRegistry extends CommandRegistrar {
     private final Map<String, CommandGroup> groups = new LinkedHashMap<>();
+
+    public CommandRegistry(NeoJukeLauncher launcher) {
+        super(launcher);
+    }
 
     public void registerCommand(CommandExecutor executor, NeoModule module) {
         registerCommand(executor, null, module);
     }
 
     public void registerCommand(CommandExecutor executor, String groupName, NeoModule module) {
+        log.debug("Register command: {}", executor.getName());
         for (CommandGroup g : groups.values()) {
             if (g.getCommands().contains(executor))
                 throw new IllegalArgumentException("Cannot register a command executor that has already been registered in another command group.");
@@ -40,6 +49,8 @@ public class CommandRegistry {
 
         CommandGroup group = groups.computeIfAbsent(groupName, key -> new CommandGroup(groupName));
         group.registerCommand(executor, module);
+
+        registerCommandToDiscord(executor);
     }
 
     public void removeCommand(String name, NeoModule module) {

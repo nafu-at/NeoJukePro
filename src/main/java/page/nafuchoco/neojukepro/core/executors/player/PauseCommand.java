@@ -26,18 +26,14 @@ public class PauseCommand extends CommandExecutor {
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
+    public String onInvoke(CommandContext context) {
         context.getNeoGuild().getAudioPlayer().setPaused(!context.getNeoGuild().getAudioPlayer().isPaused());
+        return null;
     }
 
     @Override
     public String getDescription() {
         return "Pauses the playing track.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

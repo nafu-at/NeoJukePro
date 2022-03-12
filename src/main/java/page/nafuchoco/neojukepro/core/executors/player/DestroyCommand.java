@@ -19,6 +19,10 @@ package page.nafuchoco.neojukepro.core.executors.player;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 
+/**
+ * @deprecated Lavalinkがなくなったのでこのコマンドも不要説が濃厚
+ */
+@Deprecated
 public class DestroyCommand extends CommandExecutor {
 
     public DestroyCommand(String name, String... aliases) {
@@ -26,18 +30,14 @@ public class DestroyCommand extends CommandExecutor {
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
+    public String onInvoke(CommandContext context) {
         context.getNeoGuild().destroyAudioPlayer();
+        return "Player destroyed";
     }
 
     @Override
     public String getDescription() {
         return "Destroy the player.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

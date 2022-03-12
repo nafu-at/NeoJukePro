@@ -16,46 +16,46 @@
 
 package page.nafuchoco.neojukepro.core.executors.system;
 
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.apache.commons.lang3.RandomStringUtils;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.CommandValueOption;
 import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
 public class ShutdownCommand extends CommandExecutor {
 
     public ShutdownCommand(String name, String... aliases) {
         super(name, aliases);
+
+        getOptions().add(new CommandValueOption(OptionType.STRING, "shutdown-key", "shutdownKey", false, false));
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
-        if (context.getArgs().length == 0) {
+    public String onInvoke(CommandContext context) {
+        if (context.getOptions().isEmpty()) {
             String pass = RandomStringUtils.randomAlphanumeric(6);
             context.getNeoGuild().getGuildTempRegistry().registerTemp("shutdownKey", pass);
-            context.getChannel().sendMessage(MessageUtil.format(
+            return MessageUtil.format(
                     MessageManager.getMessage(
                             context.getNeoGuild().getSettings().getLang(),
-                            "command.shutdown.key"),
-                    pass)).queue();
+                            "command.shutdown.key"), pass);
         } else {
-            if (context.getArgs()[0].equals(context.getNeoGuild().getGuildTempRegistry().deleteTemp("shutdownKey")))
+            if (context.getOptions().get("shutdownKey").getValue().equals(context.getNeoGuild().getGuildTempRegistry().deleteTemp("shutdownKey")))
                 Runtime.getRuntime().exit(0);
             else
-                context.getChannel().sendMessage(MessageManager.getMessage(
+                return MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.shutdown.key.incorrect")).queue();
+                        "command.shutdown.key.incorrect");
         }
+
+        return null;
     }
 
     @Override
     public String getDescription() {
         return "Exit the system.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

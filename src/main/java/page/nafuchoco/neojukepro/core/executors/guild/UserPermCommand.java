@@ -16,9 +16,12 @@
 
 package page.nafuchoco.neojukepro.core.executors.guild;
 
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.CommandValueOption;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
 import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 
@@ -26,46 +29,37 @@ public class UserPermCommand extends CommandExecutor {
 
     public UserPermCommand(String name, String... aliases) {
         super(name, aliases);
+
+        getOptions().add(new CommandValueOption(OptionType.MENTIONABLE, "member", "Members to change permissions", true, false));
+        getOptions().add(new CommandValueOption(OptionType.INTEGER, "permission", "To Change permissions", true, false));
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
-        if (context.getArgs().length != 0 && !context.getMentioned().isEmpty()) {
-            try {
-                int permissions = Integer.parseInt(context.getArgs()[0]);
-                if (permissions >= 0 && permissions <= 255) {
-                    context.getMessage().getMentionedMembers().forEach(member -> {
-                        NeoGuildMember guildMember = context.getNeoGuild().getGuildMemberRegistry().getNeoGuildMember(member);
-                        guildMember.setUserPermission(permissions);
-                        context.getChannel().sendMessage(
-                                MessageUtil.format(
-                                        MessageManager.getMessage(
-                                                context.getNeoGuild().getSettings().getLang(),
-                                                "command.userperm.set"),
-                                        member.getEffectiveName(),
-                                        permissions)).queue();
-                    });
-                } else {
-                    context.getChannel().sendMessage(MessageManager.getMessage(
-                            context.getNeoGuild().getSettings().getLang(),
-                            "command.userperm.invalid")).queue();
-                }
-            } catch (NumberFormatException e) {
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.userperm.invalid")).queue();
+    public String onInvoke(CommandContext context) {
+        int permissions = (int) context.getOptions().get("permission").getValue();
+        if (permissions >= 0 && permissions <= 255) {
+            if (context.getOptions().get("member").getValue() instanceof Member member) {
+                NeoGuildMember guildMember = context.getNeoGuild().getGuildMemberRegistry().getNeoGuildMember(member);
+                guildMember.setUserPermission(permissions);
+                return MessageUtil.format(
+                        MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.userperm.set"),
+                        member.getEffectiveName(),
+                        permissions);
             }
+        } else {
+            return MessageManager.getMessage(
+                    context.getNeoGuild().getSettings().getLang(),
+                    "command.userperm.invalid");
         }
+
+        return null;
     }
 
     @Override
     public String getDescription() {
         return "Sets the user's command execution permissions.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

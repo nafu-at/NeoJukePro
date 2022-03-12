@@ -11,7 +11,7 @@ NeoJukeProはSimpleJukeの正統な後継として開発された新しいDiscor
 ## 動作要項
 
 - [x] Windows, MacOS, Linuxなどの一般的なPC用OS
-- [x] Java11以降の実行環境
+- [x] Java16以降の実行環境
 - [x] MariaDB 5.5以降 若しくは MySQL 5.5以降
 - [x] Discordアカウント
     + [x] バイパスモード以外ではServer Members Intentが有効になっている必要があります。

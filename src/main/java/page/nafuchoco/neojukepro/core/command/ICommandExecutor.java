@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NAFU_at.
+ * Copyright 2022 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,40 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 public interface ICommandExecutor {
     /**
      * @return Name of the command executor
      */
+    @NotNull
     String getName();
 
     /**
      * @return Command Execuator aliases
      */
+    @NotNull
     List<String> getAliases();
 
     /**
      * Execute the command.
+     * The result of the command execution can be returned as text.
+     * To return the result in any other format, use {@link CommandContext#getHook()}.
      *
      * @param context The command context to use at runtime
+     * @return The result of the command execution can be returned as text.
      */
-    void onInvoke(CommandContext context);
+    @Nullable
+    String onInvoke(CommandContext context);
 
     /**
      * @return Description of the command
      */
+    @NotNull
     String getDescription();
-
-    /**
-     * @return Command Help
-     */
-    String getHelp();
 
     /**
      * @return Minimum permissions required to run this command

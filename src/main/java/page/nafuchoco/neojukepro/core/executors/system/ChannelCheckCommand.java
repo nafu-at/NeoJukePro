@@ -18,25 +18,30 @@ package page.nafuchoco.neojukepro.core.executors.system;
 
 import lombok.val;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.CommandValueOption;
 import page.nafuchoco.neojukepro.core.utils.ChannelPermissionUtil;
 
 public class ChannelCheckCommand extends CommandExecutor {
 
     public ChannelCheckCommand(String name, String... aliases) {
         super(name, aliases);
+
+        getOptions().add(new CommandValueOption(OptionType.MENTIONABLE, "member", "Select the user for viewing the channel list.", false, false));
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
-        if (context.getMentioned().isEmpty()) {
-            context.getChannel().sendMessage(buildChannelList(context.getNeoGuild().getJDAGuild().getSelfMember())).queue();
+    public String onInvoke(CommandContext context) {
+        if (context.getOptions().get("member") == null) {
+            return buildChannelList(context.getNeoGuild().getJDAGuild().getSelfMember());
         } else {
-            for (Member member : context.getMentioned()) {
-                context.getChannel().sendMessage(buildChannelList(member)).queue();
-            }
+            if (context.getOptions().get("member").getValue() instanceof Member member)
+                return buildChannelList(member);
         }
+
+        return null;
     }
 
     private String getIndentSpace(int indentLevel) {
@@ -92,11 +97,6 @@ public class ChannelCheckCommand extends CommandExecutor {
     @Override
     public String getDescription() {
         return "Displays a list of channels that members can access.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

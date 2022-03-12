@@ -32,7 +32,7 @@ public class JoinCommand extends CommandExecutor {
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
+    public String onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         VoiceChannel targetChannel = null;
         if (context.getInvoker().getJDAMember().getVoiceState().getChannel().getType() == ChannelType.VOICE)
@@ -40,32 +40,27 @@ public class JoinCommand extends CommandExecutor {
 
         try {
             if (targetChannel == null)
-                context.getChannel().sendMessage(MessageManager.getMessage(
+                return MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.join.before")).queue();
+                        "command.join.before");
             else if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, context.getNeoGuild().getJDAGuild().getSelfMember()))
-                context.getChannel().sendMessage(
-                        MessageManager.getMessage(
-                                context.getNeoGuild().getSettings().getLang(),
-                                "command.channel.permission")).queue();
+                return MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.channel.permission");
             else
                 audioPlayer.joinChannel(targetChannel);
         } catch (InsufficientPermissionException e) {
-            context.getChannel().sendMessage(
-                    MessageManager.getMessage(
-                            context.getNeoGuild().getSettings().getLang(),
-                            "command.channel.permission")).queue();
+            return MessageManager.getMessage(
+                    context.getNeoGuild().getSettings().getLang(),
+                    "command.channel.permission");
         }
+
+        return null;
     }
 
     @Override
     public String getDescription() {
         return "Connect the bot to the voice channel.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

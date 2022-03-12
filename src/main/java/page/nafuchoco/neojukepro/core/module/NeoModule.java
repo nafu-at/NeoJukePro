@@ -81,16 +81,17 @@ public abstract class NeoModule implements Module {
     }
 
     @Override
-    public void registerCommand(String groupName, CommandExecutor executor) {
+    public final void registerCommand(String groupName, CommandExecutor executor) {
         try {
             launcher.getCommandRegistry().registerCommand(executor, groupName, this);
+            launcher.queueCommandRegister();
         } catch (NullPointerException e) {
             throw new IllegalStateException("This method is not available in \"onLoad\".");
         }
     }
 
     @Override
-    public void removeCommand(CommandExecutor executor) {
+    public final void removeCommand(CommandExecutor executor) {
         try {
             launcher.getCommandRegistry().removeCommand(executor, this);
         } catch (NullPointerException e) {
@@ -99,7 +100,7 @@ public abstract class NeoModule implements Module {
     }
 
     @Override
-    public void removeCommands() {
+    public final void removeCommands() {
         try {
             launcher.getCommandRegistry().removeCommands(this);
         } catch (NullPointerException e) {

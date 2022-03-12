@@ -27,20 +27,17 @@ public class LeaveCommand extends CommandExecutor {
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
+    public String onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         audioPlayer.setPaused(true);
         audioPlayer.leaveChannel();
+
+        return null;
     }
 
     @Override
     public String getDescription() {
         return "Exits the Bot from the voice channel.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

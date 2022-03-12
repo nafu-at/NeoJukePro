@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NAFU_at.
+ * Copyright 2022 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core.executors.player;
+package page.nafuchoco.neojukepro.core.command;
 
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 
-public class RePlayCommand extends CommandExecutor {
+public abstract class SubCommandOption extends CommandExecutor implements CommandOption {
 
-    public RePlayCommand(String name, String... aliases) {
+    public SubCommandOption(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
-        context.getNeoGuild().getAudioPlayer().replay();
-        return null;
+    public final OptionType optionType() {
+        return OptionType.SUB_COMMAND;
     }
 
     @Override
-    public String getDescription() {
-        return "Play the currently playing track again.";
+    public final String optionName() {
+        return getName();
     }
 
     @Override
-    public int getRequiredPerm() {
-        return 0;
+    public final String optionDescription() {
+        return getDescription();
     }
 }

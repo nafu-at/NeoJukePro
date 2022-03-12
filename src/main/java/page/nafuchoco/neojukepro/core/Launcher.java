@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import page.nafuchoco.neojukepro.core.command.CommandRegistry;
+import page.nafuchoco.neojukepro.core.command.SlashCommandEventHandler;
 import page.nafuchoco.neojukepro.core.config.DatabaseSection;
 import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 import page.nafuchoco.neojukepro.core.database.*;
@@ -36,10 +37,7 @@ import page.nafuchoco.neojukepro.core.database.dummy.DummyGuildUsersPermTable;
 import page.nafuchoco.neojukepro.core.database.dummy.DummyNeoGuildSettingsTable;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildLeaveEventHandler;
 import page.nafuchoco.neojukepro.core.discord.handler.GuildVoiceEventHandler;
-import page.nafuchoco.neojukepro.core.discord.handler.MessageReceivedEventHandler;
 import page.nafuchoco.neojukepro.core.executors.guild.SettingsCommand;
-import page.nafuchoco.neojukepro.core.executors.guild.ThreadViewCommand;
-import page.nafuchoco.neojukepro.core.executors.guild.UserInfoCommand;
 import page.nafuchoco.neojukepro.core.executors.guild.UserPermCommand;
 import page.nafuchoco.neojukepro.core.executors.player.*;
 import page.nafuchoco.neojukepro.core.executors.system.*;
@@ -138,7 +136,7 @@ public class Launcher implements NeoJukeLauncher {
         }
 
         customSourceRegistry = new CustomSourceRegistry();
-        commandRegistry = new CommandRegistry();
+        commandRegistry = new CommandRegistry(this);
         var intents = EnumSet.allOf(GatewayIntent.class);
         intents.remove(GatewayIntent.GUILD_PRESENCES);
         if (BootOptions.isBypass())
@@ -146,7 +144,7 @@ public class Launcher implements NeoJukeLauncher {
         var shardManagerBuilder =
                 DefaultShardManagerBuilder.create(config.getBasicConfig().getDiscordToken(), intents);
         shardManagerBuilder.disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS);
-        shardManagerBuilder.addEventListeners(new MessageReceivedEventHandler(this, commandRegistry));
+        shardManagerBuilder.addEventListeners(new SlashCommandEventHandler(this, commandRegistry));
         shardManagerBuilder.addEventListeners(new GuildVoiceEventHandler(this));
         shardManagerBuilder.addEventListeners(new GuildLeaveEventHandler(this));
 
@@ -204,22 +202,15 @@ public class Launcher implements NeoJukeLauncher {
     }
 
     private void initCommand() {
-        commandRegistry.registerCommand(new HelpCommand("help", "h"), "Core", null);
-
         commandRegistry.registerCommand(new SystemCommand("system", "sinfo"), "Core", null);
         commandRegistry.registerCommand(new ModuleCommand("module", "mod"), "Core", null);
-        if (BootOptions.isDebug())
-            commandRegistry.registerCommand(new UpdateCommand("update"), "Core", null);
         commandRegistry.registerCommand(new ShutdownCommand("shutdown", "exit"), "Core", null);
 
         commandRegistry.registerCommand(new SettingsCommand("settings", "set"), "Admin", null);
         commandRegistry.registerCommand(new StatusCommand("status", "stats"), "Admin", null);
 
         commandRegistry.registerCommand(new UserPermCommand("permission", "perm"), "Moderate", null);
-        if (!BootOptions.isBypass())
-            commandRegistry.registerCommand(new UserInfoCommand("userinfo", "uinfo"), "Moderate", null);
         commandRegistry.registerCommand(new ChannelCheckCommand("channelcheck", "check"), "Moderate", null);
-        commandRegistry.registerCommand(new DeleteCommand("delete", "clean"), "Moderate", null);
 
         commandRegistry.registerCommand(new JoinCommand("join", "j"), "Music", null);
         commandRegistry.registerCommand(new LeaveCommand("leave", "lv"), "Music", null);
@@ -237,8 +228,7 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.registerCommand(new RepeatCommand("repeat", "rep"), "Music", null);
         commandRegistry.registerCommand(new ShuffleCommand("shuffle", "sh"), "Music", null);
         commandRegistry.registerCommand(new DestroyCommand("destroy"), "Music", null);
-
-        commandRegistry.registerCommand(new ThreadViewCommand("threads"), "Utils", null);
+        commandRegistry.queue();
     }
 
     private JDA getJdaFromId(int shardId) {
@@ -291,6 +281,11 @@ public class Launcher implements NeoJukeLauncher {
     @Override
     public CommandRegistry getCommandRegistry() {
         return commandRegistry;
+    }
+
+    @Override
+    public void queueCommandRegister() {
+        getCommandRegistry().queue();
     }
 
     @Override

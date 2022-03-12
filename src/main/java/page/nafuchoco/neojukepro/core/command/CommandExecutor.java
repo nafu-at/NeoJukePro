@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NAFU_at.
+ * Copyright 2022 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,14 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class CommandExecutor implements ICommandExecutor {
+    private final List<CommandOption> options = new ArrayList<>();
+
     private final String name;
     private final List<String> aliases;
 
@@ -36,6 +40,24 @@ public abstract class CommandExecutor implements ICommandExecutor {
     @Override
     public List<String> getAliases() {
         return aliases;
+    }
+
+    public List<CommandOption> getOptions() {
+        return options;
+    }
+
+    public List<CommandValueOption> getValueOptions() {
+        return options.stream()
+                .filter(CommandValueOption.class::isInstance)
+                .map(CommandValueOption.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    public List<SubCommandOption> getSubCommands() {
+        return options.stream()
+                .filter(SubCommandOption.class::isInstance)
+                .map(SubCommandOption.class::cast)
+                .collect(Collectors.toList());
     }
 
     public enum CommandExecutorPermission {

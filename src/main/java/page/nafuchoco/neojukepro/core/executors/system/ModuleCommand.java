@@ -16,38 +16,47 @@
 
 package page.nafuchoco.neojukepro.core.executors.system;
 
-import de.vandermeer.asciitable.AsciiTable;
-import de.vandermeer.asciithemes.TA_GridThemes;
-import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import page.nafuchoco.neojukepro.api.NeoJukePro;
-import page.nafuchoco.neojukepro.core.MessageManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.module.ModuleDescription;
-import page.nafuchoco.neojukepro.core.module.NeoModule;
 
-import java.io.File;
-import java.util.List;
 import java.util.regex.Pattern;
 
 @Slf4j
 public class ModuleCommand extends CommandExecutor {
     private static final Pattern NOMBER_REGEX = Pattern.compile("^\\d+$");
 
+    // TODO: 2022/03/12 後々
+
     public ModuleCommand(String name, String... aliases) {
         super(name, aliases);
     }
 
     @Override
+    public @Nullable String onInvoke(CommandContext context) {
+        return null;
+    }
+
+    @Override
+    public @NotNull String getDescription() {
+        return "null";
+    }
+
+    @Override
+    public int getRequiredPerm() {
+        return 0;
+    }
+/*
+    @Override
     public void onInvoke(CommandContext context) {
         NeoJukePro neoJukePro = context.getNeoJukePro();
-        if (context.getArgs().length == 0) {
+        if (context.getOptions().length == 0) {
             context.getChannel().sendMessage(renderModuleList(neoJukePro.getModuleManager().getModules(), 1)).queue();
-        } else switch (context.getArgs()[0].toLowerCase()) {
+        } else switch (context.getOptions()[0].toLowerCase()) {
             case "load":
-                if (neoJukePro.getModuleManager().loadModule(new File("modules", context.getArgs()[1])))
+                if (neoJukePro.getModuleManager().loadModule(new File("modules", context.getOptions()[1])))
                     context.getChannel().sendMessage(MessageManager.getMessage(
                             context.getNeoGuild().getSettings().getLang(),
                             "command.module.load.success")).queue();
@@ -58,15 +67,15 @@ public class ModuleCommand extends CommandExecutor {
                 break;
 
             case "unload":
-                switch (context.getArgs()[1].toLowerCase()) {
+                switch (context.getOptions()[1].toLowerCase()) {
                     case "all":
                         neoJukePro.getModuleManager().unloadAllModules();
                         break;
 
                     default:
                         try {
-                            neoJukePro.getModuleManager().disableModule(context.getArgs()[1]);
-                            neoJukePro.getModuleManager().unloadModule(context.getArgs()[1]);
+                            neoJukePro.getModuleManager().disableModule(context.getOptions()[1]);
+                            neoJukePro.getModuleManager().unloadModule(context.getOptions()[1]);
                         } catch (IllegalArgumentException e) {
                             context.getChannel().sendMessage(MessageManager.getMessage(
                                     context.getNeoGuild().getSettings().getLang(),
@@ -77,14 +86,14 @@ public class ModuleCommand extends CommandExecutor {
                 break;
 
             case "enable":
-                switch (context.getArgs()[1].toLowerCase()) {
+                switch (context.getOptions()[1].toLowerCase()) {
                     case "all":
                         neoJukePro.getModuleManager().enableAllModules();
                         break;
 
                     default:
                         try {
-                            neoJukePro.getModuleManager().enableModule(context.getArgs()[1]);
+                            neoJukePro.getModuleManager().enableModule(context.getOptions()[1]);
                         } catch (IllegalArgumentException e) {
                             context.getChannel().sendMessage(MessageManager.getMessage(
                                     context.getNeoGuild().getSettings().getLang(),
@@ -95,14 +104,14 @@ public class ModuleCommand extends CommandExecutor {
                 break;
 
             case "disable":
-                switch (context.getArgs()[1].toLowerCase()) {
+                switch (context.getOptions()[1].toLowerCase()) {
                     case "all":
                         neoJukePro.getModuleManager().disableAllModules();
                         break;
 
                     default:
                         try {
-                            neoJukePro.getModuleManager().disableModule(context.getArgs()[1]);
+                            neoJukePro.getModuleManager().disableModule(context.getOptions()[1]);
                         } catch (IllegalArgumentException e) {
                             context.getChannel().sendMessage(MessageManager.getMessage(
                                     context.getNeoGuild().getSettings().getLang(),
@@ -113,11 +122,11 @@ public class ModuleCommand extends CommandExecutor {
                 break;
 
             default:
-                if (NOMBER_REGEX.matcher(context.getArgs()[0]).find()) {
+                if (NOMBER_REGEX.matcher(context.getOptions()[0]).find()) {
                     context.getChannel().sendMessage(
-                            renderModuleList(neoJukePro.getModuleManager().getModules(), Integer.parseInt(context.getArgs()[0]))).queue();
+                            renderModuleList(neoJukePro.getModuleManager().getModules(), Integer.parseInt(context.getOptions()[0]))).queue();
                 } else {
-                    NeoModule module = neoJukePro.getModuleManager().getModule(context.getArgs()[0]);
+                    NeoModule module = neoJukePro.getModuleManager().getModule(context.getOptions()[0]);
                     if (module == null) {
                         context.getChannel().sendMessage(MessageManager.getMessage(
                                 context.getNeoGuild().getSettings().getLang(),
@@ -211,4 +220,6 @@ public class ModuleCommand extends CommandExecutor {
     public int getRequiredPerm() {
         return 254;
     }
+
+ */
 }

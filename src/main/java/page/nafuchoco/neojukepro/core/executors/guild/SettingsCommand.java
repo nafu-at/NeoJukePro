@@ -17,10 +17,12 @@
 package page.nafuchoco.neojukepro.core.executors.guild;
 
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.apache.commons.lang3.BooleanUtils;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.CommandValueOption;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
 @Slf4j
@@ -28,81 +30,60 @@ public class SettingsCommand extends CommandExecutor {
 
     public SettingsCommand(String name, String... aliases) {
         super(name, aliases);
+
+        getOptions().add(new CommandValueOption(OptionType.BOOLEAN,
+                "jukebox",
+                "Enables or disables the ability to automatically play related videos in succession.",
+                false,
+                false));
+        getOptions().add(new CommandValueOption(OptionType.STRING,
+                "lang",
+                "Sets the language of messages displayed by the bot.",
+                false,
+                false));
+        getOptions().add(new CommandValueOption(OptionType.STRING,
+                "enable-source",
+                "Enables disabled playback sources.",
+                false,
+                false));
+        getOptions().add(new CommandValueOption(OptionType.STRING,
+                "disable-source",
+                "Disables an enabled playback source.",
+                false,
+                false));
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
-        if (context.getArgs().length < 2) {
-            context.getChannel().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
-        } else switch (context.getArgs()[0]) {
-            case "prefix":
-                if (context.getArgs()[1].equals("default"))
-                    context.getNeoGuild().getSettings().setCommandPrefix(context.getNeoJukePro().getConfig().getBasicConfig().getPrefix());
-                else
-                    context.getNeoGuild().getSettings().setCommandPrefix(context.getArgs()[1]);
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.set.prefix.set")).queue();
-                break;
+    public String onInvoke(CommandContext context) {
+        if (context.getOptions().isEmpty()) {
+            return getGuildSettings(context.getNeoGuild());
+        } else {
+            context.getOptions().values().forEach(option -> {
+                switch (option.optionName()) {
+                    case "jukebox":
+                        context.getNeoGuild().getSettings().setJukeboxMode(BooleanUtils.toBoolean((Boolean) option.getValue()));
+                        break;
 
-            case "robot":
-                context.getNeoGuild().getSettings().setRobotMode(BooleanUtils.toBoolean(context.getArgs()[1]));
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.set.robot.set")).queue();
-                break;
+                    case "lang":
+                        context.getNeoGuild().getSettings().setLang((String) option.getValue());
+                        break;
 
-            case "jukebox":
-                context.getNeoGuild().getSettings().setJukeboxMode(BooleanUtils.toBoolean(context.getArgs()[1]));
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.set.autoplay.set")).queue();
-                break;
+                    case "enable-source":
+                        context.getNeoGuild().getSettings().enableSource((String) option.getValue());
+                        break;
 
-            case "lang":
-                context.getNeoGuild().getSettings().setLang(context.getArgs()[1]);
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.set.lang.set")).queue();
-                break;
+                    case "disable-source":
+                        context.getNeoGuild().getSettings().disableSource((String) option.getValue());
+                        break;
 
-            case "enableSource":
-                context.getNeoGuild().getSettings().enableSource(context.getArgs()[1]);
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.set.source.enable")).queue();
-                break;
+                    default:
+                        context.getHook().sendMessage(getGuildSettings(context.getNeoGuild())).setEphemeral(true).queue();
+                        break;
 
-            case "disableSource":
-                context.getNeoGuild().getSettings().disableSource(context.getArgs()[1]);
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.set.source.disable")).queue();
-                break;
-
-            case "enableCommandGroup":
-                context.getNeoGuild().getSettings().enableCommandGroup(
-                        context.getNeoJukePro().getCommandRegistry().getCommandGroup(context.getArgs()[1])
-                );
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.set.commandgroup.enable")).queue();
-                break;
-
-            case "disableCommandGroup":
-                context.getNeoGuild().getSettings().disableCommandGroup(
-                        context.getNeoJukePro().getCommandRegistry().getCommandGroup(context.getArgs()[1])
-                );
-                context.getChannel().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.set.commandgroup.disable")).queue();
-                break;
-
-            default:
-                context.getChannel().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
-                break;
-
+                }
+            });
         }
+        return null;
     }
 
     private String getGuildSettings(NeoGuild neoGuild) {
@@ -124,11 +105,6 @@ public class SettingsCommand extends CommandExecutor {
     @Override
     public String getDescription() {
         return "Change the guild-specific settings.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

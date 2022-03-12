@@ -69,7 +69,7 @@ public class ExceptionUtil {
             MDC.put("GuildId", guild.getJDAGuild().getId());
             if (context != null) {
                 MDC.put("CommandExecutor", context.getCommand().getName());
-                MDC.put("CommandArgs", context.getArgs().toString());
+                MDC.put("CommandArgs", context.getOptions().toString());
             }
             log.error(sb.toString(), throwable);
         }

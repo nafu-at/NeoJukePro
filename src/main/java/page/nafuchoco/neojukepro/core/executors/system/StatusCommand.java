@@ -30,7 +30,7 @@ public class StatusCommand extends CommandExecutor {
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
+    public String onInvoke(CommandContext context) {
         NeoGuildPlayerOptions playerOptions = context.getNeoGuild().getSettings().getPlayerOptions();
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         val builder = new StringBuilder(MessageManager.getMessage(
@@ -44,17 +44,13 @@ public class StatusCommand extends CommandExecutor {
         builder.append("Shuffle: ").append(playerOptions.isShuffle()).append("\n");
         builder.append("Repeat Mode: ").append(playerOptions.getRepeatMode()).append("\n");
         builder.append("```");
-        context.getChannel().sendMessage(builder.toString()).queue();
+
+        return builder.toString();
     }
 
     @Override
     public String getDescription() {
         return "Displays the current state of the player.";
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override

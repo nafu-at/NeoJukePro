@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NAFU_at.
+ * Copyright 2022 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@ package page.nafuchoco.neojukepro.core.command;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import page.nafuchoco.neojukepro.api.NeoJukePro;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
 
-import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @ToString
@@ -36,12 +35,12 @@ public class CommandContext {
     private final NeoGuild neoGuild;
     private final TextChannel channel;
     private final NeoGuildMember invoker;
-    private final Message message;
+    private final InteractionHook hook;
 
     private final String trigger;
-    private final String[] args;
-    private final List<Member> mentioned;
+    private final Map<String, AssignedCommandValueOption> options;
     private final CommandExecutor command;
+    private final CommandExecutor subCommand;
 
     public NeoJukePro getNeoJukePro() {
         return neoJukePro;
@@ -71,10 +70,11 @@ public class CommandContext {
     }
 
     /**
-     * @return Received message
+     * @return
+     * @since v3.0.0
      */
-    public Message getMessage() {
-        return message;
+    public InteractionHook getHook() {
+        return hook;
     }
 
     /**
@@ -86,17 +86,10 @@ public class CommandContext {
 
     /**
      * @return Specified options
+     * @since v3.0.0
      */
-    public String[] getArgs() {
-        return args;
-    }
-
-    /**
-     * @return List of Mentioned Members
-     * @since v2.0
-     */
-    public List<Member> getMentioned() {
-        return mentioned;
+    public Map<String, AssignedCommandValueOption> getOptions() {
+        return options;
     }
 
     /**
@@ -104,5 +97,13 @@ public class CommandContext {
      */
     public CommandExecutor getCommand() {
         return command;
+    }
+
+    /**
+     * @return
+     * @since v3.0.0
+     */
+    public CommandExecutor getSubCommand() {
+        return subCommand;
     }
 }

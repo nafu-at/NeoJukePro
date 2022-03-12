@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NAFU_at.
+ * Copyright 2022 NAFU_at.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package page.nafuchoco.neojukepro.core;
+package page.nafuchoco.neojukepro.core.command;
 
-import page.nafuchoco.neojukepro.api.NeoJukePro;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 
-public interface NeoJukeLauncher extends NeoJukePro {
+public interface CommandOption {
 
-    void queueCommandRegister();
+    OptionType optionType();
 
-    void launch();
+    String optionName();
+
+    String optionDescription();
 }

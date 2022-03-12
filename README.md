@@ -11,7 +11,7 @@ We rebuilt it from scratch to make it simpler, clearer, more functional, and mor
 ## Operation requirements
 
 - [x] Windows, MacOS, Linux, and other common PC operating systems.
-- [x] Java11 or later execution environment.
+- [x] Java16 or later execution environment.
 - [x] MariaDB 5.5 or later or MySQL 5.5 or later.
 - [x] Discord account.
     + [x] Server Members Intent must be enabled except in bypass mode.

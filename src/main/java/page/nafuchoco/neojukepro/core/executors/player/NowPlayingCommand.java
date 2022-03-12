@@ -18,10 +18,13 @@ package page.nafuchoco.neojukepro.core.executors.player;
 
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.SubCommandOption;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
 import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
@@ -35,7 +38,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class NowPlayingCommand extends CommandExecutor {
-    private static final YouTubeAPIClient client;
+    private static final YouTubeAPIClient YOUTUBE_CLIENT;
 
     static {
         YouTubeAPIClient apiClient;
@@ -44,90 +47,39 @@ public class NowPlayingCommand extends CommandExecutor {
         } catch (IllegalArgumentException e) {
             apiClient = null;
         }
-        client = apiClient;
+        YOUTUBE_CLIENT = apiClient;
     }
 
     public NowPlayingCommand(String name, String... aliases) {
         super(name, aliases);
+        
+        getOptions().add(new ThumbnailSubCommand("thumbnail", "th"));
+        getOptions().add(new TimeSubCommand("time", "t"));
     }
 
     @Override
-    public void onInvoke(CommandContext context) {
+    public String onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         if (audioPlayer.getPlayingTrack() != null) {
             LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
             if (trackContext != null) {
-                AudioTrack audioTrack = trackContext.getTrack();
-                if (context.getArgs().length == 0) {
-                    try {
-                        context.getChannel().sendMessageEmbeds(TrackEmbedUtil.getTrackEmbed(audioPlayer)).queue();
-                    } catch (IOException e) {
-                        ExceptionUtil.sendStackTrace(
-                                context.getNeoGuild(),
-                                e,
-                                MessageManager.getMessage(
-                                        context.getNeoGuild().getSettings().getLang(),
-                                        "command.nowplay.failed"));
-                    }
-                } else switch (context.getArgs()[0]) {
-                    case "thumbnail":
-                    case "th":
-                        if (audioTrack instanceof YoutubeAudioTrack) {
-                            try {
-                                InputStream thumbnail = getThumbnailStream(audioTrack.getIdentifier());
-                                if (thumbnail != null) {
-                                    context.getChannel().sendMessage(MessageManager.getMessage(
-                                            context.getNeoGuild().getSettings().getLang(),
-                                            "command.nowplay.getthumbnail")).queue();
-                                    context.getChannel().sendFile(thumbnail, "thumbnail.jpg").queue();
-                                }
-                            } catch (IOException e) {
-                                ExceptionUtil.sendStackTrace(
-                                        context.getNeoGuild(),
-                                        e,
-                                        MessageManager.getMessage(
-                                                context.getNeoGuild().getSettings().getLang(),
-                                                "command.nowplay.failed"));
-                            }
-                        } else {
-                            context.getChannel().sendMessage(MessageManager.getMessage(
+                try {
+                    context.getHook().sendMessageEmbeds(TrackEmbedUtil.getTrackEmbed(audioPlayer)).queue();
+                } catch (IOException e) {
+                    ExceptionUtil.sendStackTrace(
+                            context.getNeoGuild(),
+                            e,
+                            MessageManager.getMessage(
                                     context.getNeoGuild().getSettings().getLang(),
-                                    "command.nowplay.nosupport")).queue();
-                        }
-                        break;
-
-                    case "time":
-                    case "t":
-                        context.getChannel().sendMessage(
-                                MessageUtil.format(MessageManager.getMessage(
-                                                context.getNeoGuild().getSettings().getLang(),
-                                                "command.list.playing"),
-                                        audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n" +
-                                        MessageUtil.format(MessageManager.getMessage(
-                                                        context.getNeoGuild().getSettings().getLang(),
-                                                        "command.nowplay.currenttime"),
-                                                MessageUtil.formatTime(audioPlayer.getTrackPosition()),
-                                                MessageUtil.formatTime(audioTrack.getDuration() - audioPlayer.getTrackPosition()))).queue();
-                        break;
-
-                    default:
-                        break;
+                                    "command.nowplay.failed"));
                 }
             }
         } else {
-            context.getChannel().sendMessage(MessageManager.getMessage(
+            context.getHook().sendMessage(MessageManager.getMessage(
                     context.getNeoGuild().getSettings().getLang(),
                     "command.nowplay.nothing")).queue();
         }
-    }
-
-    private InputStream getThumbnailStream(String identifier) throws IOException {
-        if (client == null)
-            return null;
-
-        YouTubeObjectItem youtubeVideo =
-                client.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_VIDEO, identifier).getItems()[0];
-        return new URL(youtubeVideo.getSnippet().getThumbnails().getHigh().getURL()).openStream();
+        return null;
     }
 
     @Override
@@ -136,12 +88,110 @@ public class NowPlayingCommand extends CommandExecutor {
     }
 
     @Override
-    public String getHelp() {
-        return null;
-    }
-
-    @Override
     public int getRequiredPerm() {
         return 0;
+    }
+
+
+    public static class ThumbnailSubCommand extends SubCommandOption {
+
+        public ThumbnailSubCommand(String name, String... aliases) {
+            super(name, aliases);
+        }
+
+        @Override
+        public @Nullable String onInvoke(CommandContext context) {
+            NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+            if (audioPlayer.getPlayingTrack() != null) {
+                LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
+                if (trackContext != null) {
+                    AudioTrack audioTrack = trackContext.getTrack();
+                    if (audioTrack instanceof YoutubeAudioTrack) {
+                        try {
+                            InputStream thumbnail = getThumbnailStream(audioTrack.getIdentifier());
+                            if (thumbnail != null) {
+                                context.getHook().sendMessage(MessageManager.getMessage(
+                                                context.getNeoGuild().getSettings().getLang(),
+                                                "command.nowplay.getthumbnail"))
+                                        .addFile(thumbnail, "thumbnail.jpg")
+                                        .queue();
+                                return null;
+                            }
+                        } catch (IOException e) {
+                            ExceptionUtil.sendStackTrace(
+                                    context.getNeoGuild(),
+                                    e,
+                                    MessageManager.getMessage(
+                                            context.getNeoGuild().getSettings().getLang(),
+                                            "command.nowplay.failed"));
+                        }
+                    } else {
+                        return MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.nowplay.nosupport");
+                    }
+                }
+            }
+            return null;
+        }
+
+        private InputStream getThumbnailStream(String identifier) throws IOException {
+            if (YOUTUBE_CLIENT == null)
+                return null;
+
+            YouTubeObjectItem youtubeVideo =
+                    YOUTUBE_CLIENT.getYoutubeObjects(YouTubeAPIClient.YOUTUBE_VIDEO, identifier).getItems()[0];
+            return new URL(youtubeVideo.getSnippet().getThumbnails().getHigh().getURL()).openStream();
+        }
+
+        @Override
+        public @NotNull String getDescription() {
+            return "Get a thumbnail of the currently playing track.";
+        }
+
+        @Override
+        public int getRequiredPerm() {
+            return 0;
+        }
+    }
+
+
+    public static class TimeSubCommand extends SubCommandOption {
+
+        public TimeSubCommand(String name, String... aliases) {
+            super(name, aliases);
+        }
+
+        @Override
+        public @Nullable String onInvoke(CommandContext context) {
+            NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+            if (audioPlayer.getPlayingTrack() != null) {
+                LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
+                if (trackContext != null) {
+                    AudioTrack audioTrack = trackContext.getTrack();
+                    context.getHook().sendMessage(
+                            MessageUtil.format(MessageManager.getMessage(
+                                            context.getNeoGuild().getSettings().getLang(),
+                                            "command.list.playing"),
+                                    audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n" +
+                                    MessageUtil.format(MessageManager.getMessage(
+                                                    context.getNeoGuild().getSettings().getLang(),
+                                                    "command.nowplay.currenttime"),
+                                            MessageUtil.formatTime(audioPlayer.getTrackPosition()),
+                                            MessageUtil.formatTime(audioTrack.getDuration() - audioPlayer.getTrackPosition()))).queue();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public @NotNull String getDescription() {
+            return "Displays the playback time of the currently playing track.";
+        }
+
+        @Override
+        public int getRequiredPerm() {
+            return 0;
+        }
     }
 }
