@@ -35,8 +35,7 @@ public class ModuleCommand extends CommandExecutor {
     }
 
     @Override
-    public @Nullable String onInvoke(CommandContext context) {
-        return null;
+    public void onInvoke(CommandContext context) {
     }
 
     @Override

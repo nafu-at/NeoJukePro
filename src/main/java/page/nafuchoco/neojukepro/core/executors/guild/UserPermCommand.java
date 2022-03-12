@@ -35,26 +35,24 @@ public class UserPermCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         int permissions = (int) context.getOptions().get("permission").getValue();
         if (permissions >= 0 && permissions <= 255) {
             if (context.getOptions().get("member").getValue() instanceof Member member) {
                 NeoGuildMember guildMember = context.getNeoGuild().getGuildMemberRegistry().getNeoGuildMember(member);
                 guildMember.setUserPermission(permissions);
-                return MessageUtil.format(
+                context.getResponseSender().sendMessage(MessageUtil.format(
                         MessageManager.getMessage(
                                 context.getNeoGuild().getSettings().getLang(),
                                 "command.userperm.set"),
                         member.getEffectiveName(),
-                        permissions);
+                        permissions)).queue();
             }
         } else {
-            return MessageManager.getMessage(
+            context.getResponseSender().sendMessage(MessageManager.getMessage(
                     context.getNeoGuild().getSettings().getLang(),
-                    "command.userperm.invalid");
+                    "command.userperm.invalid")).queue();
         }
-
-        return null;
     }
 
     @Override

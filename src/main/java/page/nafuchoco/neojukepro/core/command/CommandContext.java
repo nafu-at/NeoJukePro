@@ -42,6 +42,8 @@ public class CommandContext {
     private final CommandExecutor command;
     private final CommandExecutor subCommand;
 
+    private final SlashCommandResponse responseSender;
+
     public NeoJukePro getNeoJukePro() {
         return neoJukePro;
     }
@@ -105,5 +107,13 @@ public class CommandContext {
      */
     public CommandExecutor getSubCommand() {
         return subCommand;
+    }
+
+    /**
+     * @return
+     * @since v3.0.0
+     */
+    public SlashCommandResponse getResponseSender() {
+        return responseSender;
     }
 }

@@ -32,7 +32,7 @@ public class JoinCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         VoiceChannel targetChannel = null;
         if (context.getInvoker().getJDAMember().getVoiceState().getChannel().getType() == ChannelType.VOICE)
@@ -40,22 +40,20 @@ public class JoinCommand extends CommandExecutor {
 
         try {
             if (targetChannel == null)
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.join.before");
+                        "command.join.before")).queue();
             else if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, context.getNeoGuild().getJDAGuild().getSelfMember()))
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.channel.permission");
+                        "command.channel.permission")).queue();
             else
                 audioPlayer.joinChannel(targetChannel);
         } catch (InsufficientPermissionException e) {
-            return MessageManager.getMessage(
+            context.getResponseSender().sendMessage(MessageManager.getMessage(
                     context.getNeoGuild().getSettings().getLang(),
-                    "command.channel.permission");
+                    "command.channel.permission")).queue();
         }
-
-        return null;
     }
 
     @Override

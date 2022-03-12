@@ -19,7 +19,6 @@ package page.nafuchoco.neojukepro.core.executors.player;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
@@ -52,34 +51,14 @@ public class NowPlayingCommand extends CommandExecutor {
 
     public NowPlayingCommand(String name, String... aliases) {
         super(name, aliases);
-        
+
+        getOptions().add(new InfoSubCommand("info"));
         getOptions().add(new ThumbnailSubCommand("thumbnail", "th"));
         getOptions().add(new TimeSubCommand("time", "t"));
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
-        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        if (audioPlayer.getPlayingTrack() != null) {
-            LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
-            if (trackContext != null) {
-                try {
-                    context.getHook().sendMessageEmbeds(TrackEmbedUtil.getTrackEmbed(audioPlayer)).queue();
-                } catch (IOException e) {
-                    ExceptionUtil.sendStackTrace(
-                            context.getNeoGuild(),
-                            e,
-                            MessageManager.getMessage(
-                                    context.getNeoGuild().getSettings().getLang(),
-                                    "command.nowplay.failed"));
-                }
-            }
-        } else {
-            context.getHook().sendMessage(MessageManager.getMessage(
-                    context.getNeoGuild().getSettings().getLang(),
-                    "command.nowplay.nothing")).queue();
-        }
-        return null;
+    public void onInvoke(CommandContext context) {
     }
 
     @Override
@@ -93,6 +72,48 @@ public class NowPlayingCommand extends CommandExecutor {
     }
 
 
+    public static class InfoSubCommand extends SubCommandOption {
+
+        public InfoSubCommand(String name, String... aliases) {
+            super(name, aliases);
+        }
+
+        @Override
+        public void onInvoke(CommandContext context) {
+            NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+            if (audioPlayer.getPlayingTrack() != null) {
+                LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
+                if (trackContext != null) {
+                    try {
+                        context.getResponseSender().sendMessageEmbeds(TrackEmbedUtil.getTrackEmbed(audioPlayer)).setEphemeral(false).queue();
+                    } catch (IOException e) {
+                        ExceptionUtil.sendStackTrace(
+                                context.getNeoGuild(),
+                                e,
+                                MessageManager.getMessage(
+                                        context.getNeoGuild().getSettings().getLang(),
+                                        "command.nowplay.failed"));
+                    }
+                }
+            } else {
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.nowplay.nothing")).queue();
+            }
+        }
+
+        @Override
+        public @NotNull String getDescription() {
+            return "Displays detailed information about the currently playing track.";
+        }
+
+        @Override
+        public int getRequiredPerm() {
+            return 0;
+        }
+    }
+
+
     public static class ThumbnailSubCommand extends SubCommandOption {
 
         public ThumbnailSubCommand(String name, String... aliases) {
@@ -100,7 +121,7 @@ public class NowPlayingCommand extends CommandExecutor {
         }
 
         @Override
-        public @Nullable String onInvoke(CommandContext context) {
+        public void onInvoke(CommandContext context) {
             NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
             if (audioPlayer.getPlayingTrack() != null) {
                 LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
@@ -115,7 +136,6 @@ public class NowPlayingCommand extends CommandExecutor {
                                                 "command.nowplay.getthumbnail"))
                                         .addFile(thumbnail, "thumbnail.jpg")
                                         .queue();
-                                return null;
                             }
                         } catch (IOException e) {
                             ExceptionUtil.sendStackTrace(
@@ -126,13 +146,12 @@ public class NowPlayingCommand extends CommandExecutor {
                                             "command.nowplay.failed"));
                         }
                     } else {
-                        return MessageManager.getMessage(
+                        context.getResponseSender().sendMessage(MessageManager.getMessage(
                                 context.getNeoGuild().getSettings().getLang(),
-                                "command.nowplay.nosupport");
+                                "command.nowplay.nosupport")).queue();
                     }
                 }
             }
-            return null;
         }
 
         private InputStream getThumbnailStream(String identifier) throws IOException {
@@ -163,7 +182,7 @@ public class NowPlayingCommand extends CommandExecutor {
         }
 
         @Override
-        public @Nullable String onInvoke(CommandContext context) {
+        public void onInvoke(CommandContext context) {
             NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
             if (audioPlayer.getPlayingTrack() != null) {
                 LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
@@ -181,7 +200,6 @@ public class NowPlayingCommand extends CommandExecutor {
                                             MessageUtil.formatTime(audioTrack.getDuration() - audioPlayer.getTrackPosition()))).queue();
                 }
             }
-            return null;
         }
 
         @Override

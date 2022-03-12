@@ -30,9 +30,9 @@ public class DestroyCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         context.getNeoGuild().destroyAudioPlayer();
-        return "Player destroyed";
+        context.getResponseSender().sendMessage("Player destroyed").queue();
     }
 
     @Override

@@ -37,7 +37,7 @@ public class RepeatCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         NeoGuildPlayerOptions.RepeatMode repeatMode;
         try {
             repeatMode = NeoGuildPlayerOptions.RepeatMode.valueOf(((String) context.getOptions().get("repeat").getValue()).toUpperCase());
@@ -45,7 +45,7 @@ public class RepeatCommand extends CommandExecutor {
             repeatMode = NeoGuildPlayerOptions.RepeatMode.NONE;
         }
         context.getNeoGuild().getSettings().setRepeatMode(repeatMode);
-        return "Repeat mode has been changed.";
+        context.getResponseSender().sendMessage("Repeat mode has been changed.").queue();
     }
 
     @Override

@@ -47,20 +47,20 @@ public class InterruptCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inAudioChannel()
                 && context.getInvoker().getJDAMember().getVoiceState().getChannel().getType() != ChannelType.VOICE) {
             VoiceChannel targetChannel = (VoiceChannel) context.getInvoker().getJDAMember().getVoiceState().getChannel();
             if (targetChannel == null) {
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.join.before");
+                        "command.join.before")).queue();
             }
             if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, context.getNeoGuild().getJDAGuild().getSelfMember())) {
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.channel.permission");
+                        "command.channel.permission")).queue();
             }
             audioPlayer.joinChannel(targetChannel);
         }
@@ -68,8 +68,6 @@ public class InterruptCommand extends CommandExecutor {
         val index = (Integer) context.getOptions().get("index").getValue();
         audioPlayer.play(new AudioTrackLoader(
                 new TrackContext(context.getNeoGuild(), context.getInvoker(), index, url)));
-
-        return null;
     }
 
     @Override

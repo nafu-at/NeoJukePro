@@ -54,10 +54,8 @@ public class SettingsCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
-        if (context.getOptions().isEmpty()) {
-            return getGuildSettings(context.getNeoGuild());
-        } else {
+    public void onInvoke(CommandContext context) {
+        if (!context.getOptions().isEmpty()) {
             context.getOptions().values().forEach(option -> {
                 switch (option.optionName()) {
                     case "jukebox":
@@ -83,7 +81,8 @@ public class SettingsCommand extends CommandExecutor {
                 }
             });
         }
-        return null;
+
+        context.getResponseSender().sendMessage(getGuildSettings(context.getNeoGuild())).queue();
     }
 
     private String getGuildSettings(NeoGuild neoGuild) {

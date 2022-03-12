@@ -33,24 +33,22 @@ public class ShutdownCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         if (context.getOptions().isEmpty()) {
             String pass = RandomStringUtils.randomAlphanumeric(6);
             context.getNeoGuild().getGuildTempRegistry().registerTemp("shutdownKey", pass);
-            return MessageUtil.format(
+            context.getResponseSender().sendMessage(MessageUtil.format(
                     MessageManager.getMessage(
                             context.getNeoGuild().getSettings().getLang(),
-                            "command.shutdown.key"), pass);
+                            "command.shutdown.key"), pass)).queue();
         } else {
             if (context.getOptions().get("shutdownKey").getValue().equals(context.getNeoGuild().getGuildTempRegistry().deleteTemp("shutdownKey")))
                 Runtime.getRuntime().exit(0);
             else
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.shutdown.key.incorrect");
+                        "command.shutdown.key.incorrect")).queue();
         }
-
-        return null;
     }
 
     @Override

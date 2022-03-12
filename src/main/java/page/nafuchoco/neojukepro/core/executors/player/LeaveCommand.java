@@ -27,12 +27,10 @@ public class LeaveCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         audioPlayer.setPaused(true);
         audioPlayer.leaveChannel();
-
-        return null;
     }
 
     @Override

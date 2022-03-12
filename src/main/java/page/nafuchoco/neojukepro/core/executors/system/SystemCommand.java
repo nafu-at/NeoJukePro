@@ -30,7 +30,7 @@ public class SystemCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         long max = Runtime.getRuntime().maxMemory() / 1048576L;
         long total = Runtime.getRuntime().totalMemory() / 1048576L;
         long free = Runtime.getRuntime().freeMemory() / 1048576L;
@@ -60,7 +60,7 @@ public class SystemCommand extends CommandExecutor {
         builder.append("Voice Channels:        ").append(shardManager.getVoiceChannelCache().size()).append("\n");
         builder.append("```");
 
-        return builder.toString();
+        context.getResponseSender().sendMessage(builder.toString()).queue();
     }
 
     private String formatTime(long millis) {

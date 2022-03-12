@@ -18,17 +18,22 @@ package page.nafuchoco.neojukepro.core;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 public abstract class CommandRegistrar {
     private final NeoJukeLauncher launcher;
 
     private CommandListUpdateAction updateAction;
+    private List<Command> registeredCommands = new ArrayList<>();
 
     protected CommandRegistrar(NeoJukeLauncher launcher) {
         this.launcher = launcher;
@@ -54,7 +59,11 @@ public abstract class CommandRegistrar {
     }
 
     protected void queue() {
-        updateAction.queue(queue -> log.debug("Queue command registration: {}", queue.toString()));
+        updateAction.queue(commands -> registeredCommands = commands);
         updateAction = null;
+    }
+
+    protected List<Command> getRegisteredCommands() {
+        return registeredCommands;
     }
 }

@@ -36,14 +36,11 @@ public interface ICommandExecutor {
 
     /**
      * Execute the command.
-     * The result of the command execution can be returned as text.
-     * To return the result in any other format, use {@link CommandContext#getHook()}.
      *
      * @param context The command context to use at runtime
-     * @return The result of the command execution can be returned as text.
      */
     @Nullable
-    String onInvoke(CommandContext context);
+    void onInvoke(CommandContext context);
 
     /**
      * @return Description of the command

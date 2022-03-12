@@ -44,7 +44,7 @@ public class SkipCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         if (audioPlayer.getPlayingTrack() != null) {
             if (context.getOptions().isEmpty()) {
@@ -56,9 +56,9 @@ public class SkipCommand extends CommandExecutor {
             } else if (context.getOptions().get("invoker") != null) {
                 if (context.getOptions().get("invoker").getValue() instanceof Member member) {
                     int skipcount = audioPlayer.skip(member).size();
-                    return MessageUtil.format(MessageManager.getMessage(
+                    context.getResponseSender().sendMessage(MessageUtil.format(MessageManager.getMessage(
                             context.getNeoGuild().getSettings().getLang(),
-                            "command.skip.skip.count"), skipcount);
+                            "command.skip.skip.count"), skipcount)).queue();
                 }
             } else if (context.getOptions().get("index") != null) {
                 val indexS = (String) context.getOptions().get("index").getValue();
@@ -67,14 +67,14 @@ public class SkipCommand extends CommandExecutor {
                     if (split.length == 1 && indexS.endsWith("-")) {
                         int below = Integer.parseInt(indexS.replace("-", ""));
                         audioPlayer.skip(below);
-                        return MessageUtil.format(MessageManager.getMessage(
+                        context.getResponseSender().sendMessage(MessageUtil.format(MessageManager.getMessage(
                                 context.getNeoGuild().getSettings().getLang(),
-                                "command.skip.below"), below);
+                                "command.skip.below"), below)).queue();
                     } else {
                         audioPlayer.skip(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-                        return MessageUtil.format(MessageManager.getMessage(
+                        context.getResponseSender().sendMessage(MessageUtil.format(MessageManager.getMessage(
                                 context.getNeoGuild().getSettings().getLang(),
-                                "command.skip.between"), split[0], split[1]);
+                                "command.skip.between"), split[0], split[1])).queue();
                     }
                 } else {
                     try {
@@ -88,8 +88,6 @@ public class SkipCommand extends CommandExecutor {
                 }
             }
         }
-
-        return null;
     }
 
     @Override

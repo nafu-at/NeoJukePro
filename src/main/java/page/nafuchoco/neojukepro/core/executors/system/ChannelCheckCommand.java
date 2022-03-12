@@ -33,15 +33,13 @@ public class ChannelCheckCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         if (context.getOptions().get("member") == null) {
-            return buildChannelList(context.getNeoGuild().getJDAGuild().getSelfMember());
+            context.getResponseSender().sendMessage(buildChannelList(context.getNeoGuild().getJDAGuild().getSelfMember())).queue();
         } else {
             if (context.getOptions().get("member").getValue() instanceof Member member)
-                return buildChannelList(member);
+                context.getResponseSender().sendMessage(buildChannelList(member)).queue();
         }
-
-        return null;
     }
 
     private String getIndentSpace(int indentLevel) {

@@ -26,9 +26,8 @@ public class RePlayCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         context.getNeoGuild().getAudioPlayer().replay();
-        return null;
     }
 
     @Override

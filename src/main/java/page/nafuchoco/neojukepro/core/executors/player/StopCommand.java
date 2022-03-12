@@ -28,15 +28,13 @@ public class StopCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         audioPlayer.stop();
         context.getChannel().sendMessage(MessageManager.getMessage(
                 context.getNeoGuild().getSettings().getLang(),
                 "command.stop")).queue();
         context.getNeoGuild().destroyAudioPlayer();
-
-        return null;
     }
 
     @Override

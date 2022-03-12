@@ -28,13 +28,12 @@ public class ShuffleCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         context.getNeoGuild().getSettings().setShuffle(!context.getNeoGuild().getSettings().getPlayerOptions().isShuffle());
         context.getHook().sendMessage(
                 MessageUtil.format(
                         MessageManager.getMessage(context.getNeoGuild().getSettings().getLang(), "command.shuffle"),
                         context.getNeoGuild().getSettings().getPlayerOptions().isShuffle())).queue();
-        return null;
     }
 
     @Override

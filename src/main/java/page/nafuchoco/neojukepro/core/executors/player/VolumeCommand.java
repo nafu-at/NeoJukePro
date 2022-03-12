@@ -43,15 +43,15 @@ public class VolumeCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         if (!context.getOptions().isEmpty()) {
             int volume = -1;
             volume = (int) context.getOptions().get("volume").getValue();
             if (volume > 200) {
                 context.getNeoGuild().getGuildTempRegistry().registerTemp("volumevalue", volume);
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.volume.warn");
+                        "command.volume.warn")).queue();
             }
 
             if (volume >= 0)
@@ -60,8 +60,6 @@ public class VolumeCommand extends CommandExecutor {
         context.getHook().sendMessage(MessageUtil.format(
                 MessageManager.getMessage(context.getNeoGuild().getSettings().getLang(), "command.volume.corrent"),
                 context.getNeoGuild().getSettings().getPlayerOptions().getVolumeLevel())).queue();
-
-        return null;
     }
 
     @Override
@@ -82,7 +80,7 @@ public class VolumeCommand extends CommandExecutor {
         }
 
         @Override
-        public @Nullable String onInvoke(CommandContext context) {
+        public void onInvoke(CommandContext context) {
             int volume = -1;
             if (context.getNeoGuild().getGuildTempRegistry().getTemp("volumevalue") != null) {
                 volume = (int) context.getNeoGuild().getGuildTempRegistry().getTemp("volumevalue");
@@ -95,8 +93,6 @@ public class VolumeCommand extends CommandExecutor {
             context.getHook().sendMessage(MessageUtil.format(
                     MessageManager.getMessage(context.getNeoGuild().getSettings().getLang(), "command.volume.corrent"),
                     context.getNeoGuild().getSettings().getPlayerOptions().getVolumeLevel())).queue();
-
-            return null;
         }
 
         @Override

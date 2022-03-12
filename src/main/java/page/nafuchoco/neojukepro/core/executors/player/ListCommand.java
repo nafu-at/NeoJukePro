@@ -40,7 +40,7 @@ public class ListCommand extends CommandExecutor {
     }
 
     @Override
-    public String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         List<LoadedTrackContext> tracks = audioPlayer.getTrackProvider().getQueues();
         if (!tracks.isEmpty()) {
@@ -66,9 +66,9 @@ public class ListCommand extends CommandExecutor {
                 listPage++;
 
             if (page > listPage)
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.page.large");
+                        "command.page.large")).queue();
 
             long totalTime = 0;
             for (LoadedTrackContext track : tracks)
@@ -91,16 +91,16 @@ public class ListCommand extends CommandExecutor {
                             + " (" + track.getInvoker().getJDAMember().getEffectiveName() + ")** `[" + MessageUtil.formatTime(track.getTrack().getDuration() - track.getStartPosition()) + "]`");
                 }
             }
-            return sb.toString();
+            context.getResponseSender().sendMessage(sb.toString()).setEphemeral(false).queue();
         } else if (audioPlayer.getPlayingTrack() != null) {
-            return MessageUtil.format(MessageManager.getMessage(
+            context.getResponseSender().sendMessage(MessageUtil.format(MessageManager.getMessage(
                             context.getNeoGuild().getSettings().getLang(),
                             "command.list.playing"),
-                    audioPlayer.getPlayingTrack().getTrack().getInfo().title);
+                    audioPlayer.getPlayingTrack().getTrack().getInfo().title)).queue();
         } else {
-            return MessageManager.getMessage(
+            context.getResponseSender().sendMessage(MessageManager.getMessage(
                     context.getNeoGuild().getSettings().getLang(),
-                    "command.list.nothing");
+                    "command.list.nothing")).queue();
         }
     }
 

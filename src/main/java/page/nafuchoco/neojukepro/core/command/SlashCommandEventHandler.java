@@ -39,6 +39,8 @@ public class SlashCommandEventHandler extends ListenerAdapter {
         // とりあえずDiscordにコマンドを受け付けた事を返す
         event.deferReply(true).queue();
         val hook = event.getHook();
+        // hook.setEphemeral(true);
+        val responseSender = new SlashCommandResponse(hook);
 
         // レジストリが登録されて居ない場合は無視
         if (registry == null)
@@ -74,7 +76,8 @@ public class SlashCommandEventHandler extends ListenerAdapter {
                 event.getName(),
                 optionsMap,
                 command,
-                subCommand);
+                subCommand,
+                responseSender);
 
 
         log.debug("Command Received: {}", context);
@@ -90,14 +93,13 @@ public class SlashCommandEventHandler extends ListenerAdapter {
         }
 
         try {
-            String result;
             if (context.getSubCommand() == null)
-                result = context.getCommand().onInvoke(context);
+                context.getCommand().onInvoke(context);
             else
-                result = context.getSubCommand().onInvoke(context);
-            
-            if (result != null)
-                hook.sendMessage(result).setEphemeral(true).queue();
+                context.getSubCommand().onInvoke(context);
+
+            if (!responseSender.isExecutorResponded())
+                hook.sendMessage("Your request has been processed!").setEphemeral(true).queue();
         } catch (Exception e) {
             // TODO: 2022/03/11 後々Hookに対してエラーを送信するように
             ExceptionUtil.sendStackTrace(

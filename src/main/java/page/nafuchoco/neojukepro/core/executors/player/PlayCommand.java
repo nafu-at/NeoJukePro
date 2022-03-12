@@ -73,7 +73,7 @@ public class PlayCommand extends CommandExecutor {
     }
 
     @Override
-    public @Nullable String onInvoke(CommandContext context) {
+    public void onInvoke(CommandContext context) {
         NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
         if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inAudioChannel()) {
             VoiceChannel targetChannel = null;
@@ -81,21 +81,21 @@ public class PlayCommand extends CommandExecutor {
                 targetChannel = (VoiceChannel) context.getInvoker().getJDAMember().getVoiceState().getChannel();
 
             if (targetChannel == null) {
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.join.before");
+                        "command.join.before")).queue();
             }
             if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, context.getNeoGuild().getJDAGuild().getSelfMember())) {
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.channel.permission");
+                        "command.channel.permission")).queue();
             }
             try {
                 audioPlayer.joinChannel(targetChannel);
             } catch (InsufficientPermissionException e) {
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.channel.permission");
+                        "command.channel.permission")).queue();
             }
         }
         audioPlayer.play();
@@ -112,17 +112,17 @@ public class PlayCommand extends CommandExecutor {
                 // TODO: 2022/03/12 ファイルがあるかどうかが分かってしまうのでこのあたりの判定をどうにかする
                 audioPlayer.play(new AudioTrackLoader(new TrackContext(context.getNeoGuild(), context.getInvoker(), 0, file.getPath())));
             } else if (YOUTUBE_CLIENT == null) {
-                return MessageManager.getMessage(
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
                         context.getNeoGuild().getSettings().getLang(),
-                        "command.play.search.disabled");
+                        "command.play.search.disabled")).queue();
             } else {
                 try {
                     YouTubeSearchResults result =
                             new YouTubeAPIClient(context.getNeoJukePro().getConfig().getAdvancedConfig().getGoogleAPIToken()).searchVideos(url);
                     if (result == null || result.getItems().length == 0) {
-                        return MessageManager.getMessage(
+                        context.getResponseSender().sendMessage(MessageManager.getMessage(
                                 context.getNeoGuild().getSettings().getLang(),
-                                "command.play.search.notfound");
+                                "command.play.search.notfound")).queue();
                     }
 
                     StringBuilder message = new StringBuilder();
@@ -140,7 +140,7 @@ public class PlayCommand extends CommandExecutor {
 
                     context.getNeoGuild().getGuildTempRegistry().registerTemp(
                             "searchResults", Arrays.asList(result, url));
-                    return message.toString();
+                    context.getResponseSender().sendMessage(message.toString()).queue();
                 } catch (IOException e) {
                     ExceptionUtil.sendStackTrace(
                             context.getNeoGuild(),
@@ -151,7 +151,6 @@ public class PlayCommand extends CommandExecutor {
                 }
             }
         }
-        return null;
     }
 
     @Override
