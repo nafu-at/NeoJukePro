@@ -20,7 +20,6 @@ import lombok.val;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
@@ -118,7 +117,7 @@ public class SearchCommand extends CommandExecutor {
                             context.getNeoGuild().getSettings().getLang(),
                             "command.play.search.select"));
 
-                    context.getChannel().sendMessage(message.toString()).queue(send ->
+                    context.getResponseSender().sendMessage(message.toString()).queue(send ->
                             context.getNeoGuild().getGuildTempRegistry().registerTemp(
                                     "searchResults", Arrays.asList(result, keyword)));
                 } catch (IOException e) {

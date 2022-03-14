@@ -16,6 +16,9 @@
 
 package page.nafuchoco.neojukepro.core.command;
 
+import lombok.ToString;
+
+@ToString
 public class AssignedCommandValueOption<T> extends CommandValueOption {
     private final T value;
 

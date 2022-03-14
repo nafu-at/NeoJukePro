@@ -57,7 +57,8 @@ public class SlashCommandEventHandler extends ListenerAdapter {
 
         // オプションの処理
         val optionsMap = new HashMap<String, AssignedCommandValueOption>();
-        for (CommandOption option : command.getOptions()) {
+        val options = subCommand != null ? subCommand.getOptions() : command.getOptions();
+        for (CommandOption option : options) {
             val optionMapping = event.getOption(option.optionName());
             if (optionMapping == null)
                 continue;
