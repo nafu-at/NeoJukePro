@@ -31,12 +31,14 @@ import java.util.List;
 @Slf4j
 public abstract class CommandRegistrar {
     private final NeoJukeLauncher launcher;
+    private final boolean registerAlias;
 
     private CommandListUpdateAction updateAction;
     private List<Command> registeredCommands = new ArrayList<>();
 
-    protected CommandRegistrar(NeoJukeLauncher launcher) {
+    protected CommandRegistrar(NeoJukeLauncher launcher, boolean registerAlias) {
         this.launcher = launcher;
+        this.registerAlias = registerAlias;
     }
 
     protected void registerCommandToDiscord(CommandExecutor executor) {
@@ -46,16 +48,23 @@ public abstract class CommandRegistrar {
         val command = Commands.slash(executor.getName(), executor.getDescription());
         addCommandOptions(executor, command);
         updateAction.addCommands(command);
-        executor.getAliases().forEach(alias -> {
-            val commandAlias = Commands.slash(alias, executor.getDescription());
-            addCommandOptions(executor, commandAlias);
-            updateAction.addCommands(commandAlias);
-        });
+
+        if (registerAlias) {
+            executor.getAliases().forEach(alias -> {
+                val commandAlias = Commands.slash(alias, executor.getDescription());
+                addCommandOptions(executor, commandAlias);
+                updateAction.addCommands(commandAlias);
+            });
+        }
     }
 
     private void addCommandOptions(CommandExecutor executor, SlashCommandData command) {
         executor.getValueOptions().forEach(option -> command.addOption(option.optionType(), option.optionName(), option.optionDescription(), option.required(), option.autoComplete()));
-        executor.getSubCommands().forEach(sub -> command.addSubcommands(new SubcommandData(sub.optionName(), sub.optionDescription())));
+        executor.getSubCommands().forEach(sub -> {
+            val subCommand = new SubcommandData(sub.optionName(), sub.optionDescription());
+            sub.getValueOptions().forEach(option -> subCommand.addOption(option.optionType(), option.optionName(), option.optionDescription(), option.required(), option.autoComplete()));
+            command.addSubcommands(subCommand);
+        });
     }
 
     protected void queue() {

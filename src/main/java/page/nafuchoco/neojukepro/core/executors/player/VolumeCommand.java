@@ -19,7 +19,6 @@ package page.nafuchoco.neojukepro.core.executors.player;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
@@ -90,7 +89,7 @@ public class VolumeCommand extends CommandExecutor {
             if (volume >= 0)
                 context.getNeoGuild().getSettings().setVolumeLevel(volume);
 
-            context.getHook().sendMessage(MessageUtil.format(
+            context.getResponseSender().sendMessage(MessageUtil.format(
                     MessageManager.getMessage(context.getNeoGuild().getSettings().getLang(), "command.volume.corrent"),
                     context.getNeoGuild().getSettings().getPlayerOptions().getVolumeLevel())).queue();
         }

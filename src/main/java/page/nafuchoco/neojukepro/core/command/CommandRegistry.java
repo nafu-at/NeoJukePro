@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 public class CommandRegistry extends CommandRegistrar {
     private final Map<String, CommandGroup> groups = new LinkedHashMap<>();
 
-    public CommandRegistry(NeoJukeLauncher launcher) {
-        super(launcher);
+    public CommandRegistry(NeoJukeLauncher launcher, boolean registerAlias) {
+        super(launcher, registerAlias);
     }
 
     public void registerCommand(CommandExecutor executor, NeoModule module) {

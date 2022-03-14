@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -51,7 +52,6 @@ import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class Launcher implements NeoJukeLauncher {
@@ -136,7 +136,7 @@ public class Launcher implements NeoJukeLauncher {
         }
 
         customSourceRegistry = new CustomSourceRegistry();
-        commandRegistry = new CommandRegistry(this);
+        commandRegistry = new CommandRegistry(this, BootOptions.isEnableAlias());
         var intents = EnumSet.allOf(GatewayIntent.class);
         intents.remove(GatewayIntent.GUILD_PRESENCES);
         if (BootOptions.isBypass())
@@ -175,7 +175,7 @@ public class Launcher implements NeoJukeLauncher {
         try {
             var guilds = settingsTable.getGuilds();
             var activeGuilds = shardManager.getGuilds();
-            guilds.removeAll(activeGuilds.stream().map(g -> g.getIdLong()).collect(Collectors.toList()));
+            guilds.removeAll(activeGuilds.stream().map(ISnowflake::getIdLong).toList());
             for (Long id : guilds) {
                 settingsTable.deleteSettings(id);
                 usersPermTable.deleteGuildUsers(id);
@@ -231,17 +231,6 @@ public class Launcher implements NeoJukeLauncher {
         commandRegistry.queue();
     }
 
-    private JDA getJdaFromId(int shardId) {
-        if (shardManager != null)
-            return shardManager.getShardById(shardId);
-        return null;
-    }
-
-    private int getShardsTotal() {
-        if (shardManager != null)
-            return shardManager.getShardsTotal();
-        return 1;
-    }
 
     @Override
     public NeoJukeConfig getConfig() {

@@ -37,4 +37,8 @@ public class BootOptions {
     @Getter
     @Setter(AccessLevel.PROTECTED)
     private static boolean bypass;
+
+    @Getter
+    @Setter(AccessLevel.PROTECTED)
+    private static boolean enableAlias;
 }

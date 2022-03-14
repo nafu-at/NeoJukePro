@@ -54,6 +54,10 @@ public class Main {
                     BootOptions.setBypass(true);
                     break;
 
+                case "enableAlias":
+                    BootOptions.setEnableAlias(true);
+                    break;
+
                 default:
                     if (prop.startsWith("lang=")) {
                         String[] s = prop.split("=");
