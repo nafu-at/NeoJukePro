@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Owner {
     @JsonProperty("avatar")
     private String avatar;
+    @JsonProperty("avatar_decoration")
+    private String avatarDecoration;
     @JsonProperty("discriminator")
     private String discriminator;
     @JsonProperty("flags")
@@ -34,6 +36,10 @@ public class Owner {
 
     public String getAvatar() {
         return avatar;
+    }
+
+    public String getAvatarDecoration() {
+        return avatarDecoration;
     }
 
     public String getDiscriminator() {
