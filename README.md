@@ -47,7 +47,6 @@ The original source code of this program is released under the Apache License 2.
 ### MIT License
 
 - SLF4J api
-- Lavalink-Client
 
 ### The 3-Clause BSD License
 

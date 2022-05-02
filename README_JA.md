@@ -47,7 +47,6 @@ NeoJukeProはSimpleJukeの正統な後継として開発された新しいDiscor
 ### MIT License
 
 - SLF4J api
-- Lavalink-Client
 
 ### The 3-Clause BSD License
 
