@@ -16,22 +16,38 @@
 
 package page.nafuchoco.neojukepro.core.executors.system;
 
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciithemes.TA_GridThemes;
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neojukepro.core.command.CommandValueOption;
+import page.nafuchoco.neojukepro.core.command.SubCommandOption;
+import page.nafuchoco.neojukepro.core.module.ModuleDescription;
+import page.nafuchoco.neojukepro.core.module.NeoModule;
 
+import java.io.File;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Slf4j
 public class ModuleCommand extends CommandExecutor {
     private static final Pattern NOMBER_REGEX = Pattern.compile("^\\d+$");
 
-    // TODO: 2022/03/12 後々
-
     public ModuleCommand(String name, String... aliases) {
         super(name, aliases);
+
+        getOptions().add(new ModuleLoadSubCommand("load"));
+        getOptions().add(new ModuleUnloadSubCommand("unload"));
+        getOptions().add(new ModuleEnableSubCommand("enable"));
+        getOptions().add(new ModuleDisableSubCommand("disable"));
+        getOptions().add(new ModuleInfoSubCommand("info"));
     }
 
     @Override
@@ -45,89 +61,196 @@ public class ModuleCommand extends CommandExecutor {
 
     @Override
     public int getRequiredPerm() {
-        return 0;
+        return 254;
     }
-/*
-    @Override
-    public void onInvoke(CommandContext context) {
-        NeoJukePro neoJukePro = context.getNeoJukePro();
-        if (context.getOptions().length == 0) {
-            context.getChannel().sendMessage(renderModuleList(neoJukePro.getModuleManager().getModules(), 1)).queue();
-        } else switch (context.getOptions()[0].toLowerCase()) {
-            case "load":
-                if (neoJukePro.getModuleManager().loadModule(new File("modules", context.getOptions()[1])))
-                    context.getChannel().sendMessage(MessageManager.getMessage(
-                            context.getNeoGuild().getSettings().getLang(),
-                            "command.module.load.success")).queue();
-                else
-                    context.getChannel().sendMessage(MessageManager.getMessage(
-                            context.getNeoGuild().getSettings().getLang(),
-                            "command.module.load.failed")).queue();
-                break;
 
-            case "unload":
-                switch (context.getOptions()[1].toLowerCase()) {
-                    case "all":
-                        neoJukePro.getModuleManager().unloadAllModules();
-                        break;
 
-                    default:
-                        try {
-                            neoJukePro.getModuleManager().disableModule(context.getOptions()[1]);
-                            neoJukePro.getModuleManager().unloadModule(context.getOptions()[1]);
-                        } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage(MessageManager.getMessage(
-                                    context.getNeoGuild().getSettings().getLang(),
-                                    "command.module.notregist")).queue();
-                        }
-                        break;
-                }
-                break;
+    public static class ModuleLoadSubCommand extends SubCommandOption {
 
-            case "enable":
-                switch (context.getOptions()[1].toLowerCase()) {
-                    case "all":
-                        neoJukePro.getModuleManager().enableAllModules();
-                        break;
+        public ModuleLoadSubCommand(String name, String... aliases) {
+            super(name, aliases);
 
-                    default:
-                        try {
-                            neoJukePro.getModuleManager().enableModule(context.getOptions()[1]);
-                        } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage(MessageManager.getMessage(
-                                    context.getNeoGuild().getSettings().getLang(),
-                                    "command.module.notregist")).queue();
-                        }
-                        break;
-                }
-                break;
+            getOptions().add(new CommandValueOption(OptionType.STRING,
+                    "module",
+                    "Name of module to load",
+                    true,
+                    false));
+        }
 
-            case "disable":
-                switch (context.getOptions()[1].toLowerCase()) {
-                    case "all":
-                        neoJukePro.getModuleManager().disableAllModules();
-                        break;
+        @Override
+        public @Nullable void onInvoke(CommandContext context) {
+            if (context.getNeoJukePro().getModuleManager().loadModule(new File("modules", (String) context.getOptions().get("module").getValue())))
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.module.load.success")).queue();
+            else
+                context.getResponseSender().sendMessage(MessageManager.getMessage(
+                        context.getNeoGuild().getSettings().getLang(),
+                        "command.module.load.failed")).queue();
+        }
 
-                    default:
-                        try {
-                            neoJukePro.getModuleManager().disableModule(context.getOptions()[1]);
-                        } catch (IllegalArgumentException e) {
-                            context.getChannel().sendMessage(MessageManager.getMessage(
-                                    context.getNeoGuild().getSettings().getLang(),
-                                    "command.module.notregist")).queue();
-                        }
-                        break;
-                }
-                break;
+        @Override
+        public @NotNull String getDescription() {
+            return "Load the specified file as a module.";
+        }
 
-            default:
-                if (NOMBER_REGEX.matcher(context.getOptions()[0]).find()) {
-                    context.getChannel().sendMessage(
-                            renderModuleList(neoJukePro.getModuleManager().getModules(), Integer.parseInt(context.getOptions()[0]))).queue();
+        @Override
+        public int getRequiredPerm() {
+            return 254;
+        }
+    }
+
+    public static class ModuleUnloadSubCommand extends SubCommandOption {
+
+        public ModuleUnloadSubCommand(String name, String... aliases) {
+            super(name, aliases);
+
+            getOptions().add(new CommandValueOption(OptionType.STRING,
+                    "module",
+                    "Name of module to unload",
+                    true,
+                    false));
+        }
+
+        @Override
+        public @Nullable void onInvoke(CommandContext context) {
+            switch (((String) context.getOptions().get("module").getValue()).toLowerCase()) {
+                case "all":
+                    context.getNeoJukePro().getModuleManager().unloadAllModules();
+                    break;
+
+                default:
+                    try {
+                        context.getNeoJukePro().getModuleManager().disableModule((String) context.getOptions().get("module").getValue());
+                        context.getNeoJukePro().getModuleManager().unloadModule((String) context.getOptions().get("module").getValue());
+                    } catch (IllegalArgumentException e) {
+                        context.getResponseSender().sendMessage(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.module.notregist")).queue();
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public @NotNull String getDescription() {
+            return "Unloads the specified module.";
+        }
+
+        @Override
+        public int getRequiredPerm() {
+            return 254;
+        }
+    }
+
+    public static class ModuleEnableSubCommand extends SubCommandOption {
+
+        public ModuleEnableSubCommand(String name, String... aliases) {
+            super(name, aliases);
+
+            getOptions().add(new CommandValueOption(OptionType.STRING,
+                    "module",
+                    "Name of module to enable",
+                    true,
+                    false));
+        }
+
+        @Override
+        public @Nullable void onInvoke(CommandContext context) {
+            switch (((String) context.getOptions().get("module").getValue()).toLowerCase()) {
+                case "all":
+                    context.getNeoJukePro().getModuleManager().enableAllModules();
+                    break;
+
+                default:
+                    try {
+                        context.getNeoJukePro().getModuleManager().enableModule((String) context.getOptions().get("module").getValue());
+                    } catch (IllegalArgumentException e) {
+                        context.getResponseSender().sendMessage(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.module.notregist")).queue();
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public @NotNull String getDescription() {
+            return "Enables the specified module.";
+        }
+
+        @Override
+        public int getRequiredPerm() {
+            return 254;
+        }
+    }
+
+    public static class ModuleDisableSubCommand extends SubCommandOption {
+
+        public ModuleDisableSubCommand(String name, String... aliases) {
+            super(name, aliases);
+
+            getOptions().add(new CommandValueOption(OptionType.STRING,
+                    "module",
+                    "Name of module to disable",
+                    true,
+                    false));
+        }
+
+        @Override
+        public @Nullable void onInvoke(CommandContext context) {
+            switch (((String) context.getOptions().get("module").getValue()).toLowerCase()) {
+                case "all":
+                    context.getNeoJukePro().getModuleManager().disableAllModules();
+                    break;
+
+                default:
+                    try {
+                        context.getNeoJukePro().getModuleManager().disableModule((String) context.getOptions().get("module").getValue());
+                    } catch (IllegalArgumentException e) {
+                        context.getResponseSender().sendMessage(MessageManager.getMessage(
+                                context.getNeoGuild().getSettings().getLang(),
+                                "command.module.notregist")).queue();
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public @NotNull String getDescription() {
+            return "Disables the specified module.";
+        }
+
+        @Override
+        public int getRequiredPerm() {
+            return 254;
+        }
+    }
+
+    public static class ModuleInfoSubCommand extends SubCommandOption {
+
+        public ModuleInfoSubCommand(String name, String... aliases) {
+            super(name, aliases);
+
+            getOptions().add(new CommandValueOption(OptionType.STRING,
+                    "module",
+                    "Name of the module for which information is to be displayed",
+                    false,
+                    false));
+        }
+
+        @Override
+        public @Nullable void onInvoke(CommandContext context) {
+            if (context.getOptions().isEmpty()) {
+                context.getResponseSender().sendMessage(renderModuleList(context.getNeoJukePro().getModuleManager().getModules(), 1)).queue();
+            } else {
+                if (NOMBER_REGEX.matcher((String) context.getOptions().get("module").getValue()).find()) {
+                    context.getResponseSender().sendMessage(
+                            renderModuleList(context.getNeoJukePro().getModuleManager().getModules(), Integer.parseInt((String) context.getOptions().get("module").getValue()))).queue();
                 } else {
-                    NeoModule module = neoJukePro.getModuleManager().getModule(context.getOptions()[0]);
+                    NeoModule module = context.getNeoJukePro().getModuleManager().getModule((String) context.getOptions().get("module").getValue());
                     if (module == null) {
-                        context.getChannel().sendMessage(MessageManager.getMessage(
+                        context.getResponseSender().sendMessage(MessageManager.getMessage(
                                 context.getNeoGuild().getSettings().getLang(),
                                 "command.module.notregist")).queue();
                     } else {
@@ -144,14 +267,25 @@ public class ModuleCommand extends CommandExecutor {
                         table.addRule();
                         table.addRow("WebSite", StringUtils.defaultString(description.getWebsite(), "null"));
                         table.getContext().setGridTheme(TA_GridThemes.HORIZONTAL);
-                        context.getChannel().sendMessage("```\n" + table.render() + "\n```").queue();
+                        context.getResponseSender().sendMessage("```\n" + table.render() + "\n```").queue();
                     }
                 }
-                break;
+            }
+        }
+
+        @Override
+        public @NotNull String getDescription() {
+            return "Displays detailed information about the specified module.";
+        }
+
+        @Override
+        public int getRequiredPerm() {
+            return 0;
         }
     }
 
-    public String renderModuleList(List<NeoModule> modules, int page) {
+
+    public static String renderModuleList(List<NeoModule> modules, int page) {
         int range = 10;
         try {
             if (page < 1)
@@ -189,36 +323,11 @@ public class ModuleCommand extends CommandExecutor {
         return "```\n" + table.render() + "\n```";
     }
 
-    private String toStringList(List<String> list) {
+    private static String toStringList(List<String> list) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String val : list) {
             stringBuilder.append(val + ", ");
         }
         return stringBuilder.toString().stripTrailing().replaceFirst(",$", "");
     }
-
-    @Override
-    public String getDescription() {
-        return "Module management.";
-    }
-
-    @Override
-    public String getHelp() {
-        return "If no argument is specified, a list of all loaded modules is displayed.\n\n" +
-                getName() + " [options] <args>\n----\n" +
-                "[<ModuleName>]: Displays detailed information about the specified module.\n" +
-                "[load]: Load the specified file as a module.\n" +
-                "[unload]: Unloads the specified module.\n" +
-                "[enable]: Enables the specified module.\n" +
-                "[enable] <all>: Enables all modules.\n" +
-                "[disable]: Disables the specified module.\n" +
-                "[disable] <all>: Disables all modules.\n";
-    }
-
-    @Override
-    public int getRequiredPerm() {
-        return 254;
-    }
-
- */
 }
