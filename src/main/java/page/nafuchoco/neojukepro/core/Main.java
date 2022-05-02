@@ -35,6 +35,7 @@ public class Main {
                 "|_| \\_|\\___|\\___/ \\___/ \\__,_|_|\\_\\___|\n" +
                 "                                       \n");
         log.info("Welcome to NeoJukePro. Starting v" + Main.class.getPackage().getImplementationVersion() + ".");
+        var startTime = System.currentTimeMillis();
 
         for (String prop : args) {
             switch (prop.toLowerCase()) {
@@ -78,6 +79,7 @@ public class Main {
 
         launcher = new Launcher();
         launcher.launch();
+        log.info("Done! ({}s)", (double) (System.currentTimeMillis() - startTime) / 1000);
 
         new Thread(() -> {
             var console = new Scanner(System.in);
