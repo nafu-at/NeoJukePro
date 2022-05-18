@@ -19,6 +19,7 @@ package page.nafuchoco.neojukepro.core;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
@@ -35,6 +36,7 @@ public class Main {
                 "|_| \\_|\\___|\\___/ \\___/ \\__,_|_|\\_\\___|\n" +
                 "                                       \n");
         log.info("Welcome to NeoJukePro. Starting v" + Main.class.getPackage().getImplementationVersion() + ".");
+        log.info(buildSystemInfo());
         var startTime = System.currentTimeMillis();
 
         for (String prop : args) {
@@ -98,6 +100,26 @@ public class Main {
                 }
             }
         }).start();
+    }
+
+    public static String buildSystemInfo() {
+        long max = Runtime.getRuntime().maxMemory() / 1048576L;
+        long total = Runtime.getRuntime().totalMemory() / 1048576L;
+        long free = Runtime.getRuntime().freeMemory() / 1048576L;
+        long used = total - free;
+
+        val builder = new StringBuilder();
+        builder.append("\n====== System Info ======\n");
+        builder.append("Operating System:      ").append(System.getProperty("os.name")).append("\n");
+        builder.append("JVM Version:           ").append(System.getProperty("java.version")).append("\n");
+        builder.append("NeoJukePro Version:    ").append(Main.class.getPackage().getImplementationVersion()).append("\n\n");
+        builder.append("====== Memory Info ======\n");
+        builder.append("Reserved memory:       ").append(total).append("MB\n");
+        builder.append("  -> Used:             ").append(used).append("MB\n");
+        builder.append("  -> Free:             ").append(free).append("MB\n");
+        builder.append("Max. reserved memory:  ").append(max).append("MB\n");
+
+        return builder.toString();
     }
 
     public static NeoJukeLauncher getLauncher() {
