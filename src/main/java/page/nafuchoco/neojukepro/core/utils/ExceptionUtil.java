@@ -18,8 +18,8 @@ package page.nafuchoco.neojukepro.core.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import page.nafuchoco.neobot.api.command.CommandContext;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.CommandContext;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 
 import java.io.PrintWriter;
@@ -48,7 +48,7 @@ public class ExceptionUtil {
         var trace = stringWriter.toString();
 
         var builder = new StringBuilder();
-        builder.append(MessageManager.getMessage(guild.getSettings().getLang(), "command.exception") + "\n");
+        builder.append(MessageManager.getMessage("command.exception") + "\n");
         for (String msg : message)
             builder.append(msg + "\n");
 

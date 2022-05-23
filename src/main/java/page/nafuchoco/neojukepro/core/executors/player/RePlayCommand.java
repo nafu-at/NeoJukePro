@@ -16,18 +16,19 @@
 
 package page.nafuchoco.neojukepro.core.executors.player;
 
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 public class RePlayCommand extends CommandExecutor {
 
-    public RePlayCommand(String name, String... aliases) {
-        super(name, aliases);
+    public RePlayCommand(String name) {
+        super(name);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        context.getNeoGuild().getAudioPlayer().replay();
+        NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).getAudioPlayer().replay();
     }
 
     @Override
@@ -35,8 +36,5 @@ public class RePlayCommand extends CommandExecutor {
         return "Play the currently playing track again.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
+
 }

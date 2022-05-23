@@ -19,15 +19,15 @@ package page.nafuchoco.neojukepro.core.player;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import net.dv8tion.jda.api.entities.Member;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
-import page.nafuchoco.neojukepro.core.guild.user.NeoGuildMember;
 
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 public class TrackContext {
     private final NeoGuild neoGuild;
-    private final NeoGuildMember invoker;
+    private final Member invoker;
     private final int interruptNumber;
     private final String trackUrl;
 }

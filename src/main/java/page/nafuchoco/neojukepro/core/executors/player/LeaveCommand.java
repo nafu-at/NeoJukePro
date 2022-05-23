@@ -16,19 +16,20 @@
 
 package page.nafuchoco.neojukepro.core.executors.player;
 
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 public class LeaveCommand extends CommandExecutor {
 
-    public LeaveCommand(String name, String... aliases) {
-        super(name, aliases);
+    public LeaveCommand(String name) {
+        super(name);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        NeoGuildPlayer audioPlayer = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).getAudioPlayer();
         audioPlayer.setPaused(true);
         audioPlayer.leaveChannel();
     }
@@ -38,8 +39,5 @@ public class LeaveCommand extends CommandExecutor {
         return "Exits the Bot from the voice channel.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
+
 }

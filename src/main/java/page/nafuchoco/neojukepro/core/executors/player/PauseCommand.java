@@ -16,18 +16,20 @@
 
 package page.nafuchoco.neojukepro.core.executors.player;
 
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 public class PauseCommand extends CommandExecutor {
 
-    public PauseCommand(String name, String... aliases) {
-        super(name, aliases);
+    public PauseCommand(String name) {
+        super(name);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        context.getNeoGuild().getAudioPlayer().setPaused(!context.getNeoGuild().getAudioPlayer().isPaused());
+        var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+        neoGuild.getAudioPlayer().setPaused(!neoGuild.getAudioPlayer().isPaused());
     }
 
     @Override
@@ -35,8 +37,5 @@ public class PauseCommand extends CommandExecutor {
         return "Pauses the playing track.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
+
 }

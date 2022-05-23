@@ -21,11 +21,10 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
+import page.nafuchoco.neobot.api.command.CommandValueOption;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.CommandValueOption;
 import page.nafuchoco.neojukepro.core.http.youtube.SearchItem;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeSearchResults;
@@ -34,6 +33,7 @@ import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 import page.nafuchoco.neojukepro.core.player.TrackContext;
 import page.nafuchoco.neojukepro.core.utils.ChannelPermissionUtil;
 import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,15 +49,15 @@ public class PlayCommand extends CommandExecutor {
     static {
         YouTubeAPIClient apiClient;
         try {
-            apiClient = new YouTubeAPIClient(Main.getLauncher().getConfig().getAdvancedConfig().getGoogleAPIToken());
+            apiClient = new YouTubeAPIClient(NeoJuke.getInstance().getConfig().getBasicConfig().getGoogleAPIToken());
         } catch (IllegalArgumentException e) {
             apiClient = null;
         }
         YOUTUBE_CLIENT = apiClient;
     }
 
-    public PlayCommand(String name, String... aliases) {
-        super(name, aliases);
+    public PlayCommand(String name) {
+        super(name);
 
         getOptions().add(new CommandValueOption(OptionType.STRING,
                 "url",
@@ -68,28 +68,23 @@ public class PlayCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
-        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
-        if (!context.getNeoGuild().getJDAGuild().getSelfMember().getVoiceState().inAudioChannel()) {
+        var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+        NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
+        if (!neoGuild.getJDAGuild().getSelfMember().getVoiceState().inAudioChannel()) {
             VoiceChannel targetChannel = null;
-            if (context.getInvoker().getJDAMember().getVoiceState().getChannel().getType() == ChannelType.VOICE)
-                targetChannel = (VoiceChannel) context.getInvoker().getJDAMember().getVoiceState().getChannel();
+            if (context.getInvoker().getVoiceState().getChannel().getType() == ChannelType.VOICE)
+                targetChannel = (VoiceChannel) context.getInvoker().getVoiceState().getChannel();
 
             if (targetChannel == null) {
-                context.getResponseSender().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.join.before")).queue();
+                context.getResponseSender().sendMessage(MessageManager.getMessage("command.join.before")).queue();
             }
-            if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, context.getNeoGuild().getJDAGuild().getSelfMember())) {
-                context.getResponseSender().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.channel.permission")).queue();
+            if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, neoGuild.getJDAGuild().getSelfMember())) {
+                context.getResponseSender().sendMessage(MessageManager.getMessage("command.channel.permission")).queue();
             }
             try {
                 audioPlayer.joinChannel(targetChannel);
             } catch (InsufficientPermissionException e) {
-                context.getResponseSender().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.channel.permission")).queue();
+                context.getResponseSender().sendMessage(MessageManager.getMessage("command.channel.permission")).queue();
             }
         }
         audioPlayer.play();
@@ -99,49 +94,39 @@ public class PlayCommand extends CommandExecutor {
         if (!context.getOptions().isEmpty()) {
             val url = (String) context.getOptions().get("url").getValue();
             if (URL_REGEX.matcher(url).find()) { // 指定された引数がURLの場合はURLのトラックを再生
-                audioPlayer.play(new AudioTrackLoader(new TrackContext(context.getNeoGuild(), context.getInvoker(), 0, url)));
+                audioPlayer.play(new AudioTrackLoader(new TrackContext(neoGuild, context.getInvoker(), 0, url)));
             } else {
                 File file = new File(url);
                 if (file.exists()) { // 入力された引数がファイルパスかを確認しファイルが存在する場合再生
                     // TODO: 2022/03/12 ファイルがあるかどうかが分かってしまうのでこのあたりの判定をどうにかする
-                    audioPlayer.play(new AudioTrackLoader(new TrackContext(context.getNeoGuild(), context.getInvoker(), 0, file.getPath())));
+                    audioPlayer.play(new AudioTrackLoader(new TrackContext(neoGuild, context.getInvoker(), 0, file.getPath())));
                 } else if (YOUTUBE_CLIENT == null) {
-                    context.getResponseSender().sendMessage(MessageManager.getMessage(
-                            context.getNeoGuild().getSettings().getLang(),
-                            "command.play.search.disabled")).queue();
+                    context.getResponseSender().sendMessage(MessageManager.getMessage("command.play.search.disabled")).queue();
                 } else {
                     try {
                         YouTubeSearchResults result =
-                                new YouTubeAPIClient(context.getNeoJukePro().getConfig().getAdvancedConfig().getGoogleAPIToken()).searchVideos(url);
+                                new YouTubeAPIClient(NeoJuke.getInstance().getConfig().getBasicConfig().getGoogleAPIToken()).searchVideos(url);
                         if (result == null || result.getItems().length == 0) {
-                            context.getResponseSender().sendMessage(MessageManager.getMessage(
-                                    context.getNeoGuild().getSettings().getLang(),
-                                    "command.play.search.notfound")).queue();
+                            context.getResponseSender().sendMessage(MessageManager.getMessage("command.play.search.notfound")).queue();
                         }
 
                         StringBuilder message = new StringBuilder();
-                        message.append(MessageManager.getMessage(
-                                context.getNeoGuild().getSettings().getLang(),
-                                "command.play.search.found"));
+                        message.append(MessageManager.getMessage("command.play.search.found"));
                         int count = 1;
                         for (SearchItem item : result.getItems()) {
                             message.append("\n`[" + count + "]` " + item.getSnippet().getTitle() + "");
                             count++;
                         }
-                        message.append("\n\n" + MessageManager.getMessage(
-                                context.getNeoGuild().getSettings().getLang(),
-                                "command.play.search.select"));
+                        message.append("\n\n" + MessageManager.getMessage("command.play.search.select"));
 
-                        context.getNeoGuild().getGuildTempRegistry().registerTemp(
+                        neoGuild.getGuildTempRegistry().registerTemp(
                                 "searchResults", Arrays.asList(result, url));
                         context.getResponseSender().sendMessage(message.toString()).queue();
                     } catch (IOException e) {
                         ExceptionUtil.sendStackTrace(
-                                context.getNeoGuild(),
+                                neoGuild,
                                 e,
-                                MessageManager.getMessage(
-                                        context.getNeoGuild().getSettings().getLang(),
-                                        "command.play.search.failed"));
+                                MessageManager.getMessage("command.play.search.failed"));
                     }
                 }
             }
@@ -153,8 +138,5 @@ public class PlayCommand extends CommandExecutor {
         return "Play for tracks.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
+
 }

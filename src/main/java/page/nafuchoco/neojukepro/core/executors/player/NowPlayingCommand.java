@@ -19,11 +19,10 @@ package page.nafuchoco.neojukepro.core.executors.player;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.jetbrains.annotations.NotNull;
-import page.nafuchoco.neojukepro.core.Main;
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
+import page.nafuchoco.neobot.api.command.SubCommandOption;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.SubCommandOption;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
 import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
@@ -31,6 +30,7 @@ import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 import page.nafuchoco.neojukepro.core.utils.ExceptionUtil;
 import page.nafuchoco.neojukepro.core.utils.MessageUtil;
 import page.nafuchoco.neojukepro.core.utils.TrackEmbedUtil;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,19 +42,19 @@ public class NowPlayingCommand extends CommandExecutor {
     static {
         YouTubeAPIClient apiClient;
         try {
-            apiClient = new YouTubeAPIClient(Main.getLauncher().getConfig().getAdvancedConfig().getGoogleAPIToken());
+            apiClient = new YouTubeAPIClient(NeoJuke.getInstance().getConfig().getBasicConfig().getGoogleAPIToken());
         } catch (IllegalArgumentException e) {
             apiClient = null;
         }
         YOUTUBE_CLIENT = apiClient;
     }
 
-    public NowPlayingCommand(String name, String... aliases) {
-        super(name, aliases);
+    public NowPlayingCommand(String name) {
+        super(name);
 
         getOptions().add(new InfoSubCommand("info"));
-        getOptions().add(new ThumbnailSubCommand("thumbnail", "th"));
-        getOptions().add(new TimeSubCommand("time", "t"));
+        getOptions().add(new ThumbnailSubCommand("thumbnail"));
+        getOptions().add(new TimeSubCommand("time"));
     }
 
     @Override
@@ -66,21 +66,17 @@ public class NowPlayingCommand extends CommandExecutor {
         return "Displays detailed information about the currently playing track.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
-
 
     public static class InfoSubCommand extends SubCommandOption {
 
-        public InfoSubCommand(String name, String... aliases) {
-            super(name, aliases);
+        public InfoSubCommand(String name) {
+            super(name);
         }
 
         @Override
         public void onInvoke(CommandContext context) {
-            NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+            var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+            NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
             if (audioPlayer.getPlayingTrack() != null) {
                 LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
                 if (trackContext != null) {
@@ -88,17 +84,13 @@ public class NowPlayingCommand extends CommandExecutor {
                         context.getResponseSender().sendMessageEmbeds(TrackEmbedUtil.getTrackEmbed(audioPlayer)).setEphemeral(false).queue();
                     } catch (IOException e) {
                         ExceptionUtil.sendStackTrace(
-                                context.getNeoGuild(),
+                                neoGuild,
                                 e,
-                                MessageManager.getMessage(
-                                        context.getNeoGuild().getSettings().getLang(),
-                                        "command.nowplay.failed"));
+                                MessageManager.getMessage("command.nowplay.failed"));
                     }
                 }
             } else {
-                context.getResponseSender().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.nowplay.nothing")).queue();
+                context.getResponseSender().sendMessage(MessageManager.getMessage("command.nowplay.nothing")).queue();
             }
         }
 
@@ -106,23 +98,19 @@ public class NowPlayingCommand extends CommandExecutor {
         public @NotNull String getDescription() {
             return "Displays detailed information about the currently playing track.";
         }
-
-        @Override
-        public int getRequiredPerm() {
-            return 0;
-        }
     }
 
 
     public static class ThumbnailSubCommand extends SubCommandOption {
 
-        public ThumbnailSubCommand(String name, String... aliases) {
-            super(name, aliases);
+        public ThumbnailSubCommand(String name) {
+            super(name);
         }
 
         @Override
         public void onInvoke(CommandContext context) {
-            NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+            var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+            NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
             if (audioPlayer.getPlayingTrack() != null) {
                 LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
                 if (trackContext != null) {
@@ -131,24 +119,18 @@ public class NowPlayingCommand extends CommandExecutor {
                         try {
                             InputStream thumbnail = getThumbnailStream(audioTrack.getIdentifier());
                             if (thumbnail != null) {
-                                context.getHook().sendMessage(MessageManager.getMessage(
-                                                context.getNeoGuild().getSettings().getLang(),
-                                                "command.nowplay.getthumbnail"))
+                                context.getHook().sendMessage(MessageManager.getMessage("command.nowplay.getthumbnail"))
                                         .addFile(thumbnail, "thumbnail.jpg")
                                         .queue();
                             }
                         } catch (IOException e) {
                             ExceptionUtil.sendStackTrace(
-                                    context.getNeoGuild(),
+                                    neoGuild,
                                     e,
-                                    MessageManager.getMessage(
-                                            context.getNeoGuild().getSettings().getLang(),
-                                            "command.nowplay.failed"));
+                                    MessageManager.getMessage("command.nowplay.failed"));
                         }
                     } else {
-                        context.getResponseSender().sendMessage(MessageManager.getMessage(
-                                context.getNeoGuild().getSettings().getLang(),
-                                "command.nowplay.nosupport")).queue();
+                        context.getResponseSender().sendMessage(MessageManager.getMessage("command.nowplay.nosupport")).queue();
                     }
                 }
             }
@@ -167,35 +149,26 @@ public class NowPlayingCommand extends CommandExecutor {
         public @NotNull String getDescription() {
             return "Get a thumbnail of the currently playing track.";
         }
-
-        @Override
-        public int getRequiredPerm() {
-            return 0;
-        }
     }
 
 
     public static class TimeSubCommand extends SubCommandOption {
 
-        public TimeSubCommand(String name, String... aliases) {
-            super(name, aliases);
+        public TimeSubCommand(String name) {
+            super(name);
         }
 
         @Override
         public void onInvoke(CommandContext context) {
-            NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+            NeoGuildPlayer audioPlayer = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).getAudioPlayer();
             if (audioPlayer.getPlayingTrack() != null) {
                 LoadedTrackContext trackContext = audioPlayer.getPlayingTrack();
                 if (trackContext != null) {
                     AudioTrack audioTrack = trackContext.getTrack();
                     context.getHook().sendMessage(
-                            MessageUtil.format(MessageManager.getMessage(
-                                            context.getNeoGuild().getSettings().getLang(),
-                                            "command.list.playing"),
+                            MessageUtil.format(MessageManager.getMessage("command.list.playing"),
                                     audioPlayer.getPlayingTrack().getTrack().getInfo().title) + "\n" +
-                                    MessageUtil.format(MessageManager.getMessage(
-                                                    context.getNeoGuild().getSettings().getLang(),
-                                                    "command.nowplay.currenttime"),
+                                    MessageUtil.format(MessageManager.getMessage("command.nowplay.currenttime"),
                                             MessageUtil.formatTime(audioPlayer.getTrackPosition()),
                                             MessageUtil.formatTime(audioTrack.getDuration() - audioPlayer.getTrackPosition()))).queue();
                 }
@@ -205,11 +178,6 @@ public class NowPlayingCommand extends CommandExecutor {
         @Override
         public @NotNull String getDescription() {
             return "Displays the playback time of the currently playing track.";
-        }
-
-        @Override
-        public int getRequiredPerm() {
-            return 0;
         }
     }
 }

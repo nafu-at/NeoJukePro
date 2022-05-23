@@ -16,25 +16,24 @@
 
 package page.nafuchoco.neojukepro.core.executors.player;
 
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 public class StopCommand extends CommandExecutor {
 
-    public StopCommand(String name, String... aliases) {
-        super(name, aliases);
+    public StopCommand(String name) {
+        super(name);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        NeoGuildPlayer audioPlayer = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).getAudioPlayer();
         audioPlayer.stop();
-        context.getChannel().sendMessage(MessageManager.getMessage(
-                context.getNeoGuild().getSettings().getLang(),
-                "command.stop")).queue();
-        context.getNeoGuild().destroyAudioPlayer();
+        context.getChannel().sendMessage(MessageManager.getMessage("command.stop")).queue();
+        NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).destroyAudioPlayer();
     }
 
     @Override
@@ -42,8 +41,5 @@ public class StopCommand extends CommandExecutor {
         return "Stops the player.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
+
 }

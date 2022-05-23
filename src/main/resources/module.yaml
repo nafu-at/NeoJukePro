@@ -1,0 +1,8 @@
+name: "NeoJukePro"
+version: ${version}
+authors: [ NAFU_at ]
+website: "https://toybox.nafuchoco.page/"
+main: "page.nafuchoco.neojukepro.module.NeoJuke"
+additionalIntents:
+  - GUILD_VOICE_STATES
+  - GUILD_MEMBERS

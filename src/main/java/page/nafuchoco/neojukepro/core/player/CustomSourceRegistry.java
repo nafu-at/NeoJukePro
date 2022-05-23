@@ -16,7 +16,7 @@
 
 package page.nafuchoco.neojukepro.core.player;
 
-import page.nafuchoco.neojukepro.core.module.NeoModule;
+import page.nafuchoco.neobot.api.module.NeoModule;
 
 import java.util.*;
 import java.util.stream.Collectors;

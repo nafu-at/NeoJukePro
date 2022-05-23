@@ -17,7 +17,6 @@
 package page.nafuchoco.neojukepro.core.player;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
@@ -26,16 +25,12 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
-import org.apache.commons.lang3.RandomUtils;
-import page.nafuchoco.neojukepro.api.NeoJukePro;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.guild.NeoGuild;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
-import page.nafuchoco.neojukepro.core.http.youtube.YouTubeSearchResults;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -43,7 +38,6 @@ import java.util.List;
 public class NeoGuildPlayer implements PlayerEventListenerAdapter {
     private static final YouTubeAPIClient client;
 
-    private final NeoJukePro neoJukePro;
     private final NeoGuild neoGuild;
     private final AudioPlayer player;
     private final GuildTrackProvider trackProvider;
@@ -53,7 +47,7 @@ public class NeoGuildPlayer implements PlayerEventListenerAdapter {
     static {
         YouTubeAPIClient apiClient;
         try {
-            apiClient = new YouTubeAPIClient(Main.getLauncher().getConfig().getAdvancedConfig().getGoogleAPIToken());
+            apiClient = new YouTubeAPIClient(NeoJuke.getInstance().getConfig().getBasicConfig().getGoogleAPIToken());
         } catch (IllegalArgumentException e) {
             apiClient = null;
         }
@@ -61,8 +55,7 @@ public class NeoGuildPlayer implements PlayerEventListenerAdapter {
     }
 
 
-    public NeoGuildPlayer(NeoJukePro neoJukePro, NeoGuild neoGuild) {
-        this.neoJukePro = neoJukePro;
+    public NeoGuildPlayer(NeoGuild neoGuild) {
         this.neoGuild = neoGuild;
         player = getNeoGuild().getAudioPlayerManager().createPlayer();
         player.addListener(this);
@@ -215,12 +208,12 @@ public class NeoGuildPlayer implements PlayerEventListenerAdapter {
 
     @Override
     public void onPlayerPause(AudioPlayer player) {
-        getNeoGuild().sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.pause"));
+        getNeoGuild().sendMessageToLatest(MessageManager.getMessage("player.pause"));
     }
 
     @Override
     public void onPlayerResume(AudioPlayer player) {
-        getNeoGuild().sendMessageToLatest(MessageManager.getMessage(neoGuild.getSettings().getLang(), "player.resume"));
+        getNeoGuild().sendMessageToLatest(MessageManager.getMessage("player.resume"));
     }
 
     @Override
@@ -242,21 +235,6 @@ public class NeoGuildPlayer implements PlayerEventListenerAdapter {
 
             if (playingTrack != null && getNeoGuild().getSettings().getPlayerOptions().getRepeatMode() == NeoGuildPlayerOptions.RepeatMode.ALL) {
                 play(playingTrack.makeClone(0));
-            }
-
-            if (playingTrack != null
-                    && playingTrack.getTrack() instanceof YoutubeAudioTrack
-                    && trackProvider.getQueues().isEmpty()
-                    && client != null
-                    && getNeoJukePro().getConfig().getAdvancedConfig().isEnableRelatedVideoSearch()
-                    && getNeoGuild().getSettings().isJukeboxMode()) {
-                try {
-                    YouTubeSearchResults results =
-                            client.searchVideos(YouTubeAPIClient.SearchType.RELATED, playingTrack.getTrack().getIdentifier(), null);
-                    play(new AudioTrackLoader(new TrackContext(getNeoGuild(), getPlayingTrack().getInvoker(), 0, "https://www.youtube.com/watch?v=" + results.getItems()[RandomUtils.nextInt(0, 4)].getID().getVideoID())));
-                } catch (IOException e) {
-                    log.warn(MessageManager.getMessage("command.play.search.failed"));
-                }
             }
 
             playingTrack = null;

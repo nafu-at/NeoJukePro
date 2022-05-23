@@ -10,10 +10,7 @@
 basic: # This is the configuration required to use this bot.
   language: "en_US"                    # Specifies the language that the system uses by default.
 
-  discordToken: "YourTokenHere"        # Set the token that this Bot will use to authenticate to the Discord API.
-
-  prefix: ";;"                         # Specifies a prefix for the bot to recognize the message as a command.
-  botAdmins: [ ]                       # Specifies the ID of the user who has administrative privileges for this Bot.
+  googleAPIToken: ""                   # You can use the YouTube video search function by entering a token.
 
   musicSource: # Specifies the source to be used to play the music.
     youtube: true
@@ -23,29 +20,3 @@ basic: # This is the configuration required to use this bot.
     twitch: true
     http: true
     local: false
-
-  database: # Set the connection information of the database to store the data.
-    databaseType: "MARIADB"            # Specify the type of database. (MARIADB/MYSQL)
-    tablePrefix: "sj_"
-    address: localhost:3306
-    database: NeoJukePro
-    username: NeoJukePro
-    password: PaSsWoRd
-
-
-###############################################
-#              Advanced Settings              #
-###############################################
-advanced:
-  googleAPIToken: ""                   # You can use the YouTube video search function by entering a token.
-
-  # Notification #
-  # The related video search feature is also used for the auto-play feature.
-  # Autoplay will automatically play the related video if the last video in the queue was on YouTube.
-  # Be aware that this can result in a lot of API resources being consumed.
-  # It is recommended to disable this feature if you intend to run your application as a public bot for the masses.
-  relatedVideoSearch: false            # Specifies whether to enable the related video search function.
-
-
-  # --- --- --- --- #
-  sentryDsn: ""

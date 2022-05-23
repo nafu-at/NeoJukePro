@@ -19,7 +19,6 @@ package page.nafuchoco.neojukepro.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.extern.slf4j.Slf4j;
-import page.nafuchoco.neojukepro.core.config.NeoJukeConfig;
 
 import java.io.*;
 import java.nio.file.Files;

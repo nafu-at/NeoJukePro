@@ -20,11 +20,10 @@ import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.UnavailableGuildLeaveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import page.nafuchoco.neojukepro.api.NeoJukePro;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 @AllArgsConstructor
 public class GuildLeaveEventHandler extends ListenerAdapter {
-    private final NeoJukePro neoJukePro;
 
     public void onGuildLeave(GuildLeaveEvent event) {
         deleteGuildData(event.getGuild().getIdLong());
@@ -35,6 +34,6 @@ public class GuildLeaveEventHandler extends ListenerAdapter {
     }
 
     private void deleteGuildData(long guildId) {
-        neoJukePro.getGuildRegistry().deleteGuildData(guildId);
+        NeoJuke.getInstance().getGuildRegistry().deleteGuildData(guildId);
     }
 }

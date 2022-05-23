@@ -16,14 +16,11 @@
 
 package page.nafuchoco.neojukepro.core.guild;
 
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
-import page.nafuchoco.neojukepro.api.NeoJukePro;
-import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.database.GuildUsersPermTable;
-import page.nafuchoco.neojukepro.core.database.NeoGuildSettingsTable;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,49 +29,23 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class NeoGuildRegistry {
+    private static final Gson gson = new Gson();
     private final Map<Long, NeoGuild> guilds = new HashMap<>();
-
-    private final NeoJukePro neoJukePro;
-    private final NeoGuildSettingsTable settingsTable;
-    private final GuildUsersPermTable permTable;
-
-    public NeoGuildRegistry(NeoJukePro api, NeoGuildSettingsTable settingsTable, GuildUsersPermTable permTable) {
-        this.neoJukePro = api;
-        this.settingsTable = settingsTable;
-        this.permTable = permTable;
-    }
-
-    public NeoJukePro getNeoJukePro() {
-        return neoJukePro;
-    }
 
     public NeoGuild getNeoGuild(long guildId) {
         return guilds.computeIfAbsent(guildId, key -> {
-            NeoGuildSettings guildSettings = null;
+            NeoGuildSettings guildSettings;
             try {
-                guildSettings = settingsTable.getGuildSettings(key);
-            } catch (SQLException e) {
-                log.warn(MessageManager.getMessage("system.db.retrieving.error"), e);
-            }
-            if (guildSettings == null) {
-                guildSettings = new NeoGuildSettings(
-                        getNeoJukePro(),
-                        settingsTable,
-                        key,
-                        getNeoJukePro().getConfig().getBasicConfig().getLanguage(),
-                        getNeoJukePro().getConfig().getBasicConfig().getPrefix(),
-                        false,
-                        false,
-                        new ArrayList<>(),
-                        new NeoGuildPlayerOptions(80, NeoGuildPlayerOptions.RepeatMode.NONE, false, new ArrayList<>()));
-                try {
-                    settingsTable.registerGuildSettings(guildSettings);
-                } catch (SQLException e) {
-                    log.error(MessageManager.getMessage("system.db.communicate.error"));
+                guildSettings = new NeoGuildSettings(guildId, gson.fromJson((String) NeoJuke.getInstance().getSettingsStore().getStoreData(guildId, "player_options"), NeoGuildPlayerOptions.class));
+                if (guildSettings == null) {
+                    guildSettings = new NeoGuildSettings(guildId, new NeoGuildPlayerOptions(80, NeoGuildPlayerOptions.RepeatMode.NONE, false, new ArrayList<>()));
+                    NeoJuke.getInstance().getSettingsStore().registerStoreData(guildId, gson.toJson(guildSettings.getPlayerOptions()));
                 }
-            }
 
-            return new NeoGuild(getNeoJukePro(), key, guildSettings, permTable);
+                return new NeoGuild(key, guildSettings);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -90,19 +61,9 @@ public class NeoGuildRegistry {
         return getNeoGuilds().stream().filter(guild -> guild.audioPlayer != null).collect(Collectors.toList());
     }
 
-    /**
-     * Delete the saved guild data.
-     * This process will delete all the data of the specified guild stored in the database.
-     *
-     * @param guildId Guild to delete data
-     */
     public void deleteGuildData(long guildId) {
-        try {
-            settingsTable.deleteSettings(guildId);
-            permTable.deleteGuildUsers(guildId);
-        } catch (SQLException e) {
-            log.error("An error occurred while deleting data.", e);
-        }
+        NeoJuke.getInstance().getSettingsStore().deleteStoredData(guildId);
+
         var neoGuild = guilds.get(guildId);
         if (neoGuild != null)
             neoGuild.destroyAudioPlayer();

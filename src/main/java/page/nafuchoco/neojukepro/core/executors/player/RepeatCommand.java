@@ -18,16 +18,17 @@ package page.nafuchoco.neojukepro.core.executors.player;
 
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
-import page.nafuchoco.neojukepro.core.command.CommandValueOption;
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
+import page.nafuchoco.neobot.api.command.CommandValueOption;
 import page.nafuchoco.neojukepro.core.guild.NeoGuildPlayerOptions;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 @Slf4j
 public class RepeatCommand extends CommandExecutor {
 
-    public RepeatCommand(String name, String... aliases) {
-        super(name, aliases);
+    public RepeatCommand(String name) {
+        super(name);
 
         getOptions().add(new CommandValueOption(OptionType.STRING,
                 "repeat",
@@ -44,7 +45,7 @@ public class RepeatCommand extends CommandExecutor {
         } catch (IllegalArgumentException e) {
             repeatMode = NeoGuildPlayerOptions.RepeatMode.NONE;
         }
-        context.getNeoGuild().getSettings().setRepeatMode(repeatMode);
+        NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).getSettings().setRepeatMode(repeatMode);
         context.getResponseSender().sendMessage("Repeat mode has been changed.").queue();
     }
 
@@ -53,8 +54,5 @@ public class RepeatCommand extends CommandExecutor {
         return "Repeat the track.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
+
 }

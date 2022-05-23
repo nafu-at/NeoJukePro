@@ -19,40 +19,36 @@ package page.nafuchoco.neojukepro.core.executors.player;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 import page.nafuchoco.neojukepro.core.utils.ChannelPermissionUtil;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 public class JoinCommand extends CommandExecutor {
 
-    public JoinCommand(String name, String... aliases) {
-        super(name, aliases);
+    public JoinCommand(String name) {
+        super(name);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        NeoGuildPlayer audioPlayer = context.getNeoGuild().getAudioPlayer();
+        var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+        NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
         VoiceChannel targetChannel = null;
-        if (context.getInvoker().getJDAMember().getVoiceState().getChannel().getType() == ChannelType.VOICE)
-            targetChannel = (VoiceChannel) context.getInvoker().getJDAMember().getVoiceState().getChannel();
+        if (context.getInvoker().getVoiceState().getChannel().getType() == ChannelType.VOICE)
+            targetChannel = (VoiceChannel) context.getInvoker().getVoiceState().getChannel();
 
         try {
             if (targetChannel == null)
-                context.getResponseSender().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.join.before")).queue();
-            else if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, context.getNeoGuild().getJDAGuild().getSelfMember()))
-                context.getResponseSender().sendMessage(MessageManager.getMessage(
-                        context.getNeoGuild().getSettings().getLang(),
-                        "command.channel.permission")).queue();
+                context.getResponseSender().sendMessage(MessageManager.getMessage("command.join.before")).queue();
+            else if (!ChannelPermissionUtil.checkAccessVoiceChannel(targetChannel, neoGuild.getJDAGuild().getSelfMember()))
+                context.getResponseSender().sendMessage(MessageManager.getMessage("command.channel.permission")).queue();
             else
                 audioPlayer.joinChannel(targetChannel);
         } catch (InsufficientPermissionException e) {
-            context.getResponseSender().sendMessage(MessageManager.getMessage(
-                    context.getNeoGuild().getSettings().getLang(),
-                    "command.channel.permission")).queue();
+            context.getResponseSender().sendMessage(MessageManager.getMessage("command.channel.permission")).queue();
         }
     }
 
@@ -61,8 +57,5 @@ public class JoinCommand extends CommandExecutor {
         return "Connect the bot to the voice channel.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
+
 }

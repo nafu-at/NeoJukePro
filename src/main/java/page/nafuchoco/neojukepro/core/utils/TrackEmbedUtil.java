@@ -25,20 +25,18 @@ import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import page.nafuchoco.neojukepro.core.Main;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.NeoJukeLauncher;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeAPIClient;
 import page.nafuchoco.neojukepro.core.http.youtube.YouTubeObjectItem;
 import page.nafuchoco.neojukepro.core.player.CustomAudioSourceManager;
 import page.nafuchoco.neojukepro.core.player.LoadedTrackContext;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 import java.awt.*;
 import java.io.IOException;
 
 public class TrackEmbedUtil {
-    private static final NeoJukeLauncher launcher = Main.getLauncher();
     private static final YouTubeAPIClient client;
     private static final Color YOUTUBE = new Color(255, 0, 0);
     private static final Color SOUNDCLOUD_COLOR = new Color(255, 85, 0);
@@ -54,7 +52,7 @@ public class TrackEmbedUtil {
     static {
         YouTubeAPIClient apiClient;
         try {
-            apiClient = new YouTubeAPIClient(launcher.getConfig().getAdvancedConfig().getGoogleAPIToken());
+            apiClient = new YouTubeAPIClient(NeoJuke.getInstance().getConfig().getBasicConfig().getGoogleAPIToken());
         } catch (IllegalArgumentException e) {
             apiClient = null;
         }
@@ -115,11 +113,9 @@ public class TrackEmbedUtil {
         var description = new MessageEmbed.Field("Description", descMessage, false);
         builder.addField(description);
         builder.setFooter(MessageUtil.format(
-                        MessageManager.getMessage(
-                                audioPlayer.getNeoGuild().getSettings().getLang(),
-                                "command.nowplay.request"),
-                        audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getEffectiveName()),
-                audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getUser().getAvatarUrl());
+                        MessageManager.getMessage("command.nowplay.request"),
+                        audioPlayer.getPlayingTrack().getInvoker().getEffectiveName()),
+                audioPlayer.getPlayingTrack().getInvoker().getUser().getAvatarUrl());
         return builder.build();
     }
 
@@ -136,11 +132,9 @@ public class TrackEmbedUtil {
                 "Loaded from " + audioPlayer.getPlayingTrack().getTrack().getSourceManager().getSourceName() + ".", false);
         builder.addField(source);
         builder.setFooter(MessageUtil.format(
-                        MessageManager.getMessage(
-                                audioPlayer.getNeoGuild().getSettings().getLang(),
-                                "command.nowplay.request"),
-                        audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getEffectiveName()),
-                audioPlayer.getPlayingTrack().getInvoker().getJDAMember().getUser().getAvatarUrl());
+                        MessageManager.getMessage("command.nowplay.request"),
+                        audioPlayer.getPlayingTrack().getInvoker().getEffectiveName()),
+                audioPlayer.getPlayingTrack().getInvoker().getUser().getAvatarUrl());
         return builder.build();
     }
 }

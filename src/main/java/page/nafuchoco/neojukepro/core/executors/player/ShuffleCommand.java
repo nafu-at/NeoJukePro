@@ -16,24 +16,26 @@
 
 package page.nafuchoco.neojukepro.core.executors.player;
 
+import page.nafuchoco.neobot.api.command.CommandContext;
+import page.nafuchoco.neobot.api.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.MessageManager;
-import page.nafuchoco.neojukepro.core.command.CommandContext;
-import page.nafuchoco.neojukepro.core.command.CommandExecutor;
 import page.nafuchoco.neojukepro.core.utils.MessageUtil;
+import page.nafuchoco.neojukepro.module.NeoJuke;
 
 public class ShuffleCommand extends CommandExecutor {
 
-    public ShuffleCommand(String name, String... aliases) {
-        super(name, aliases);
+    public ShuffleCommand(String name) {
+        super(name);
     }
 
     @Override
     public void onInvoke(CommandContext context) {
-        context.getNeoGuild().getSettings().setShuffle(!context.getNeoGuild().getSettings().getPlayerOptions().isShuffle());
+        var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+        neoGuild.getSettings().setShuffle(!neoGuild.getSettings().getPlayerOptions().isShuffle());
         context.getHook().sendMessage(
                 MessageUtil.format(
-                        MessageManager.getMessage(context.getNeoGuild().getSettings().getLang(), "command.shuffle"),
-                        context.getNeoGuild().getSettings().getPlayerOptions().isShuffle())).queue();
+                        MessageManager.getMessage("command.shuffle"),
+                        neoGuild.getSettings().getPlayerOptions().isShuffle())).queue();
     }
 
     @Override
@@ -41,8 +43,5 @@ public class ShuffleCommand extends CommandExecutor {
         return "Shuffle the registered queues.";
     }
 
-    @Override
-    public int getRequiredPerm() {
-        return 0;
-    }
+
 }
