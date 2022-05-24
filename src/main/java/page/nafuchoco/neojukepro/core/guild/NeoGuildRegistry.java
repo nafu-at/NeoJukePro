@@ -36,10 +36,13 @@ public class NeoGuildRegistry {
         return guilds.computeIfAbsent(guildId, key -> {
             NeoGuildSettings guildSettings;
             try {
-                guildSettings = new NeoGuildSettings(guildId, gson.fromJson((String) NeoJuke.getInstance().getSettingsStore().getStoreData(guildId, "player_options"), NeoGuildPlayerOptions.class));
-                if (guildSettings == null) {
+                String settingsJson = NeoJuke.getInstance().getSettingsStore().getStoreData(guildId, "player_options");
+
+                if (settingsJson == null) {
                     guildSettings = new NeoGuildSettings(guildId, new NeoGuildPlayerOptions(80, NeoGuildPlayerOptions.RepeatMode.NONE, false, new ArrayList<>()));
                     NeoJuke.getInstance().getSettingsStore().registerStoreData(guildId, gson.toJson(guildSettings.getPlayerOptions()));
+                } else {
+                    guildSettings = new NeoGuildSettings(guildId, gson.fromJson(settingsJson, NeoGuildPlayerOptions.class));
                 }
 
                 return new NeoGuild(key, guildSettings);
