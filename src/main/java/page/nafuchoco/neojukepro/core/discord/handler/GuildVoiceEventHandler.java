@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import page.nafuchoco.neojukepro.core.MessageManager;
 import page.nafuchoco.neojukepro.core.player.NeoGuildPlayer;
 import page.nafuchoco.neojukepro.module.NeoJuke;
 
@@ -50,7 +51,7 @@ public final class GuildVoiceEventHandler extends ListenerAdapter {
                 return;
 
         var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(event.getGuild());
-        neoGuild.sendMessageToLatest("player.autoleave");
+        neoGuild.sendMessageToLatest(MessageManager.getMessage("player.autoleave"));
         NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
         audioPlayer.setPaused(true);
         audioPlayer.leaveChannel();
