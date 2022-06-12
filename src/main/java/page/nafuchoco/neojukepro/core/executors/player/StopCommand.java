@@ -30,6 +30,8 @@ public class StopCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
+        NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).setLastJoinedChannel(context.getChannel());
+        
         NeoGuildPlayer audioPlayer = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).getAudioPlayer();
         audioPlayer.stop();
         context.getChannel().sendMessage(MessageManager.getMessage("command.stop")).queue();

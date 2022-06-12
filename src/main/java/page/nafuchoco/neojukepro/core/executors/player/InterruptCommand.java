@@ -50,6 +50,8 @@ public class InterruptCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+        neoGuild.setLastJoinedChannel(context.getChannel());
+        
         NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
         if (!neoGuild.getJDAGuild().getSelfMember().getVoiceState().inAudioChannel()
                 && context.getInvoker().getVoiceState().getChannel().getType() != ChannelType.VOICE) {

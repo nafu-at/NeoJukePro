@@ -85,6 +85,8 @@ public class SearchCommand extends CommandExecutor {
         @Override
         public void onInvoke(CommandContext context) {
             var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+            neoGuild.setLastJoinedChannel(context.getChannel());
+            
             if (YOUTUBE_CLIENT == null) {
                 context.getResponseSender().sendMessage(MessageManager.getMessage("command.play.search.disabled")).queue();
             } else if (context.getOptions().get("keyword") != null) { // TODO: 2022/03/12 このNullチェックは不要なので消す

@@ -35,6 +35,8 @@ public class JoinCommand extends CommandExecutor {
     @Override
     public void onInvoke(CommandContext context) {
         var neoGuild = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild());
+        neoGuild.setLastJoinedChannel(context.getChannel());
+
         NeoGuildPlayer audioPlayer = neoGuild.getAudioPlayer();
         VoiceChannel targetChannel = null;
         if (context.getInvoker().getVoiceState().getChannel().getType() == ChannelType.VOICE)

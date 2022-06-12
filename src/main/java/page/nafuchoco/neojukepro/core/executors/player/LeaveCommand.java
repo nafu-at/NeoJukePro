@@ -29,6 +29,8 @@ public class LeaveCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
+        NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).setLastJoinedChannel(context.getChannel());
+        
         NeoGuildPlayer audioPlayer = NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).getAudioPlayer();
         audioPlayer.setPaused(true);
         audioPlayer.leaveChannel();

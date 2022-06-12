@@ -28,6 +28,8 @@ public class RePlayCommand extends CommandExecutor {
 
     @Override
     public void onInvoke(CommandContext context) {
+        NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).setLastJoinedChannel(context.getChannel());
+        
         NeoJuke.getInstance().getGuildRegistry().getNeoGuild(context.getGuild()).getAudioPlayer().replay();
     }
 
