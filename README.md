@@ -5,6 +5,9 @@
 [![Java CI with Gradle](https://github.com/nafu-at/NeoJukePro/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/nafu-at/NeoJukePro/actions/workflows/gradle.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/35ee3810e0b647de90d3251fad96bcc4)](https://www.codacy.com/gh/nafu-at/NeoJukePro/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nafu-at/NeoJukePro&amp;utm_campaign=Badge_Grade)
 
+**NeoJukePro is now a module of NeoBotCore and has been moved to this repository.**  
+https://github.com/NeoBotDevelopment/NeoBotCore
+
 NeoJukePro is a new Discord Music Bot developed as a successor to SimpleJuke.  
 We rebuilt it from scratch to make it simpler, clearer, more functional, and more stable.
 
